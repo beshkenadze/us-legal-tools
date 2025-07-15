@@ -1,0 +1,80 @@
+{
+  "name": "ecfr-sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK and MCP server for the eCFR (Electronic Code of Federal Regulations) API",
+  "author": "Your Name",
+  "license": "MIT",
+  "keywords": [
+    "ecfr",
+    "federal",
+    "regulations",
+    "api",
+    "sdk",
+    "mcp",
+    "typescript"
+  ],
+  "homepage": "https://github.com/yourusername/ecfr-sdk#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/ecfr-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/ecfr-sdk/issues"
+  },
+  "type": "module",
+  "module": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./mcp": {
+      "import": "./dist/mcp/index.js",
+      "types": "./dist/mcp/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun run build:clean && bun run build:js && bun run build:types",
+    "build:clean": "rm -rf dist",
+    "build:js": "bun build --target=node ./src/index.ts --outdir=dist --splitting",
+    "build:types": "tsc --emitDeclarationOnly --project tsconfig.build.json",
+    "generate": "bun run scripts/fix-and-convert-swagger.ts && orval",
+    "format": "biome format --write .",
+    "lint": "biome lint --write .",
+    "check": "biome check --write .",
+    "check:ci": "biome ci .",
+    "prepublishOnly": "bun run build",
+    "test": "bun test",
+    "mcp:server": "bun run src/mcp/server.ts",
+    "docker:build": "docker build -t ecfr-mcp-server .",
+    "docker:run": "docker run -i --rm ecfr-mcp-server"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.1",
+    "@types/bun": "latest",
+    "@types/node": "^24.0.14",
+    "orval": "^7.10.0",
+    "puppeteer-core": "^24.13.0",
+    "swagger2openapi": "^7.0.8",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.15.1",
+    "axios": "^1.10.0",
+    "zod": "^4.0.5"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  lightpanda:
+    image: lightpanda/browser:nightly
+    container_name: lightpanda
+    privileged: true
+    ports:
+      - "9222:9222"
+    restart: unless-stopped
