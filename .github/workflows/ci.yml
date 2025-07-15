@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run format check
+        run: bun run format
+
+      - name: Run lint check
+        run: bun run check:ci
+
+      - name: Build SDK
+        run: bun run build
+
+      - name: Run tests
+        run: bun test
+
+      - name: Verify MCP server starts
+        run: |
+          timeout 5s bun run mcp:server || exit_code=$?
+          if [ $exit_code -eq 124 ]; then
+            echo "MCP server started successfully (timeout expected)"
+            exit 0
+          else
+            echo "MCP server failed to start"
+            exit 1
+          fi

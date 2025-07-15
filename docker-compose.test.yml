@@ -1,0 +1,21 @@
+services:
+  chrome:
+    image: browserless/chrome:latest
+    container_name: chrome-test
+    ports:
+      - "9222:3000"
+    environment:
+      - CONNECTION_TIMEOUT=60000
+      - MAX_CONCURRENT_SESSIONS=10
+    shm_size: 2gb
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9222/json/version"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+networks:
+  test-network:
+    driver: bridge
