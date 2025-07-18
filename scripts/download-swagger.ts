@@ -12,31 +12,52 @@ const OUTPUT_FILE = path.join(OUTPUT_DIR, 'v1.json');
 const CDP_URL = process.env.CDP_URL || 'http://chrome:9222';
 const FALLBACK_CDP_URL = 'http://localhost:9222';
 
-async function downloadWithBrowser(cdpUrl: string) {
+async function downloadWithBrowser(cdpUrl?: string) {
   let browser: any;
   let context: any;
   let page: any;
 
   try {
     console.log('🌐 Using headless browser to download Swagger documentation...');
-    console.log('🔗 Connecting to:', cdpUrl);
+    
+    if (cdpUrl) {
+      console.log('🔗 Connecting to:', cdpUrl);
+      // Construct WebSocket endpoint from CDP URL
+      const host = cdpUrl.replace('http://', '').replace('https://', '');
+      const wsEndpoint = `ws://${host}`;
+      console.log('🔗 WebSocket endpoint:', wsEndpoint);
 
-    // Construct WebSocket endpoint from CDP URL
-    const host = cdpUrl.replace('http://', '').replace('https://', '');
-    const wsEndpoint = `ws://${host}`;
+      // Connect to browser instance using WebSocket
+      browser = await puppeteer.connect({
+        browserWSEndpoint: wsEndpoint,
+      });
+    } else {
+      console.log('🚀 Launching Chrome browser...');
+      // Launch Chrome directly (for GitHub Actions)
+      browser = await puppeteer.launch({
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding',
+          '--disable-features=TranslateUI',
+          '--disable-ipc-flooding-protection',
+        ],
+      });
+    }
 
-    console.log('🔗 WebSocket endpoint:', wsEndpoint);
-
-    // Connect to Lightpanda browser instance using WebSocket
-    browser = await puppeteer.connect({
-      browserWSEndpoint: wsEndpoint,
-    });
-
-    // Create a new browser context (as per Lightpanda docs)
-    context = await browser.createBrowserContext();
-
-    // Create a new page in the context
-    page = await context.newPage();
+    // Create a new page
+    if (cdpUrl) {
+      // Create a new browser context (for remote browser)
+      context = await browser.createBrowserContext();
+      page = await context.newPage();
+    } else {
+      // Create page directly (for launched browser)
+      page = await browser.newPage();
+    }
 
     // Set user agent to mimic a real browser
     await page.setUserAgent(
@@ -143,22 +164,37 @@ async function downloadWithBrowser(cdpUrl: string) {
     }
     if (browser) {
       try {
-        await browser.disconnect();
+        if (cdpUrl) {
+          await browser.disconnect();
+        } else {
+          await browser.close();
+        }
       } catch (e) {
-        // Ignore disconnect errors
+        // Ignore disconnect/close errors
       }
     }
   }
 }
 
 async function main() {
-  // Try primary CDP URL first
-  let success = await downloadWithBrowser(CDP_URL);
+  let success = false;
 
-  // If failed and not already using localhost, try fallback
-  if (!success && !CDP_URL.includes('localhost')) {
-    console.log('\n🔄 Trying fallback CDP URL...');
-    success = await downloadWithBrowser(FALLBACK_CDP_URL);
+  // If CDP_URL is set, try to connect to remote browser
+  if (process.env.CDP_URL) {
+    console.log('🔗 Connecting to remote browser...');
+    success = await downloadWithBrowser(process.env.CDP_URL);
+    
+    // If failed and not already using localhost, try fallback
+    if (!success && !process.env.CDP_URL.includes('localhost')) {
+      console.log('\n🔄 Trying fallback CDP URL...');
+      success = await downloadWithBrowser(FALLBACK_CDP_URL);
+    }
+  }
+
+  // If no CDP_URL or remote connection failed, launch Chrome directly
+  if (!success) {
+    console.log('\n🚀 Launching Chrome directly...');
+    success = await downloadWithBrowser();
   }
 
   if (!success) {

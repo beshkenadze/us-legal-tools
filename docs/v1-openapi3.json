@@ -28,7 +28,9 @@
             "description": "```json\n  {\n    \"agencies\": [\n      {\n        \"name\": \"Administrative Conference of the United States\",\n        \"short_name\": \"ACUS\",\n        \"display_name\": \"Administrative Conference of the United States\",\n        \"sortable_name\": \"Administrative Conference of the United States\",\n        \"slug\": \"administrative-conference-of-the-united-states\",\n        \"children\": [],\n        \"cfr_references\": [\n          {\n            \"title\": 1,\n            \"chapter\": \"III\"\n          }\n        ]\n      },\n  ...\n      {\n        \"name\": \"Department of Agriculture\",\n        \"short_name\": \"USDA\",\n        \"display_name\": \"Department of Agriculture\",\n        \"sortable_name\": \"Agriculture, Department of\",\n        \"slug\": \"agriculture-department\",\n        \"children\": [\n          {\n          \"name\": \"Agricultural Marketing Service\",\n          \"short_name\": \"AMS\",\n          \"display_name\": \"Agricultural Marketing Service, Department of Agriculture\",\n          \"sortable_name\": \"Agricultural Marketing Service\",\n          \"slug\": \"agricultural-marketing-service\",\n          \"cfr_references\": [\n            {\n              \"title\": 7,\n              \"chapter\": \"I\"\n            },\n            ...\n          ],\n        \"cfr_references\": [\n          {\n            \"title\": 2,\n            \"chapter\": \"IV\",\n          },\n          ...\n        ]\n      },\n  ...\n      {\n        \"name\": \"World Agricultural Outlook Board\",\n        \"short_name\": \"WAOB\",\n        \"display_name\": \"World Agricultural Outlook Board\",\n        \"sortable_name\": \"World Agricultural Outlook Board\",\n        \"slug\": \"world-agricultural-outlook-board\",\n        \"cfr_references\": [\n          {\n            \"title\": 7,\n            \"chapter\": \"XXXVIII\"\n          }\n        ]\n      }\n    ]\n  }\n```\n"
           }
         },
-        "tags": ["Admin Service"]
+        "tags": [
+          "Admin Service"
+        ]
       }
     },
     "/api/admin/v1/corrections.json": {
@@ -77,7 +79,9 @@
             "description": "Title not found"
           }
         },
-        "tags": ["Admin Service"]
+        "tags": [
+          "Admin Service"
+        ]
       }
     },
     "/api/admin/v1/corrections/title/{title}.json": {
@@ -103,7 +107,9 @@
             "description": "Response 404"
           }
         },
-        "tags": ["Admin Service"]
+        "tags": [
+          "Admin Service"
+        ]
       }
     },
     "/api/search/v1/results": {
@@ -221,7 +227,10 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["date", "results"],
+              "enum": [
+                "date",
+                "results"
+              ],
               "default": "results"
             }
           }
@@ -284,7 +293,9 @@
             "description": "Invalid input"
           }
         },
-        "tags": ["Search Service"]
+        "tags": [
+          "Search Service"
+        ]
       }
     },
     "/api/search/v1/count": {
@@ -367,7 +378,9 @@
             "description": "Invalid input"
           }
         },
-        "tags": ["Search Service"]
+        "tags": [
+          "Search Service"
+        ]
       }
     },
     "/api/search/v1/summary": {
@@ -450,7 +463,9 @@
             "description": "Invalid input"
           }
         },
-        "tags": ["Search Service"]
+        "tags": [
+          "Search Service"
+        ]
       }
     },
     "/api/search/v1/counts/daily": {
@@ -533,7 +548,9 @@
             "description": "Invalid input"
           }
         },
-        "tags": ["Search Service"]
+        "tags": [
+          "Search Service"
+        ]
       }
     },
     "/api/search/v1/counts/titles": {
@@ -616,7 +633,9 @@
             "description": "Invalid input"
           }
         },
-        "tags": ["Search Service"]
+        "tags": [
+          "Search Service"
+        ]
       }
     },
     "/api/search/v1/counts/hierarchy": {
@@ -699,7 +718,9 @@
             "description": "Invalid input"
           }
         },
-        "tags": ["Search Service"]
+        "tags": [
+          "Search Service"
+        ]
       }
     },
     "/api/search/v1/suggestions": {
@@ -782,7 +803,9 @@
             "description": "Invalid input"
           }
         },
-        "tags": ["Search Service"]
+        "tags": [
+          "Search Service"
+        ]
       }
     },
     "/api/versioner/v1/ancestry/{date}/title-{title}.json": {
@@ -874,7 +897,9 @@
             "description": "null // Invalid input or missing some hierarchy"
           }
         },
-        "tags": ["Versioner Service"]
+        "tags": [
+          "Versioner Service"
+        ]
       }
     },
     "/api/versioner/v1/full/{date}/title-{title}.xml": {
@@ -977,7 +1002,9 @@
             "description": "No matching content found."
           }
         },
-        "tags": ["Versioner Service"]
+        "tags": [
+          "Versioner Service"
+        ]
       }
     },
     "/api/versioner/v1/structure/{date}/title-{title}.json": {
@@ -1013,7 +1040,9 @@
             "description": "Invalid input."
           }
         },
-        "tags": ["Versioner Service"]
+        "tags": [
+          "Versioner Service"
+        ]
       }
     },
     "/api/versioner/v1/titles.json": {
@@ -1025,7 +1054,9 @@
             "description": "```json\n  {\n    \"titles\": [\n      {\n        \"number\": 1,\n        \"name\": \"General Provisions\",\n        \"latest_amended_on\": \"2022-05-04\",\n        \"latest_issue_date\": \"2022-05-04\",\n        \"up_to_date_as_of\": \"2022-07-28\",\n        \"reserved\": false\n      },\n      {\n        \"number\": 2,\n        \"name\": \"Federal Financial Assistance\",\n        \"latest_amended_on\": \"2022-05-19\",\n        \"latest_issue_date\": \"2022-06-03\",\n        \"up_to_date_as_of\": \"2022-07-28\",\n        \"reserved\": false,\n        \"processing_in_progress\": true\n      },\n      {\n        \"number\": 3,\n        \"name\": \"The President\",\n        \"latest_amended_on\": \"2015-03-17\",\n        \"latest_issue_date\": \"2019-06-27\",\n        \"up_to_date_as_of\": \"2022-07-28\",\n        \"reserved\": false\n      },\n      ...\n    ],\n    meta\": {\n      \"date\": \"2022-07-29\",\n      \"import_in_progress\": true\n    }\n  }\n```\n"
           }
         },
-        "tags": ["Versioner Service"]
+        "tags": [
+          "Versioner Service"
+        ]
       }
     },
     "/api/versioner/v1/versions/title-{title}.json": {
@@ -1137,7 +1168,9 @@
             "description": "```json\n{\n  \"message\": \"Title 2 currently unavailable\"\n}\n```\n"
           }
         },
-        "tags": ["Versioner Service"]
+        "tags": [
+          "Versioner Service"
+        ]
       }
     }
   },

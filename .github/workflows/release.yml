@@ -12,12 +12,6 @@ jobs:
       contents: write
       packages: write
     
-    services:
-      chrome:
-        image: browserless/chrome:latest
-        ports:
-          - 9222:3000
-        options: --shm-size="2g"
     
     steps:
       - name: Checkout repository
@@ -31,6 +25,14 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Setup Lightpanda Browser
+        run: |
+          echo "🚀 Setting up Lightpanda browser..."
+          curl -L -o lightpanda https://github.com/lightpanda-io/browser/releases/download/nightly/lightpanda-x86_64-linux
+          chmod +x lightpanda
+          sudo mv lightpanda /usr/local/bin/
+          lightpanda version
+
       - name: Install Bun
         run: |
           curl -fsSL https://bun.sh/install | bash
@@ -43,11 +45,24 @@ jobs:
           export PATH="$HOME/.bun/bin:$PATH"
           bun install
 
-      - name: Generate SDK
+      - name: Start Lightpanda server
+        run: |
+          echo "🚀 Starting Lightpanda CDP server..."
+          lightpanda serve --host 0.0.0.0 --port 9222 &
+          sleep 3
+          echo "✅ Lightpanda server started"
+
+      - name: Download OpenAPI document
         run: |
           export PATH="$HOME/.bun/bin:$PATH"
-          echo "🏗️ Generating SDK..."
-          CDP_URL=http://localhost:9222 bun run generate
+          echo "🌐 Downloading fresh OpenAPI document..."
+          CDP_URL=http://localhost:9222 bun run scripts/download-swagger.ts
+
+      - name: Generate SDK using orval
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
+          echo "🏗️ Generating SDK using orval..."
+          bun run generate
 
       - name: Run tests
         run: |
