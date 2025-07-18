@@ -12,6 +12,13 @@ jobs:
       contents: write
       packages: write
     
+    services:
+      chrome:
+        image: browserless/chrome:latest
+        ports:
+          - 9222:3000
+        options: --shm-size="2g"
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -36,12 +43,18 @@ jobs:
           export PATH="$HOME/.bun/bin:$PATH"
           bun install
 
-      - name: Run basic tests
+      - name: Generate SDK
         run: |
           export PATH="$HOME/.bun/bin:$PATH"
-          echo "🧪 Running basic tests..."
+          echo "🏗️ Generating SDK..."
+          CDP_URL=http://localhost:9222 bun run generate
+
+      - name: Run tests
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
+          echo "🧪 Running tests..."
           bun test src/api/client.test.ts
-          echo "✅ Basic tests passed"
+          echo "✅ Tests passed"
 
       - name: Build SDK
         run: |
