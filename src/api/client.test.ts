@@ -9,7 +9,7 @@ describe('API Client', () => {
 
     it('should have correct headers', () => {
       expect(INSTANCE.defaults.headers['User-Agent']).toBe('ecfr-sdk/0.1.0');
-      expect(INSTANCE.defaults.headers['Accept']).toBe('application/json');
+      expect(INSTANCE.defaults.headers.Accept).toBe('application/json');
     });
   });
 });
