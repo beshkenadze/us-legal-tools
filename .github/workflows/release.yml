@@ -102,8 +102,24 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Setup Node.js for GitHub Packages
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@beshkenadze'
+
+      - name: Publish to GitHub Packages
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
+          echo "📤 Publishing to GitHub Packages..."
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Success notification
         run: |
           echo "🎉 Successfully released @beshkenadze/ecfr-sdk v${{ steps.version.outputs.version }}!"
           echo "📦 NPM: https://www.npmjs.com/package/@beshkenadze/ecfr-sdk"
+          echo "📦 GitHub Packages: https://github.com/${{ github.repository }}/packages"
           echo "🏷️ GitHub Release: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref }}"
