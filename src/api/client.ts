@@ -1,7 +1,7 @@
 import Axios, { type AxiosRequestConfig } from 'axios';
 
 const INSTANCE = Axios.create({
-  baseURL: 'https://www.ecfr.gov/api/versioned/v1',
+  baseURL: 'https://www.ecfr.gov',
   headers: {
     'User-Agent': 'ecfr-sdk/0.1.0',
     Accept: 'application/json',

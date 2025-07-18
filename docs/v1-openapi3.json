@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "eCFR API Documentation",
-    "version": ""
+    "version": "1.0.0"
   },
   "tags": [
     {
@@ -104,7 +104,6 @@
             "description": "```json\n  {\n    \"ecfr_corrections\": [\n      {\n        \"id\": 1473,\n        \"cfr_references\": [\n          {\n            \"cfr_reference\": \"6 CFR Part 5\",\n            \"hierarchy\": {\n              \"title\": \"6\",\n              \"chapter\": \"I\",\n              \"part\": \"5\"\n            }\n          }\n        ],\n        \"corrective_action\": \"Paragraph 72 added\",\n        \"error_corrected\": \"2014-11-12\",\n        \"error_occurred\": \"2014-04-02\",\n        \"fr_citation\": \"79 FR 18441\",\n        \"position\": 1,\n        \"display_in_toc\": false,\n        \"title\": 6,\n        \"year\": 2014,\n        \"last_modified\": \"2021-12-22\"\n      },\n      {\n        \"id\": 2252,\n        \"cfr_references\": [\n          {\n            \"cfr_reference\": \"6 CFR 1001.6\",\n            \"hierarchy\": {\n              \"title\": \"6\",\n              \"chapter\": \"X\",\n              \"part\": \"1001\",\n              \"section\": \"1001.6\"\n            }\n          }\n        ],\n        \"corrective_action\": \"(b)(4) amended\",\n        \"error_corrected\": \"2018-01-16\",\n        \"error_occurred\": \"2017-08-28\",\n        \"fr_citation\": \"82 FR 34836\",\n        \"position\": 1,\n        \"display_in_toc\": false,\n        \"title\": 6,\n        \"year\": 2018,\n        \"last_modified\": \"2021-12-22\"\n      }\n    ]\n  }\n```\n"
           },
           "404": {
-            "descripton": "Not Found",
             "description": "Response 404"
           }
         },
@@ -129,14 +128,13 @@
             "name": "agency_slugs[]",
             "description": "limit to content currently associated with these agencies (see AdminService agencies endpoint to retrieve a list of agency slugs)",
             "in": "query",
-            "items": {
-              "type": "string"
-            },
             "style": "form",
             "explode": true,
             "schema": {
               "type": "array",
-              "items": {}
+              "items": {
+                "type": "string"
+              }
             },
             "x-s2o-warning": "parameter has array,items and schema"
           },
@@ -190,8 +188,10 @@
             "description": "number of results per page; max of 1,000",
             "in": "query",
             "schema": {
-              "type": "string",
-              "default": 20
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 1000
             }
           },
           {
@@ -199,8 +199,9 @@
             "description": "page of results; can't paginate beyond 10,000 total results",
             "in": "query",
             "schema": {
-              "type": "string",
-              "default": 1
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
             }
           },
           {
@@ -313,14 +314,13 @@
             "name": "agency_slugs[]",
             "description": "limit to content currently associated with these agencies (see AdminService agencies endpoint to retrieve a list of agency slugs)",
             "in": "query",
-            "items": {
-              "type": "string"
-            },
             "style": "form",
             "explode": true,
             "schema": {
               "type": "array",
-              "items": {}
+              "items": {
+                "type": "string"
+              }
             },
             "x-s2o-warning": "parameter has array,items and schema"
           },
@@ -399,14 +399,13 @@
             "name": "agency_slugs[]",
             "description": "limit to content currently associated with these agencies (see AdminService agencies endpoint to retrieve a list of agency slugs)",
             "in": "query",
-            "items": {
-              "type": "string"
-            },
             "style": "form",
             "explode": true,
             "schema": {
               "type": "array",
-              "items": {}
+              "items": {
+                "type": "string"
+              }
             },
             "x-s2o-warning": "parameter has array,items and schema"
           },
@@ -485,14 +484,13 @@
             "name": "agency_slugs[]",
             "description": "limit to content currently associated with these agencies (see AdminService agencies endpoint to retrieve a list of agency slugs)",
             "in": "query",
-            "items": {
-              "type": "string"
-            },
             "style": "form",
             "explode": true,
             "schema": {
               "type": "array",
-              "items": {}
+              "items": {
+                "type": "string"
+              }
             },
             "x-s2o-warning": "parameter has array,items and schema"
           },
@@ -571,14 +569,13 @@
             "name": "agency_slugs[]",
             "description": "limit to content currently associated with these agencies (see AdminService agencies endpoint to retrieve a list of agency slugs)",
             "in": "query",
-            "items": {
-              "type": "string"
-            },
             "style": "form",
             "explode": true,
             "schema": {
               "type": "array",
-              "items": {}
+              "items": {
+                "type": "string"
+              }
             },
             "x-s2o-warning": "parameter has array,items and schema"
           },
@@ -657,14 +654,13 @@
             "name": "agency_slugs[]",
             "description": "limit to content currently associated with these agencies (see AdminService agencies endpoint to retrieve a list of agency slugs)",
             "in": "query",
-            "items": {
-              "type": "string"
-            },
             "style": "form",
             "explode": true,
             "schema": {
               "type": "array",
-              "items": {}
+              "items": {
+                "type": "string"
+              }
             },
             "x-s2o-warning": "parameter has array,items and schema"
           },
@@ -743,14 +739,13 @@
             "name": "agency_slugs[]",
             "description": "limit to content currently associated with these agencies (see AdminService agencies endpoint to retrieve a list of agency slugs)",
             "in": "query",
-            "items": {
-              "type": "string"
-            },
             "style": "form",
             "explode": true,
             "schema": {
               "type": "array",
-              "items": {}
+              "items": {
+                "type": "string"
+              }
             },
             "x-s2o-warning": "parameter has array,items and schema"
           },

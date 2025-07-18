@@ -113,6 +113,69 @@ async function fixAndConvert() {
       // Additional fixes for OpenAPI 3.0
       const openapi3 = result.openapi;
       
+      // Fix OpenAPI 3.0 specific issues
+      if (openapi3.paths) {
+        for (const [, pathValue] of Object.entries(openapi3.paths)) {
+          if (pathValue && typeof pathValue === 'object') {
+            for (const [, operation] of Object.entries(pathValue)) {
+              if (typeof operation === 'object' && operation !== null && 'parameters' in operation) {
+                const op = operation as any;
+                
+                // Fix parameters
+                if (op.parameters && Array.isArray(op.parameters)) {
+                  op.parameters = op.parameters.map((param: any) => {
+                    // Fix array parameters with conflicting items and schema
+                    if (param.items && param.schema) {
+                      const { items, ...rest } = param;
+                      return {
+                        ...rest,
+                        schema: {
+                          ...param.schema,
+                          items: items
+                        }
+                      };
+                    }
+                    
+                    // Fix per_page and page parameters - should be integers
+                    if (param.name === 'per_page' || param.name === 'page') {
+                      return {
+                        ...param,
+                        schema: {
+                          ...param.schema,
+                          type: 'integer',
+                          ...(param.name === 'per_page' && { minimum: 1, maximum: 1000 }),
+                          ...(param.name === 'page' && { minimum: 1 })
+                        }
+                      };
+                    }
+                    
+                    return param;
+                  });
+                }
+                
+                // Fix responses with duplicate description fields
+                if (op.responses) {
+                  for (const [, response] of Object.entries(op.responses)) {
+                    if (typeof response === 'object' && response !== null && !('$ref' in response)) {
+                      const resp = response as any;
+                      // Remove duplicate descripton field if it exists
+                      if (resp.descripton && resp.description) {
+                        delete resp.descripton;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      // Ensure info.version is set
+      if (!openapi3.info?.version) {
+        openapi3.info = { ...openapi3.info, version: '1.0.0' };
+      }
+      
       // Save the converted file
       await fs.writeFile(OUTPUT_FILE, JSON.stringify(openapi3, null, 2));
       
