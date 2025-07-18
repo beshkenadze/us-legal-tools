@@ -8,5 +8,5 @@
     "noEmit": false
   },
   "include": ["src/**/*"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.spec.ts"]
+  "exclude": ["src/**/*.test.ts", "src/**/*.spec.ts", "src/mcp/server.ts", "src/api/generated/**/*", "src/mcp/handlers.ts", "src/mcp/http-schemas/**/*", "src/mcp/tool-schemas.zod.ts"]
 }

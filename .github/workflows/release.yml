@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js for NPM
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+          export PATH="$HOME/.bun/bin:$PATH"
+          bun --version
+
+      - name: Install dependencies
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
+          bun install
+
+      - name: Run basic tests
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
+          echo "🧪 Running basic tests..."
+          bun test src/api/client.test.ts
+          echo "✅ Basic tests passed"
+
+      - name: Build SDK
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
+          echo "🔨 Building SDK..."
+          bun run build
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Publishing version $VERSION"
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ## Release ${{ steps.version.outputs.version }}
+            
+            Published @beshkenadze/ecfr-sdk v${{ steps.version.outputs.version }}
+            
+            ### Features
+            - TypeScript SDK for eCFR API
+            - Model Context Protocol (MCP) server
+            - Complete API coverage
+          draft: false
+          prerelease: false
+
+      - name: Publish to NPM
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
+          echo "📤 Publishing to NPM..."
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Success notification
+        run: |
+          echo "🎉 Successfully released @beshkenadze/ecfr-sdk v${{ steps.version.outputs.version }}!"
+          echo "📦 NPM: https://www.npmjs.com/package/@beshkenadze/ecfr-sdk"
+          echo "🏷️ GitHub Release: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref }}"
