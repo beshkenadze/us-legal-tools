@@ -1,0 +1,17 @@
+name: 'Setup Bun'
+description: 'Setup Bun runtime for act'
+inputs:
+  bun-version:
+    description: 'Bun version to install'
+    required: false
+    default: 'latest'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Bun
+      shell: bash
+      run: |
+        curl -fsSL https://bun.sh/install | bash
+        echo "$HOME/.bun/bin" >> $GITHUB_PATH
+        export PATH="$HOME/.bun/bin:$PATH"
+        bun --version

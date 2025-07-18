@@ -1,8 +1,8 @@
 {
-  "name": "ecfr-sdk",
+  "name": "@beshkenadze/ecfr-sdk",
   "version": "0.1.0",
   "description": "TypeScript SDK and MCP server for the eCFR (Electronic Code of Federal Regulations) API",
-  "author": "Your Name",
+  "author": "Akira Beshkenadze",
   "license": "MIT",
   "keywords": [
     "ecfr",
@@ -13,13 +13,13 @@
     "mcp",
     "typescript"
   ],
-  "homepage": "https://github.com/yourusername/ecfr-sdk#readme",
+  "homepage": "https://github.com/beshkenadze/ecfr-sdk#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/ecfr-sdk.git"
+    "url": "git+https://github.com/beshkenadze/ecfr-sdk.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/ecfr-sdk/issues"
+    "url": "https://github.com/beshkenadze/ecfr-sdk/issues"
   },
   "type": "module",
   "module": "src/index.ts",
