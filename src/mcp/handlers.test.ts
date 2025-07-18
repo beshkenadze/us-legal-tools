@@ -1,4 +1,4 @@
-import { describe, expect, it, mock, beforeEach } from 'bun:test';
+import { beforeEach, describe, expect, it, mock } from 'bun:test';
 import * as handlers from './handlers';
 import * as httpClient from './http-client';
 

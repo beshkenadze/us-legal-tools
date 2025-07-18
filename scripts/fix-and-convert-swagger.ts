@@ -10,12 +10,12 @@ const OUTPUT_FILE = path.join(process.cwd(), 'docs', 'v1-openapi3.json');
 async function fixAndConvert() {
   try {
     console.log('📝 Reading Swagger 2.0 file...');
-    
+
     const swaggerContent = await fs.readFile(INPUT_FILE, 'utf-8');
     const swagger2 = JSON.parse(swaggerContent);
-    
+
     console.log('🔧 Fixing common issues...');
-    
+
     // Fix common issues in the swagger file
     if (swagger2.paths) {
       for (const [pathKey, pathValue] of Object.entries(swagger2.paths)) {
@@ -28,7 +28,7 @@ async function fixAndConvert() {
                 if (param.$ref) {
                   return param;
                 }
-                
+
                 // Fix missing schema for non-body parameters
                 if (param.type && !param.schema && param.in !== 'body') {
                   const { type, format, enum: enumValues, ...rest } = param;
@@ -41,11 +41,11 @@ async function fixAndConvert() {
                     },
                   };
                 }
-                
+
                 return param;
               });
             }
-            
+
             // Fix responses
             if (operation.responses) {
               for (const [statusCode, response] of Object.entries(operation.responses)) {
@@ -80,7 +80,7 @@ async function fixAndConvert() {
                     }
                     response.headers = fixedHeaders;
                   }
-                  
+
                   // Ensure description exists
                   if (!response.description) {
                     response.description = `Response ${statusCode}`;
@@ -92,35 +92,39 @@ async function fixAndConvert() {
         }
       }
     }
-    
+
     // Ensure all required fields exist
     if (!swagger2.info) {
       swagger2.info = { title: 'eCFR API', version: '1.0.0' };
     }
-    
+
     console.log('🔄 Converting to OpenAPI 3.0...');
-    
+
     // Convert to OpenAPI 3.0
     const options = {
       patch: true,
       warnOnly: true,
       refSiblings: 'preserve',
     };
-    
+
     const result = await converter.convertObj(swagger2, options);
-    
+
     if (result.openapi) {
       // Additional fixes for OpenAPI 3.0
       const openapi3 = result.openapi;
-      
+
       // Fix OpenAPI 3.0 specific issues
       if (openapi3.paths) {
         for (const [, pathValue] of Object.entries(openapi3.paths)) {
           if (pathValue && typeof pathValue === 'object') {
             for (const [, operation] of Object.entries(pathValue)) {
-              if (typeof operation === 'object' && operation !== null && 'parameters' in operation) {
+              if (
+                typeof operation === 'object' &&
+                operation !== null &&
+                'parameters' in operation
+              ) {
                 const op = operation as any;
-                
+
                 // Fix parameters
                 if (op.parameters && Array.isArray(op.parameters)) {
                   op.parameters = op.parameters.map((param: any) => {
@@ -131,11 +135,11 @@ async function fixAndConvert() {
                         ...rest,
                         schema: {
                           ...param.schema,
-                          items: items
-                        }
+                          items: items,
+                        },
                       };
                     }
-                    
+
                     // Fix per_page and page parameters - should be integers
                     if (param.name === 'per_page' || param.name === 'page') {
                       return {
@@ -144,19 +148,23 @@ async function fixAndConvert() {
                           ...param.schema,
                           type: 'integer',
                           ...(param.name === 'per_page' && { minimum: 1, maximum: 1000 }),
-                          ...(param.name === 'page' && { minimum: 1 })
-                        }
+                          ...(param.name === 'page' && { minimum: 1 }),
+                        },
                       };
                     }
-                    
+
                     return param;
                   });
                 }
-                
+
                 // Fix responses with duplicate description fields
                 if (op.responses) {
                   for (const [, response] of Object.entries(op.responses)) {
-                    if (typeof response === 'object' && response !== null && !('$ref' in response)) {
+                    if (
+                      typeof response === 'object' &&
+                      response !== null &&
+                      !('$ref' in response)
+                    ) {
                       const resp = response as any;
                       // Remove duplicate descripton field if it exists
                       if (resp.descripton && resp.description) {
@@ -170,18 +178,18 @@ async function fixAndConvert() {
           }
         }
       }
-      
+
       // Ensure info.version is set
       if (!openapi3.info?.version) {
         openapi3.info = { ...openapi3.info, version: '1.0.0' };
       }
-      
+
       // Save the converted file
       await fs.writeFile(OUTPUT_FILE, JSON.stringify(openapi3, null, 2));
-      
+
       console.log('\n✅ Conversion successful!');
       console.log(`📁 OpenAPI 3.0 saved to: ${OUTPUT_FILE}`);
-      
+
       if (result.warnings && result.warnings.length > 0) {
         console.log('\n⚠️  Warnings:');
         result.warnings.forEach((warning: any) => {
@@ -191,7 +199,6 @@ async function fixAndConvert() {
     } else {
       throw new Error('Conversion failed - no OpenAPI output');
     }
-    
   } catch (error) {
     console.error('❌ Error:', error);
     process.exit(1);
