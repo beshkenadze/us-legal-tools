@@ -25,14 +25,6 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Setup Lightpanda Browser
-        run: |
-          echo "🚀 Setting up Lightpanda browser..."
-          curl -L -o lightpanda https://github.com/lightpanda-io/browser/releases/download/nightly/lightpanda-x86_64-linux
-          chmod +x lightpanda
-          sudo mv lightpanda /usr/local/bin/
-          lightpanda version
-
       - name: Install Bun
         run: |
           curl -fsSL https://bun.sh/install | bash
@@ -40,23 +32,22 @@ jobs:
           export PATH="$HOME/.bun/bin:$PATH"
           bun --version
 
+      - name: Setup Playwright
+        run: |
+          echo "🚀 Setting up Playwright..."
+          export PATH="$HOME/.bun/bin:$PATH"
+          bunx playwright install --with-deps chromium
+
       - name: Install dependencies
         run: |
           export PATH="$HOME/.bun/bin:$PATH"
           bun install
 
-      - name: Start Lightpanda server
-        run: |
-          echo "🚀 Starting Lightpanda CDP server..."
-          lightpanda serve --host 0.0.0.0 --port 9222 &
-          sleep 3
-          echo "✅ Lightpanda server started"
-
       - name: Download OpenAPI document
         run: |
           export PATH="$HOME/.bun/bin:$PATH"
           echo "🌐 Downloading fresh OpenAPI document..."
-          CDP_URL=http://localhost:9222 bun run scripts/download-swagger.ts
+          bun run scripts/download-swagger.ts
 
       - name: Generate SDK using orval
         run: |
