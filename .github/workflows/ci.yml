@@ -26,6 +26,15 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Setup Playwright
+        run: bunx playwright install --with-deps chromium
+
+      - name: Download OpenAPI spec
+        run: bun run scripts/download-swagger.ts
+
+      - name: Generate SDK
+        run: bun run generate
+
       - name: Run format check
         run: bun run format
 
