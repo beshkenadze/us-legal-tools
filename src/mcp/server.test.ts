@@ -69,7 +69,7 @@ describe('MCP Server', () => {
     expect(parsed.result).toBeDefined();
     expect(parsed.result.protocolVersion).toBeDefined();
     expect(parsed.result.protocolVersion).toMatch(/^\d{4}-\d{2}-\d{2}$/); // Expect date format
-    expect(parsed.result.serverInfo.name).toBe('eCFRAPIDocumentationServer');
+    expect(parsed.result.serverInfo.name).toBe('eCFRSDKServer');
 
     // Kill the server
     serverProcess.kill();
