@@ -48,13 +48,4 @@ jobs:
         run: bun test
 
       - name: Verify MCP server starts
-        run: |
-          timeout 5s bun run mcp:server
-          exit_code=$?
-          if [ $exit_code -eq 124 ]; then
-            echo "MCP server started successfully (timeout expected)"
-            exit 0
-          else
-            echo "MCP server failed to start with exit code: $exit_code"
-            exit 1
-          fi
+        run: bun run scripts/test-mcp-server.ts
