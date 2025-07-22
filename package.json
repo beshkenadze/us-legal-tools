@@ -24,7 +24,7 @@
   "bugs": {
     "url": "https://github.com/beshkenadze/ecfr-sdk/issues"
   },
-  "packageManager": "bun@1.2.18",
+  "packageManager": "bun@1.2.19",
   "workspaces": [
     "packages/*"
   ],
@@ -47,18 +47,18 @@
     "format-and-lint:fix": "biome check . --write"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.1",
+    "@biomejs/biome": "^2.1.2",
     "@changesets/cli": "^2.29.5",
     "@types/bun": "latest",
-    "@types/node": "^24.0.14",
+    "@types/node": "^24.1.0",
     "orval": "^7.10.0",
-    "playwright": "^1.48.2",
+    "playwright": "^1.54.1",
     "swagger2openapi": "^7.0.8",
     "turbo": "^2.5.5",
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.15.1",
+    "@modelcontextprotocol/sdk": "^1.16.0",
     "axios": "^1.10.0",
     "zod": "^4.0.5"
   },
