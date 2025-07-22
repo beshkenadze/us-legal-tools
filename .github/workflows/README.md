@@ -91,6 +91,7 @@ This directory contains automated workflows for the eCFR SDK project.
 ### Required Secrets
 - `NPM_TOKEN`: NPM authentication token for publishing
 - `GITHUB_TOKEN`: Automatically provided by GitHub Actions
+- `GOV_INFO_API_KEY`: GovInfo API key for govinfo-sdk tests (get from https://api.data.gov/signup/)
 
 ### Environment Variables
 - `CDP_URL`: Chrome DevTools Protocol URL (default: http://chrome:9222)

@@ -70,6 +70,15 @@ packages/courtlistener-sdk/src/mcp/tool-schemas.zod.ts
 packages/courtlistener-sdk/src/client/
 # NOTE: courtlistener-openapi.json must be committed as it cannot be downloaded automatically
 
+# GovInfo SDK
+packages/govinfo-sdk/src/api/generated/
+packages/govinfo-sdk/src/mcp/handlers.ts
+packages/govinfo-sdk/src/mcp/http-client.ts
+packages/govinfo-sdk/src/mcp/http-schemas/
+packages/govinfo-sdk/src/mcp/server.ts
+packages/govinfo-sdk/src/mcp/tool-schemas.zod.ts
+packages/govinfo-sdk/openapi.json
+
 # Old structure (for cleanup)
 /src/
 scripts/
