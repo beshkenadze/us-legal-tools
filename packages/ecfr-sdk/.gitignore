@@ -1,0 +1,31 @@
+# Generated API files
+src/api/generated/
+src/mcp/handlers.ts
+src/mcp/http-client.ts
+src/mcp/http-schemas/
+src/mcp/server.ts
+src/mcp/tool-schemas.zod.ts
+
+# Generated OpenAPI spec
+docs/v1-openapi3.json
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

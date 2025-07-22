@@ -1,0 +1,4180 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CourtListener REST API",
+    "description": "The CourtListener REST API provides access to a comprehensive database of legal documents, case law, judges, oral arguments, and citation lookups. This API supports advanced search capabilities, rate limiting, and token-based authentication.",
+    "version": "4.0.0",
+    "license": {
+      "name": "BSD 3-Clause",
+      "url": "https://github.com/freelawproject/courtlistener/blob/main/LICENSE"
+    },
+    "contact": {
+      "name": "CourtListener Support",
+      "url": "https://www.courtlistener.com/contact/",
+      "email": "info@free.law"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://www.courtlistener.com/api/rest/v4",
+      "description": "CourtListener API v4"
+    }
+  ],
+  "security": [
+    {
+      "TokenAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Search",
+      "description": "Universal search across all content types with advanced operators"
+    },
+    {
+      "name": "Citations",
+      "description": "Citation lookup and normalization services"
+    },
+    {
+      "name": "Case Law",
+      "description": "Access to legal opinions, clusters, and dockets"
+    },
+    {
+      "name": "Courts",
+      "description": "Information about courts and jurisdictions"
+    },
+    {
+      "name": "Judges",
+      "description": "Judge profiles, positions, and biographical information"
+    },
+    {
+      "name": "Oral Arguments",
+      "description": "Audio recordings and transcripts of oral arguments"
+    },
+    {
+      "name": "PACER",
+      "description": "PACER integration and document access"
+    },
+    {
+      "name": "Financial Disclosures",
+      "description": "Judge financial disclosure information"
+    },
+    {
+      "name": "Alerts",
+      "description": "Search alerts and docket alerts"
+    },
+    {
+      "name": "Visualizations",
+      "description": "Network visualizations and charts"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": ["API Root"],
+        "summary": "Get API root endpoints",
+        "description": "Returns a JSON object with all available API endpoints and their descriptions",
+        "responses": {
+          "200": {
+            "description": "List of available endpoints",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/": {
+      "get": {
+        "tags": ["Search"],
+        "summary": "Universal search",
+        "description": "Search across all content types including opinions, oral arguments, people, and RECAP documents. Supports advanced query operators including AND, OR, NOT, quotes, wildcards, fuzzy search (~), and field-specific searches.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Search query with support for advanced operators and field-specific searches (caseName:, court_id:, dateFiled:, etc.)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Type of content to search",
+            "schema": {
+              "type": "string",
+              "enum": ["o", "r", "rd", "d", "p", "oa"],
+              "default": "o"
+            }
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "description": "Field to order results by",
+            "schema": {
+              "type": "string",
+              "enum": ["score", "dateFiled", "dateArgued", "citeCount"]
+            }
+          },
+          {
+            "name": "highlight",
+            "in": "query",
+            "description": "Enable result highlighting",
+            "schema": {
+              "type": "string",
+              "enum": ["on", "off"],
+              "default": "off"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Cursor for pagination",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResults"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid search parameters"
+          }
+        }
+      }
+    },
+    "/citation-lookup/": {
+      "post": {
+        "tags": ["Citations"],
+        "summary": "Citation lookup and normalization",
+        "description": "Look up citations by providing either a text blob containing citations or specific volume/reporter/page parameters. Rate limited to 60 citations per minute with a maximum of 250 citations per request.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CitationLookupText"
+                  },
+                  {
+                    "$ref": "#/components/schemas/CitationLookupStructured"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Citation found successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CitationResult"
+                }
+              }
+            }
+          },
+          "300": {
+            "description": "Multiple citations found - disambiguation needed"
+          },
+          "400": {
+            "description": "Bad request - invalid citation format"
+          },
+          "404": {
+            "description": "Citation not found"
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateLimitError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dockets/": {
+      "get": {
+        "tags": ["Case Law"],
+        "summary": "List dockets",
+        "description": "Get a list of court dockets with case information",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          },
+          {
+            "name": "court",
+            "in": "query",
+            "description": "Filter by court ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "date_filed",
+            "in": "query",
+            "description": "Filter by date filed (YYYY-MM-DD)",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of dockets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedDockets"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dockets/{id}/": {
+      "get": {
+        "tags": ["Case Law"],
+        "summary": "Get docket by ID",
+        "description": "Retrieve detailed information about a specific docket",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Docket ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Docket details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Docket"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Docket not found"
+          }
+        }
+      }
+    },
+    "/clusters/": {
+      "get": {
+        "tags": ["Case Law"],
+        "summary": "List opinion clusters",
+        "description": "Get a list of opinion clusters (groups of related opinions)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of clusters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedClusters"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clusters/{id}/": {
+      "get": {
+        "tags": ["Case Law"],
+        "summary": "Get cluster by ID",
+        "description": "Retrieve detailed information about a specific opinion cluster",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Cluster ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cluster details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cluster"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cluster not found"
+          }
+        }
+      }
+    },
+    "/opinions/": {
+      "get": {
+        "tags": ["Case Law"],
+        "summary": "List opinions",
+        "description": "Get a list of legal opinions",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of opinions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedOpinions"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/opinions/{id}/": {
+      "get": {
+        "tags": ["Case Law"],
+        "summary": "Get opinion by ID",
+        "description": "Retrieve detailed information about a specific legal opinion",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Opinion ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Opinion details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Opinion"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Opinion not found"
+          }
+        }
+      }
+    },
+    "/courts/": {
+      "get": {
+        "tags": ["Courts"],
+        "summary": "List courts",
+        "description": "Get a list of all courts in the system",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "jurisdiction",
+            "in": "query",
+            "description": "Filter by jurisdiction type",
+            "schema": {
+              "type": "string",
+              "enum": ["F", "S", "FS", "MA"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of courts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedCourts"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/courts/{id}/": {
+      "get": {
+        "tags": ["Courts"],
+        "summary": "Get court by ID",
+        "description": "Retrieve detailed information about a specific court",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Court ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Court details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Court"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Court not found"
+          }
+        }
+      }
+    },
+    "/people/": {
+      "get": {
+        "tags": ["Judges"],
+        "summary": "List people (judges)",
+        "description": "Get a list of judges and other legal professionals",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of people",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedPeople"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/people/{id}/": {
+      "get": {
+        "tags": ["Judges"],
+        "summary": "Get person by ID",
+        "description": "Retrieve detailed information about a specific judge or legal professional",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Person ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Person details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Person"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Person not found"
+          }
+        }
+      }
+    },
+    "/audio/": {
+      "get": {
+        "tags": ["Oral Arguments"],
+        "summary": "List oral argument recordings",
+        "description": "Get a list of oral argument audio recordings",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of audio recordings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedAudio"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/audio/{id}/": {
+      "get": {
+        "tags": ["Oral Arguments"],
+        "summary": "Get audio recording by ID",
+        "description": "Retrieve detailed information about a specific oral argument recording",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Audio ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audio recording details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Audio"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Audio recording not found"
+          }
+        }
+      }
+    },
+    "/financial-disclosures/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "List financial disclosures",
+        "description": "Get a list of judge financial disclosures",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of financial disclosures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedFinancialDisclosures"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/financial-disclosures/{id}/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "Get financial disclosure by ID",
+        "description": "Retrieve detailed information about a specific financial disclosure",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Financial disclosure ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Financial disclosure details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinancialDisclosure"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Financial disclosure not found"
+          }
+        }
+      }
+    },
+    "/investments/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "List investments",
+        "description": "Get a list of judge investments from financial disclosures",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of investments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedInvestments"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/investments/{id}/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "Get investment by ID",
+        "description": "Retrieve detailed information about a specific investment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Investment ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Investment details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Investment"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Investment not found"
+          }
+        }
+      }
+    },
+    "/positions/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "List positions",
+        "description": "Get a list of judge positions from financial disclosures",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of positions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedPositions"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/positions/{id}/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "Get position by ID",
+        "description": "Retrieve detailed information about a specific position",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Position ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Position details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Position"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Position not found"
+          }
+        }
+      }
+    },
+    "/agreements/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "List agreements",
+        "description": "Get a list of judge agreements from financial disclosures",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of agreements",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedAgreements"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agreements/{id}/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "Get agreement by ID",
+        "description": "Retrieve detailed information about a specific agreement",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Agreement ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Agreement details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Agreement"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Agreement not found"
+          }
+        }
+      }
+    },
+    "/non-investment-income/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "List non-investment income",
+        "description": "Get a list of judge non-investment income from financial disclosures",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of non-investment income",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedNonInvestmentIncome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/non-investment-income/{id}/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "Get non-investment income by ID",
+        "description": "Retrieve detailed information about specific non-investment income",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Non-investment income ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Non-investment income details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NonInvestmentIncome"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Non-investment income not found"
+          }
+        }
+      }
+    },
+    "/spouse-income/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "List spouse income",
+        "description": "Get a list of judge spouse income from financial disclosures",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of spouse income",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedSpouseIncome"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/spouse-income/{id}/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "Get spouse income by ID",
+        "description": "Retrieve detailed information about specific spouse income",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Spouse income ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Spouse income details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpouseIncome"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Spouse income not found"
+          }
+        }
+      }
+    },
+    "/reimbursements/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "List reimbursements",
+        "description": "Get a list of judge reimbursements from financial disclosures",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of reimbursements",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedReimbursements"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reimbursements/{id}/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "Get reimbursement by ID",
+        "description": "Retrieve detailed information about a specific reimbursement",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Reimbursement ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reimbursement details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reimbursement"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Reimbursement not found"
+          }
+        }
+      }
+    },
+    "/gifts/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "List gifts",
+        "description": "Get a list of judge gifts from financial disclosures",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of gifts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedGifts"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gifts/{id}/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "Get gift by ID",
+        "description": "Retrieve detailed information about a specific gift",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Gift ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gift details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Gift"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Gift not found"
+          }
+        }
+      }
+    },
+    "/debts/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "List debts",
+        "description": "Get a list of judge debts from financial disclosures",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of debts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedDebts"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/debts/{id}/": {
+      "get": {
+        "tags": ["Financial Disclosures"],
+        "summary": "Get debt by ID",
+        "description": "Retrieve detailed information about a specific debt",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Debt ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Debt details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Debt"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Debt not found"
+          }
+        }
+      }
+    },
+    "/alerts/": {
+      "get": {
+        "tags": ["Alerts"],
+        "summary": "List search alerts",
+        "description": "Get user's search alerts",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of alerts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedAlerts"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Alerts"],
+        "summary": "Create search alert",
+        "description": "Create a new search alert",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Alert created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Alert"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid alert parameters"
+          }
+        }
+      }
+    },
+    "/processing-queue/": {
+      "get": {
+        "tags": ["PACER"],
+        "summary": "List PACER processing queue items",
+        "description": "Get list of PACER documents in processing queue",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of processing queue items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedProcessingQueue"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recap/": {
+      "get": {
+        "tags": ["PACER"],
+        "summary": "List RECAP documents",
+        "description": "Get list of RECAP documents from PACER",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of RECAP documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedRECAPDocuments"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recap/{id}/": {
+      "get": {
+        "tags": ["PACER"],
+        "summary": "Get RECAP document by ID",
+        "description": "Retrieve detailed information about a specific RECAP document",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "RECAP document ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "RECAP document details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RECAPDocument"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "RECAP document not found"
+          }
+        }
+      }
+    },
+    "/pacer-doc-ids/": {
+      "get": {
+        "tags": ["PACER"],
+        "summary": "List PACER document IDs",
+        "description": "Get list of PACER document identifiers",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of PACER document IDs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedPACERDocIDs"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recap-fetch/": {
+      "post": {
+        "tags": ["PACER"],
+        "summary": "Fetch RECAP document",
+        "description": "Fetch a specific document from PACER via RECAP",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RECAPFetchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document fetch initiated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RECAPFetchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid fetch request"
+          }
+        }
+      }
+    },
+    "/docket-alerts/": {
+      "get": {
+        "tags": ["Alerts"],
+        "summary": "List docket alerts",
+        "description": "Get user's docket alerts for case updates",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of docket alerts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedDocketAlerts"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Alerts"],
+        "summary": "Create docket alert",
+        "description": "Create a new docket alert for case updates",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocketAlertCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Docket alert created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocketAlert"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid alert parameters"
+          }
+        }
+      }
+    },
+    "/original-proceedings-panels/": {
+      "get": {
+        "tags": ["PACER"],
+        "summary": "List original proceedings panels",
+        "description": "Get list of original proceedings panels from PACER",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of original proceedings panels",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedOriginalProceedingsPanels"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/judge-positions/": {
+      "get": {
+        "tags": ["Judges"],
+        "summary": "List judge positions",
+        "description": "Get a list of judicial positions",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of judge positions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedJudgePositions"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/judge-positions/{id}/": {
+      "get": {
+        "tags": ["Judges"],
+        "summary": "Get judge position by ID",
+        "description": "Retrieve detailed information about a specific judicial position",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Judge position ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Judge position details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JudgePosition"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Judge position not found"
+          }
+        }
+      }
+    },
+    "/schools/": {
+      "get": {
+        "tags": ["Judges"],
+        "summary": "List schools",
+        "description": "Get a list of schools from judge education data",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of schools",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedSchools"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schools/{id}/": {
+      "get": {
+        "tags": ["Judges"],
+        "summary": "Get school by ID",
+        "description": "Retrieve detailed information about a specific school",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "School ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "School details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/School"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "School not found"
+          }
+        }
+      }
+    },
+    "/political-affiliations/": {
+      "get": {
+        "tags": ["Judges"],
+        "summary": "List political affiliations",
+        "description": "Get a list of judge political affiliations",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of political affiliations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedPoliticalAffiliations"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/political-affiliations/{id}/": {
+      "get": {
+        "tags": ["Judges"],
+        "summary": "Get political affiliation by ID",
+        "description": "Retrieve detailed information about a specific political affiliation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Political affiliation ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Political affiliation details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PoliticalAffiliation"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Political affiliation not found"
+          }
+        }
+      }
+    },
+    "/citations/": {
+      "get": {
+        "tags": ["Citations"],
+        "summary": "List citation network data",
+        "description": "Get citation network information showing how cases cite each other",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of citation network data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedCitations"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/citations/{id}/": {
+      "get": {
+        "tags": ["Citations"],
+        "summary": "Get citation by ID",
+        "description": "Retrieve detailed information about a specific citation relationship",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Citation ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Citation details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Citation"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Citation not found"
+          }
+        }
+      }
+    },
+    "/visualizations/": {
+      "get": {
+        "tags": ["Visualizations"],
+        "summary": "List visualization data",
+        "description": "Get data for network visualizations and charts",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of visualization data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedVisualizations"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/visualizations/{id}/": {
+      "get": {
+        "tags": ["Visualizations"],
+        "summary": "Get visualization by ID",
+        "description": "Retrieve detailed information about a specific visualization",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Visualization ID",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Visualization details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Visualization"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Visualization not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "TokenAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Token-based authentication. Use 'Token <your-token>' format."
+      }
+    },
+    "parameters": {
+      "CursorParam": {
+        "name": "cursor",
+        "in": "query",
+        "description": "Cursor for cursor-based pagination",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "schemas": {
+      "SearchResults": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "description": "Total number of results"
+          },
+          "next": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "URL for next page of results"
+          },
+          "previous": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "URL for previous page of results"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SearchResult"
+            }
+          }
+        }
+      },
+      "SearchResult": {
+        "type": "object",
+        "properties": {
+          "absolute_url": {
+            "type": "string",
+            "description": "Absolute URL to the document"
+          },
+          "attorney": {
+            "type": "string",
+            "description": "Attorney information"
+          },
+          "caseName": {
+            "type": "string",
+            "description": "Case name"
+          },
+          "caseNameFull": {
+            "type": "string",
+            "description": "Full case name"
+          },
+          "citation": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Citations for this case"
+          },
+          "citeCount": {
+            "type": "integer",
+            "description": "Number of times this case has been cited"
+          },
+          "cluster_id": {
+            "type": "integer",
+            "description": "ID of the opinion cluster"
+          },
+          "court": {
+            "type": "string",
+            "description": "Court name"
+          },
+          "court_citation_string": {
+            "type": "string",
+            "description": "Court citation abbreviation"
+          },
+          "court_id": {
+            "type": "string",
+            "description": "Court identifier"
+          },
+          "dateArgued": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date the case was argued"
+          },
+          "dateFiled": {
+            "type": "string",
+            "format": "date",
+            "description": "Date the case was filed"
+          },
+          "dateReargued": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date the case was reargued"
+          },
+          "dateReargumentDenied": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date reargument was denied"
+          },
+          "docketNumber": {
+            "type": "string",
+            "description": "Docket number"
+          },
+          "docket_id": {
+            "type": "integer",
+            "description": "Docket ID"
+          },
+          "judge": {
+            "type": "string",
+            "description": "Judge information"
+          },
+          "lexisCite": {
+            "type": "string",
+            "description": "Lexis citation"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/SearchMeta"
+          },
+          "neutralCite": {
+            "type": "string",
+            "description": "Neutral citation"
+          },
+          "non_participating_judge_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "opinions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OpinionSummary"
+            }
+          },
+          "panel_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "panel_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "posture": {
+            "type": "string",
+            "description": "Procedural posture"
+          },
+          "procedural_history": {
+            "type": "string",
+            "description": "Procedural history"
+          },
+          "scdb_id": {
+            "type": "string",
+            "description": "Supreme Court Database ID"
+          },
+          "sibling_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "source": {
+            "type": "string",
+            "description": "Source of the document"
+          },
+          "status": {
+            "type": "string",
+            "description": "Publication status"
+          },
+          "suitNature": {
+            "type": "string",
+            "description": "Nature of suit"
+          },
+          "syllabus": {
+            "type": "string",
+            "description": "Case syllabus"
+          }
+        }
+      },
+      "SearchMeta": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of the document"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date the document was created"
+          },
+          "score": {
+            "type": "object",
+            "properties": {
+              "bm25": {
+                "type": "number",
+                "description": "BM25 relevance score"
+              }
+            }
+          }
+        }
+      },
+      "OpinionSummary": {
+        "type": "object",
+        "properties": {
+          "author_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "ID of the opinion author"
+          },
+          "cites": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "IDs of cases cited in this opinion"
+          },
+          "download_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to download the opinion document"
+          },
+          "id": {
+            "type": "integer",
+            "description": "Opinion ID"
+          },
+          "joined_by_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "IDs of judges who joined this opinion"
+          },
+          "local_path": {
+            "type": "string",
+            "description": "Local file path"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "date_created": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "ordering_key": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Key for ordering opinions"
+          },
+          "per_curiam": {
+            "type": "boolean",
+            "description": "Whether this is a per curiam opinion"
+          },
+          "sha1": {
+            "type": "string",
+            "description": "SHA1 hash of the document"
+          },
+          "snippet": {
+            "type": "string",
+            "description": "Text snippet from the opinion"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of opinion"
+          }
+        }
+      },
+      "CitationLookupText": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Text blob containing citations to look up",
+            "maxLength": 10000
+          }
+        },
+        "required": ["text"]
+      },
+      "CitationLookupStructured": {
+        "type": "object",
+        "properties": {
+          "volume": {
+            "type": "string",
+            "description": "Citation volume"
+          },
+          "reporter": {
+            "type": "string",
+            "description": "Citation reporter"
+          },
+          "page": {
+            "type": "string",
+            "description": "Citation page"
+          }
+        },
+        "required": ["volume", "reporter", "page"]
+      },
+      "CitationResult": {
+        "type": "object",
+        "properties": {
+          "normalized_citations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "volume": {
+                  "type": "string"
+                },
+                "reporter": {
+                  "type": "string"
+                },
+                "page": {
+                  "type": "string"
+                },
+                "cluster_id": {
+                  "type": "integer"
+                },
+                "absolute_url": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          }
+        }
+      },
+      "RateLimitError": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "wait_until": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Time when rate limit resets"
+          }
+        }
+      },
+      "PaginatedDockets": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Docket"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Docket": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Docket ID"
+          },
+          "court": {
+            "type": "string",
+            "description": "Court identifier"
+          },
+          "docket_number": {
+            "type": "string",
+            "description": "Docket number"
+          },
+          "case_name": {
+            "type": "string",
+            "description": "Case name"
+          },
+          "case_name_short": {
+            "type": "string",
+            "description": "Short case name"
+          },
+          "case_name_full": {
+            "type": "string",
+            "description": "Full case name"
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL slug"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date created"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date modified"
+          },
+          "date_filed": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date filed"
+          },
+          "date_terminated": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date terminated"
+          },
+          "source": {
+            "type": "integer",
+            "description": "Source of the docket"
+          }
+        }
+      },
+      "PaginatedClusters": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Cluster"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Cluster": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Cluster ID"
+          },
+          "docket": {
+            "type": "integer",
+            "description": "Associated docket ID"
+          },
+          "panel": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "Panel member IDs"
+          },
+          "non_participating_judges": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "Non-participating judge IDs"
+          },
+          "judges": {
+            "type": "string",
+            "description": "Judge names"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date created"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date modified"
+          },
+          "date_filed": {
+            "type": "string",
+            "format": "date",
+            "description": "Date filed"
+          },
+          "date_argued": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date argued"
+          },
+          "date_reargued": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date reargued"
+          },
+          "date_reargument_denied": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date reargument denied"
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL slug"
+          },
+          "case_name": {
+            "type": "string",
+            "description": "Case name"
+          },
+          "case_name_short": {
+            "type": "string",
+            "description": "Short case name"
+          },
+          "case_name_full": {
+            "type": "string",
+            "description": "Full case name"
+          },
+          "federal_cite_one": {
+            "type": "string",
+            "description": "Primary federal citation"
+          },
+          "federal_cite_two": {
+            "type": "string",
+            "description": "Secondary federal citation"
+          },
+          "federal_cite_three": {
+            "type": "string",
+            "description": "Tertiary federal citation"
+          },
+          "state_cite_one": {
+            "type": "string",
+            "description": "Primary state citation"
+          },
+          "state_cite_two": {
+            "type": "string",
+            "description": "Secondary state citation"
+          },
+          "state_cite_three": {
+            "type": "string",
+            "description": "Tertiary state citation"
+          },
+          "state_cite_regional": {
+            "type": "string",
+            "description": "Regional state citation"
+          },
+          "specialty_cite_one": {
+            "type": "string",
+            "description": "Primary specialty citation"
+          },
+          "scotus_early_cite": {
+            "type": "string",
+            "description": "Early SCOTUS citation"
+          },
+          "lexis_cite": {
+            "type": "string",
+            "description": "Lexis citation"
+          },
+          "westlaw_cite": {
+            "type": "string",
+            "description": "Westlaw citation"
+          },
+          "neutral_cite": {
+            "type": "string",
+            "description": "Neutral citation"
+          },
+          "scdb_id": {
+            "type": "string",
+            "description": "Supreme Court Database ID"
+          },
+          "scdb_decision_direction": {
+            "type": "integer",
+            "nullable": true,
+            "description": "SCDB decision direction"
+          },
+          "scdb_votes_majority": {
+            "type": "integer",
+            "nullable": true,
+            "description": "SCDB majority votes"
+          },
+          "scdb_votes_minority": {
+            "type": "integer",
+            "nullable": true,
+            "description": "SCDB minority votes"
+          },
+          "source": {
+            "type": "string",
+            "description": "Source of the cluster"
+          },
+          "procedural_history": {
+            "type": "string",
+            "description": "Procedural history"
+          },
+          "attorneys": {
+            "type": "string",
+            "description": "Attorney information"
+          },
+          "nature_of_suit": {
+            "type": "string",
+            "description": "Nature of suit"
+          },
+          "posture": {
+            "type": "string",
+            "description": "Procedural posture"
+          },
+          "syllabus": {
+            "type": "string",
+            "description": "Case syllabus"
+          },
+          "citation_count": {
+            "type": "integer",
+            "description": "Number of citations"
+          },
+          "precedential_status": {
+            "type": "string",
+            "description": "Precedential status"
+          },
+          "date_blocked": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date blocked from public view"
+          },
+          "blocked": {
+            "type": "boolean",
+            "description": "Whether blocked from public view"
+          }
+        }
+      },
+      "PaginatedOpinions": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Opinion"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Opinion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Opinion ID"
+          },
+          "cluster": {
+            "type": "integer",
+            "description": "Associated cluster ID"
+          },
+          "author": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Author judge ID"
+          },
+          "joined_by": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "Judges who joined this opinion"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date created"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date modified"
+          },
+          "type": {
+            "type": "string",
+            "description": "Opinion type"
+          },
+          "sha1": {
+            "type": "string",
+            "description": "SHA1 hash of the document"
+          },
+          "page_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of pages"
+          },
+          "download_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "Download URL"
+          },
+          "local_path": {
+            "type": "string",
+            "description": "Local file path"
+          },
+          "plain_text": {
+            "type": "string",
+            "description": "Plain text content"
+          },
+          "html": {
+            "type": "string",
+            "description": "HTML content"
+          },
+          "html_lawbox": {
+            "type": "string",
+            "description": "Lawbox HTML content"
+          },
+          "html_columbia": {
+            "type": "string",
+            "description": "Columbia HTML content"
+          },
+          "html_anon_2020": {
+            "type": "string",
+            "description": "Anonymized HTML content"
+          },
+          "xml_harvard": {
+            "type": "string",
+            "description": "Harvard XML content"
+          },
+          "html_with_citations": {
+            "type": "string",
+            "description": "HTML with citations"
+          },
+          "extracted_by_ocr": {
+            "type": "boolean",
+            "description": "Whether extracted by OCR"
+          },
+          "ordering_key": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Key for ordering opinions"
+          },
+          "per_curiam": {
+            "type": "boolean",
+            "description": "Whether this is a per curiam opinion"
+          }
+        }
+      },
+      "PaginatedCourts": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Court"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Court": {
+        "type": "object",
+        "properties": {
+          "resource_uri": {
+            "type": "string",
+            "format": "uri",
+            "description": "Resource URI"
+          },
+          "id": {
+            "type": "string",
+            "description": "Court identifier"
+          },
+          "pacer_court_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "PACER court ID"
+          },
+          "pacer_has_rss_feed": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Whether court has RSS feed"
+          },
+          "pacer_rss_entry_types": {
+            "type": "string",
+            "description": "Types of RSS entries"
+          },
+          "date_last_pacer_contact": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Last PACER contact date"
+          },
+          "fjc_court_id": {
+            "type": "string",
+            "description": "Federal Judicial Center court ID"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date modified"
+          },
+          "in_use": {
+            "type": "boolean",
+            "description": "Whether court is in use"
+          },
+          "has_opinion_scraper": {
+            "type": "boolean",
+            "description": "Whether court has opinion scraper"
+          },
+          "has_oral_argument_scraper": {
+            "type": "boolean",
+            "description": "Whether court has oral argument scraper"
+          },
+          "position": {
+            "type": "number",
+            "description": "Position for ordering"
+          },
+          "citation_string": {
+            "type": "string",
+            "description": "Citation abbreviation"
+          },
+          "short_name": {
+            "type": "string",
+            "description": "Short court name"
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Full court name"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Court website URL"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Court start date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Court end date"
+          },
+          "jurisdiction": {
+            "type": "string",
+            "enum": ["F", "S", "FS", "MA"],
+            "description": "Jurisdiction type: F=Federal, S=State, FS=Federal Special, MA=Military Appeals"
+          },
+          "parent_court": {
+            "type": "string",
+            "nullable": true,
+            "description": "Parent court ID"
+          },
+          "appeals_to": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Courts this court appeals to"
+          }
+        }
+      },
+      "PaginatedPeople": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Person"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Person": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Person ID"
+          },
+          "resource_uri": {
+            "type": "string",
+            "format": "uri",
+            "description": "Resource URI"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date created"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date modified"
+          },
+          "date_completed": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Date profile completed"
+          },
+          "fjc_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Federal Judicial Center ID"
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL slug"
+          },
+          "name_first": {
+            "type": "string",
+            "description": "First name"
+          },
+          "name_middle": {
+            "type": "string",
+            "description": "Middle name"
+          },
+          "name_last": {
+            "type": "string",
+            "description": "Last name"
+          },
+          "name_suffix": {
+            "type": "string",
+            "description": "Name suffix"
+          },
+          "date_dob": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date of birth"
+          },
+          "date_granularity_dob": {
+            "type": "string",
+            "description": "Granularity of birth date"
+          },
+          "date_dod": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date of death"
+          },
+          "date_granularity_dod": {
+            "type": "string",
+            "description": "Granularity of death date"
+          },
+          "dob_city": {
+            "type": "string",
+            "description": "Birth city"
+          },
+          "dob_state": {
+            "type": "string",
+            "description": "Birth state"
+          },
+          "dob_country": {
+            "type": "string",
+            "description": "Birth country"
+          },
+          "dod_city": {
+            "type": "string",
+            "description": "Death city"
+          },
+          "dod_state": {
+            "type": "string",
+            "description": "Death state"
+          },
+          "dod_country": {
+            "type": "string",
+            "description": "Death country"
+          },
+          "gender": {
+            "type": "string",
+            "description": "Gender"
+          },
+          "religion": {
+            "type": "string",
+            "description": "Religion"
+          },
+          "ftm_total_received": {
+            "type": "number",
+            "nullable": true,
+            "description": "Follow the Money total received"
+          },
+          "ftm_eid": {
+            "type": "string",
+            "description": "Follow the Money entity ID"
+          },
+          "has_photo": {
+            "type": "boolean",
+            "description": "Whether person has photo"
+          }
+        }
+      },
+      "PaginatedAudio": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Audio"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Audio": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Audio ID"
+          },
+          "docket": {
+            "type": "integer",
+            "description": "Associated docket ID"
+          },
+          "source": {
+            "type": "string",
+            "description": "Source of the audio"
+          },
+          "case_name": {
+            "type": "string",
+            "description": "Case name"
+          },
+          "case_name_short": {
+            "type": "string",
+            "description": "Short case name"
+          },
+          "case_name_full": {
+            "type": "string",
+            "description": "Full case name"
+          },
+          "panel": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "Panel member IDs"
+          },
+          "judges": {
+            "type": "string",
+            "description": "Judge names"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date created"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date modified"
+          },
+          "sha1": {
+            "type": "string",
+            "description": "SHA1 hash of the audio file"
+          },
+          "download_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "Download URL"
+          },
+          "local_path_mp3": {
+            "type": "string",
+            "description": "Local MP3 file path"
+          },
+          "local_path_original_file": {
+            "type": "string",
+            "description": "Local original file path"
+          },
+          "filepath_ia": {
+            "type": "string",
+            "description": "Internet Archive file path"
+          },
+          "ia_upload_failure_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Internet Archive upload failure count"
+          },
+          "duration": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Duration in seconds"
+          },
+          "processing_complete": {
+            "type": "boolean",
+            "description": "Whether processing is complete"
+          },
+          "date_argued": {
+            "type": "string",
+            "format": "date",
+            "description": "Date argued"
+          },
+          "date_reargued": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date reargued"
+          },
+          "date_reargument_denied": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date reargument denied"
+          },
+          "docket_number": {
+            "type": "string",
+            "description": "Docket number"
+          },
+          "judge": {
+            "type": "string",
+            "description": "Judge information"
+          },
+          "date_blocked": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date blocked from public view"
+          },
+          "blocked": {
+            "type": "boolean",
+            "description": "Whether blocked from public view"
+          }
+        }
+      },
+      "PaginatedFinancialDisclosures": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/FinancialDisclosure"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "FinancialDisclosure": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Financial disclosure ID"
+          },
+          "person": {
+            "type": "integer",
+            "description": "Associated person ID"
+          },
+          "year": {
+            "type": "integer",
+            "description": "Disclosure year"
+          },
+          "download_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "Download URL"
+          },
+          "filepath": {
+            "type": "string",
+            "description": "File path"
+          },
+          "thumbnail": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "Thumbnail URL"
+          },
+          "page_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of pages"
+          },
+          "sha1": {
+            "type": "string",
+            "description": "SHA1 hash"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date created"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date modified"
+          },
+          "is_amended": {
+            "type": "boolean",
+            "description": "Whether this is an amended disclosure"
+          },
+          "addendum_content_raw": {
+            "type": "string",
+            "description": "Raw addendum content"
+          },
+          "addendum_redacted": {
+            "type": "boolean",
+            "description": "Whether addendum is redacted"
+          }
+        }
+      },
+      "PaginatedAlerts": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Alert"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Alert": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Alert ID"
+          },
+          "user": {
+            "type": "integer",
+            "description": "User ID"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date created"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date modified"
+          },
+          "date_last_hit": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Date of last hit"
+          },
+          "name": {
+            "type": "string",
+            "description": "Alert name"
+          },
+          "query": {
+            "type": "string",
+            "description": "Search query"
+          },
+          "rate": {
+            "type": "string",
+            "description": "Alert frequency"
+          },
+          "alert_type": {
+            "type": "string",
+            "description": "Type of alert"
+          }
+        }
+      },
+      "AlertCreate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Alert name",
+            "maxLength": 75
+          },
+          "query": {
+            "type": "string",
+            "description": "Search query",
+            "maxLength": 2500
+          },
+          "rate": {
+            "type": "string",
+            "enum": ["rt", "dly", "wly", "mly", "off"],
+            "description": "Alert frequency: rt=Real Time, dly=Daily, wly=Weekly, mly=Monthly, off=Off"
+          },
+          "alert_type": {
+            "type": "string",
+            "enum": ["o", "oa"],
+            "description": "Type of alert: o=Opinions, oa=Oral Arguments"
+          }
+        },
+        "required": ["name", "query", "rate", "alert_type"]
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "description": "Total number of items"
+          },
+          "next": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "URL for next page"
+          },
+          "previous": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "URL for previous page"
+          }
+        }
+      },
+      "PaginatedProcessingQueue": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ProcessingQueueItem"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ProcessingQueueItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Processing queue item ID"
+          },
+          "court": {
+            "type": "string",
+            "description": "Court identifier"
+          },
+          "pacer_case_id": {
+            "type": "string",
+            "description": "PACER case ID"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date created"
+          },
+          "status": {
+            "type": "string",
+            "description": "Processing status"
+          }
+        }
+      },
+      "PaginatedRECAPDocuments": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RECAPDocument"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "RECAPDocument": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "RECAP document ID"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date created"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date modified"
+          },
+          "sha1": {
+            "type": "string",
+            "description": "SHA1 hash of document"
+          },
+          "page_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of pages"
+          },
+          "file_size": {
+            "type": "integer",
+            "nullable": true,
+            "description": "File size in bytes"
+          },
+          "filepath_local": {
+            "type": "string",
+            "description": "Local file path"
+          },
+          "filepath_ia": {
+            "type": "string",
+            "description": "Internet Archive file path"
+          },
+          "ia_upload_failure_count": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Internet Archive upload failure count"
+          },
+          "thumbnail": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "Thumbnail URL"
+          },
+          "thumbnail_status": {
+            "type": "integer",
+            "description": "Thumbnail generation status"
+          },
+          "plain_text": {
+            "type": "string",
+            "description": "Plain text content"
+          },
+          "ocr_status": {
+            "type": "integer",
+            "nullable": true,
+            "description": "OCR processing status"
+          },
+          "date_upload": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Date uploaded"
+          },
+          "document_number": {
+            "type": "string",
+            "description": "PACER document number"
+          },
+          "attachment_number": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Attachment number"
+          },
+          "pacer_doc_id": {
+            "type": "string",
+            "description": "PACER document ID"
+          },
+          "is_available": {
+            "type": "boolean",
+            "description": "Whether document is available"
+          },
+          "is_free_on_pacer": {
+            "type": "boolean",
+            "description": "Whether document is free on PACER"
+          },
+          "is_sealed": {
+            "type": "boolean",
+            "description": "Whether document is sealed"
+          },
+          "docket_entry": {
+            "type": "integer",
+            "description": "Associated docket entry ID"
+          }
+        }
+      },
+      "PaginatedPACERDocIDs": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PACERDocID"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "PACERDocID": {
+        "type": "object",
+        "properties": {
+          "pk": {
+            "type": "string",
+            "description": "PACER document ID (primary key)"
+          },
+          "recap_document": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Associated RECAP document ID"
+          }
+        }
+      },
+      "RECAPFetchRequest": {
+        "type": "object",
+        "properties": {
+          "pacer_doc_id": {
+            "type": "string",
+            "description": "PACER document ID to fetch"
+          },
+          "pacer_case_id": {
+            "type": "string",
+            "description": "PACER case ID"
+          }
+        },
+        "required": ["pacer_doc_id", "pacer_case_id"]
+      },
+      "RECAPFetchResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Response message"
+          },
+          "status": {
+            "type": "string",
+            "description": "Fetch status"
+          }
+        }
+      },
+      "PaginatedDocketAlerts": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DocketAlert"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "DocketAlert": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Docket alert ID"
+          },
+          "user": {
+            "type": "integer",
+            "description": "User ID"
+          },
+          "docket": {
+            "type": "integer",
+            "description": "Docket ID"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date created"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date modified"
+          },
+          "date_last_hit": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Date of last hit"
+          },
+          "alert_type": {
+            "type": "string",
+            "description": "Type of docket alert"
+          }
+        }
+      },
+      "DocketAlertCreate": {
+        "type": "object",
+        "properties": {
+          "docket": {
+            "type": "integer",
+            "description": "Docket ID to monitor"
+          },
+          "alert_type": {
+            "type": "string",
+            "enum": ["o", "oa"],
+            "description": "Type of alert: o=Opinions, oa=Oral Arguments"
+          }
+        },
+        "required": ["docket", "alert_type"]
+      },
+      "PaginatedOriginalProceedingsPanels": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/OriginalProceedingsPanel"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "OriginalProceedingsPanel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Original proceedings panel ID"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date created"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date modified"
+          },
+          "panel_name": {
+            "type": "string",
+            "description": "Name of the panel"
+          },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "description": "Panel member IDs"
+          }
+        }
+      },
+      "PaginatedInvestments": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Investment"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Investment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Investment ID"
+          },
+          "financial_disclosure": {
+            "type": "integer",
+            "description": "Associated financial disclosure ID"
+          },
+          "page_number": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Page number in disclosure"
+          },
+          "description": {
+            "type": "string",
+            "description": "Investment description"
+          },
+          "redacted": {
+            "type": "boolean",
+            "description": "Whether information is redacted"
+          },
+          "income_during_reporting_period_code": {
+            "type": "string",
+            "description": "Income code during reporting period"
+          },
+          "income_during_reporting_period_type": {
+            "type": "string",
+            "description": "Income type during reporting period"
+          },
+          "value_code": {
+            "type": "string",
+            "description": "Value code"
+          },
+          "has_inferred_values": {
+            "type": "boolean",
+            "description": "Whether values are inferred"
+          },
+          "gross_value_method": {
+            "type": "string",
+            "description": "Method used to determine gross value"
+          },
+          "gross_value_min": {
+            "type": "number",
+            "nullable": true,
+            "description": "Minimum gross value"
+          },
+          "gross_value_max": {
+            "type": "number",
+            "nullable": true,
+            "description": "Maximum gross value"
+          }
+        }
+      },
+      "PaginatedPositions": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Position"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Position": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Position ID"
+          },
+          "financial_disclosure": {
+            "type": "integer",
+            "description": "Associated financial disclosure ID"
+          },
+          "position": {
+            "type": "string",
+            "description": "Position description"
+          },
+          "organization_name": {
+            "type": "string",
+            "description": "Organization name"
+          },
+          "redacted": {
+            "type": "boolean",
+            "description": "Whether information is redacted"
+          }
+        }
+      },
+      "PaginatedAgreements": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Agreement"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Agreement": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Agreement ID"
+          },
+          "financial_disclosure": {
+            "type": "integer",
+            "description": "Associated financial disclosure ID"
+          },
+          "date_raw": {
+            "type": "string",
+            "description": "Raw date string"
+          },
+          "parties_and_terms": {
+            "type": "string",
+            "description": "Parties and terms of agreement"
+          },
+          "redacted": {
+            "type": "boolean",
+            "description": "Whether information is redacted"
+          }
+        }
+      },
+      "PaginatedNonInvestmentIncome": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/NonInvestmentIncome"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "NonInvestmentIncome": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Non-investment income ID"
+          },
+          "financial_disclosure": {
+            "type": "integer",
+            "description": "Associated financial disclosure ID"
+          },
+          "date_raw": {
+            "type": "string",
+            "description": "Raw date string"
+          },
+          "source_type": {
+            "type": "string",
+            "description": "Source type of income"
+          },
+          "income_amount": {
+            "type": "string",
+            "description": "Income amount"
+          },
+          "redacted": {
+            "type": "boolean",
+            "description": "Whether information is redacted"
+          }
+        }
+      },
+      "PaginatedSpouseIncome": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SpouseIncome"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "SpouseIncome": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Spouse income ID"
+          },
+          "financial_disclosure": {
+            "type": "integer",
+            "description": "Associated financial disclosure ID"
+          },
+          "source_type": {
+            "type": "string",
+            "description": "Source type of spouse income"
+          },
+          "date_raw": {
+            "type": "string",
+            "description": "Raw date string"
+          },
+          "redacted": {
+            "type": "boolean",
+            "description": "Whether information is redacted"
+          }
+        }
+      },
+      "PaginatedReimbursements": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Reimbursement"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Reimbursement": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Reimbursement ID"
+          },
+          "financial_disclosure": {
+            "type": "integer",
+            "description": "Associated financial disclosure ID"
+          },
+          "source": {
+            "type": "string",
+            "description": "Reimbursement source"
+          },
+          "date_raw": {
+            "type": "string",
+            "description": "Raw date string"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location of reimbursed activity"
+          },
+          "purpose": {
+            "type": "string",
+            "description": "Purpose of reimbursement"
+          },
+          "items_paid_or_provided": {
+            "type": "string",
+            "description": "Items paid or provided"
+          },
+          "redacted": {
+            "type": "boolean",
+            "description": "Whether information is redacted"
+          }
+        }
+      },
+      "PaginatedGifts": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Gift"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Gift": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Gift ID"
+          },
+          "financial_disclosure": {
+            "type": "integer",
+            "description": "Associated financial disclosure ID"
+          },
+          "source": {
+            "type": "string",
+            "description": "Gift source"
+          },
+          "description": {
+            "type": "string",
+            "description": "Gift description"
+          },
+          "value": {
+            "type": "string",
+            "description": "Gift value"
+          },
+          "redacted": {
+            "type": "boolean",
+            "description": "Whether information is redacted"
+          }
+        }
+      },
+      "PaginatedDebts": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Debt"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Debt": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Debt ID"
+          },
+          "financial_disclosure": {
+            "type": "integer",
+            "description": "Associated financial disclosure ID"
+          },
+          "creditor_name": {
+            "type": "string",
+            "description": "Creditor name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Debt description"
+          },
+          "value_code": {
+            "type": "string",
+            "description": "Value code"
+          },
+          "has_inferred_values": {
+            "type": "boolean",
+            "description": "Whether values are inferred"
+          },
+          "gross_value_method": {
+            "type": "string",
+            "description": "Method used to determine gross value"
+          },
+          "gross_value_min": {
+            "type": "number",
+            "nullable": true,
+            "description": "Minimum gross value"
+          },
+          "gross_value_max": {
+            "type": "number",
+            "nullable": true,
+            "description": "Maximum gross value"
+          },
+          "redacted": {
+            "type": "boolean",
+            "description": "Whether information is redacted"
+          }
+        }
+      },
+      "PaginatedJudgePositions": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/JudgePosition"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "JudgePosition": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Judge position ID"
+          },
+          "person": {
+            "type": "integer",
+            "description": "Associated person ID"
+          },
+          "court": {
+            "type": "string",
+            "description": "Court identifier"
+          },
+          "position_type": {
+            "type": "string",
+            "description": "Type of judicial position"
+          },
+          "appointer": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Appointer person ID"
+          },
+          "supervisor": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Supervisor person ID"
+          },
+          "predecessor": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Predecessor person ID"
+          },
+          "date_nominated": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date nominated"
+          },
+          "date_elected": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date elected"
+          },
+          "date_recess_appointment": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date of recess appointment"
+          },
+          "date_referred_to_judicial_committee": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date referred to judicial committee"
+          },
+          "date_judicial_committee_action": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date of judicial committee action"
+          },
+          "judicial_committee_action": {
+            "type": "string",
+            "description": "Judicial committee action"
+          },
+          "date_hearing": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date of hearing"
+          },
+          "date_confirmation": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date of confirmation"
+          },
+          "date_start": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Start date of position"
+          },
+          "date_granularity_start": {
+            "type": "string",
+            "description": "Granularity of start date"
+          },
+          "date_termination": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Termination date"
+          },
+          "termination_reason": {
+            "type": "string",
+            "description": "Reason for termination"
+          },
+          "date_granularity_termination": {
+            "type": "string",
+            "description": "Granularity of termination date"
+          },
+          "date_retirement": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Date of retirement"
+          },
+          "nomination_process": {
+            "type": "string",
+            "description": "Nomination process"
+          },
+          "vote_type": {
+            "type": "string",
+            "description": "Type of vote"
+          },
+          "voice_vote": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Whether it was a voice vote"
+          },
+          "votes_yes": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of yes votes"
+          },
+          "votes_no": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Number of no votes"
+          },
+          "votes_yes_percent": {
+            "type": "number",
+            "nullable": true,
+            "description": "Percentage of yes votes"
+          },
+          "votes_no_percent": {
+            "type": "number",
+            "nullable": true,
+            "description": "Percentage of no votes"
+          },
+          "how_selected": {
+            "type": "string",
+            "description": "How the judge was selected"
+          },
+          "has_inferred_values": {
+            "type": "boolean",
+            "description": "Whether values are inferred"
+          }
+        }
+      },
+      "PaginatedSchools": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/School"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "School": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "School ID"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date created"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date modified"
+          },
+          "name": {
+            "type": "string",
+            "description": "School name"
+          },
+          "ein": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Employer Identification Number"
+          }
+        }
+      },
+      "PaginatedPoliticalAffiliations": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/PoliticalAffiliation"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "PoliticalAffiliation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Political affiliation ID"
+          },
+          "person": {
+            "type": "integer",
+            "description": "Associated person ID"
+          },
+          "political_party": {
+            "type": "string",
+            "description": "Political party"
+          },
+          "source": {
+            "type": "string",
+            "description": "Source of affiliation information"
+          },
+          "date_start": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Start date of affiliation"
+          },
+          "date_granularity_start": {
+            "type": "string",
+            "description": "Granularity of start date"
+          },
+          "date_end": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "End date of affiliation"
+          },
+          "date_granularity_end": {
+            "type": "string",
+            "description": "Granularity of end date"
+          }
+        }
+      },
+      "PaginatedCitations": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Citation"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Citation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Citation ID"
+          },
+          "cluster_cited": {
+            "type": "integer",
+            "description": "ID of the cited cluster"
+          },
+          "cluster_citing": {
+            "type": "integer",
+            "description": "ID of the citing cluster"
+          },
+          "depth": {
+            "type": "integer",
+            "description": "Citation depth in network"
+          }
+        }
+      },
+      "PaginatedVisualizations": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Visualization"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Visualization": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Visualization ID"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date created"
+          },
+          "date_modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date modified"
+          },
+          "date_published": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Date published"
+          },
+          "date_deleted": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Date deleted"
+          },
+          "title": {
+            "type": "string",
+            "description": "Visualization title"
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL slug"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Visualization notes"
+          },
+          "cluster_start": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Starting cluster ID"
+          },
+          "cluster_end": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Ending cluster ID"
+          },
+          "json_data": {
+            "type": "object",
+            "description": "Visualization data in JSON format"
+          },
+          "published": {
+            "type": "boolean",
+            "description": "Whether visualization is published"
+          },
+          "deleted": {
+            "type": "boolean",
+            "description": "Whether visualization is deleted"
+          },
+          "generation_time": {
+            "type": "number",
+            "nullable": true,
+            "description": "Time taken to generate visualization"
+          }
+        }
+      }
+    }
+  }
+}

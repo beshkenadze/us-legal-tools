@@ -1,0 +1,87 @@
+{
+  "name": "@beshkenadze/ecfr-sdk",
+  "version": "0.3.0",
+  "description": "TypeScript SDK and MCP server for the eCFR (Electronic Code of Federal Regulations) API",
+  "author": "Akira Beshkenadze",
+  "license": "MIT",
+  "keywords": [
+    "ecfr",
+    "federal",
+    "regulations",
+    "api",
+    "sdk",
+    "mcp",
+    "typescript"
+  ],
+  "homepage": "https://github.com/beshkenadze/ecfr-sdk#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beshkenadze/ecfr-sdk.git",
+    "directory": "packages/ecfr-sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/beshkenadze/ecfr-sdk/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./mcp": {
+      "require": "./dist/mcp/index.js",
+      "import": "./dist/mcp/index.mjs",
+      "types": "./dist/mcp/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun run build.ts",
+    "generate": "bun run scripts/fix-and-convert-swagger.ts && orval",
+    "format": "biome format --write .",
+    "lint": "biome lint --write .",
+    "check": "biome check --write .",
+    "check:ci": "biome ci .",
+    "prepublishOnly": "bun run build",
+    "test": "bun test src",
+    "test:watch": "bun test --watch src",
+    "test:integration": "SKIP_INTEGRATION_TESTS=false bun test src",
+    "test:e2e": "SKIP_E2E_TESTS=false bun test tests/e2e",
+    "test:e2e:api": "SKIP_E2E_TESTS=false bun test tests/e2e/api.e2e.test.ts",
+    "test:e2e:mcp": "SKIP_E2E_TESTS=false bun test tests/e2e/mcp-server.e2e.test.ts",
+    "test:e2e:full": "SKIP_E2E_TESTS=false bun test tests/e2e/full-integration.e2e.test.ts",
+    "test:all": "bun test",
+    "mcp:server": "bun run src/mcp/server.ts",
+    "docker:build": "docker build -t ecfr-mcp-server .",
+    "docker:run": "docker run -i --rm ecfr-mcp-server"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.1",
+    "@types/bun": "latest",
+    "@types/node": "^24.0.14",
+    "orval": "^7.10.0",
+    "playwright": "^1.48.2",
+    "swagger2openapi": "^7.0.8",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.15.1",
+    "axios": "^1.10.0",
+    "zod": "^4.0.5"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

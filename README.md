@@ -1,229 +1,202 @@
-# eCFR SDK
+# Federal Legal APIs Monorepo
 
-TypeScript SDK and MCP (Model Context Protocol) server for the eCFR (Electronic Code of Federal Regulations) API.
+A comprehensive TypeScript monorepo containing SDKs and Model Context Protocol (MCP) servers for major U.S. federal legal and regulatory APIs.
 
+[![CI](https://github.com/beshkenadze/ecfr-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/beshkenadze/ecfr-sdk/actions/workflows/ci.yml)
 [![Release](https://github.com/beshkenadze/ecfr-sdk/actions/workflows/release.yml/badge.svg)](https://github.com/beshkenadze/ecfr-sdk/actions/workflows/release.yml)
-[![npm version](https://badge.fury.io/js/@beshkenadze%2Fecfr-sdk.svg)](https://badge.fury.io/js/@beshkenadze%2Fecfr-sdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Features
+## 📦 Packages
 
-- 🚀 **TypeScript SDK** - Fully typed client for all eCFR API endpoints
-- 🤖 **MCP Server** - AI-ready server for integration with Claude and other AI assistants
-- 🔄 **Auto-generated** - Automatically updated from the official eCFR OpenAPI specification
-- 📦 **Modern tooling** - Built with Bun, Biome, and Orval
-- 🐳 **Docker support** - Ready-to-use Docker image for the MCP server
-- ✨ **Tree-shakeable** - Only import what you need
-- 🔍 **Type-safe** - Full TypeScript support with auto-completion
+This monorepo contains three powerful SDKs for accessing federal legal information:
 
-## Installation
+### [@beshkenadze/ecfr-sdk](./packages/ecfr-sdk)
+[![npm version](https://badge.fury.io/js/@beshkenadze%2Fecfr-sdk.svg)](https://badge.fury.io/js/@beshkenadze%2Fecfr-sdk)
 
-### From NPM Registry
+**Electronic Code of Federal Regulations (eCFR) SDK**
+
+Access the complete, continuously updated digital version of the Code of Federal Regulations (CFR).
+
+- 📖 **API Coverage**: Full text of all 50 CFR titles
+- 🔍 **Search**: Advanced search across all federal regulations
+- 📅 **Versioning**: Access historical versions and track changes
+- 🏗️ **Structure**: Navigate hierarchical regulation structure
+- 🤖 **MCP Server**: `eCFRSDKServer` for AI integration
+
+### [@beshkenadze/federal-register-sdk](./packages/federal-register-sdk)
+[![npm version](https://badge.fury.io/js/@beshkenadze%2Ffederal-register-sdk.svg)](https://badge.fury.io/js/@beshkenadze%2Ffederal-register-sdk)
+
+**Federal Register SDK**
+
+Access the daily journal of the United States government, including all proposed and final rules, notices, and presidential documents.
+
+- 📄 **Documents**: Search all documents published since 1994
+- 🏛️ **Agencies**: Comprehensive agency information
+- 📋 **Public Inspection**: Access documents before publication
+- 🖼️ **Images**: Document images and metadata
+- 🤖 **MCP Server**: `FederalRegisterServer` for AI integration
+
+### [@beshkenadze/courtlistener-sdk](./packages/courtlistener-sdk)
+[![npm version](https://badge.fury.io/js/@beshkenadze%2Fcourtlistener-sdk.svg)](https://badge.fury.io/js/@beshkenadze%2Fcourtlistener-sdk)
+
+**CourtListener SDK**
+
+Access the largest free legal database, containing millions of legal opinions, oral arguments, judges, and more.
+
+- ⚖️ **Case Law**: Millions of legal opinions from federal and state courts
+- 👨‍⚖️ **Judges**: Comprehensive judge profiles and biographical data
+- 🎙️ **Oral Arguments**: Audio recordings and metadata
+- 📚 **Citations**: Advanced citation lookup and normalization
+- 💼 **PACER Integration**: Access federal court dockets
+- 🔔 **Alerts**: Track changes to cases and dockets
+- 🤖 **MCP Server**: `CourtListenerRESTAPIServer` for AI integration
+
+## 🚀 Installation
+
+Each SDK can be installed independently from npm:
 
 ```bash
-# npm
+# eCFR SDK
 npm install @beshkenadze/ecfr-sdk
 
-# yarn
-yarn add @beshkenadze/ecfr-sdk
+# Federal Register SDK  
+npm install @beshkenadze/federal-register-sdk
 
-# pnpm
-pnpm add @beshkenadze/ecfr-sdk
+# CourtListener SDK
+npm install @beshkenadze/courtlistener-sdk
+```
 
-# bun
+Or using other package managers:
+
+```bash
+# Using Bun
 bun add @beshkenadze/ecfr-sdk
+
+# Using Yarn
+yarn add @beshkenadze/federal-register-sdk
+
+# Using PNPM
+pnpm add @beshkenadze/courtlistener-sdk
 ```
 
-### From GitHub Packages
+## 📖 Quick Start
 
-First, authenticate with GitHub Packages:
-
-```bash
-# Create a .npmrc file in your project root
-echo "@beshkenadze:registry=https://npm.pkg.github.com" >> .npmrc
-echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> .npmrc
-```
-
-Then install:
-
-```bash
-npm install @beshkenadze/ecfr-sdk
-```
-
-## Usage
-
-### TypeScript SDK
+### eCFR SDK
 
 ```typescript
-import { ecfrClient } from '@beshkenadze/ecfr-sdk';
+import { getApiSearchV1Results } from '@beshkenadze/ecfr-sdk';
 
-// Get all agencies
-const agencies = await ecfrClient.getApiAdminV1AgenciesJson();
-console.log(agencies.agencies);
-
-// Search regulations
-const searchResults = await ecfrClient.getApiSearchV1Results({
-  query: 'environmental protection',
-  per_page: 20,
-  page: 1,
-});
-console.log(`Found ${searchResults.count} results`);
-
-// Get title structure
-const titleStructure = await ecfrClient.getApiVersionerV1StructureDateTitleTitleJson({
-  date: '2024-01-01',
-  title: '40', // Environmental Protection
+// Search for regulations about "clean air"
+const results = await getApiSearchV1Results({
+  q: 'clean air',
+  per_page: 10,
+  page: 1
 });
 
-// Get corrections for a specific title
-const corrections = await ecfrClient.getApiAdminV1CorrectionsTitleTitleJson({
-  title: '40',
-});
-
-// Search with filters
-const filteredSearch = await ecfrClient.getApiSearchV1Results({
-  query: 'carbon emissions',
-  title: ['40'], // Only Title 40
-  last_modified_on_or_after: '2024-01-01',
-  per_page: 50,
-});
-
-// Get ancestry information
-const ancestry = await ecfrClient.getApiVersionerV1AncestryDateTitleTitleJson({
-  date: '2024-01-01',
-  title: '40',
-  part: '60',
-  section: '60.1',
-});
-
-// Get search suggestions
-const suggestions = await ecfrClient.getApiSearchV1Suggestions({
-  query: 'clean air',
-  title: ['40', '42'],
+console.log(`Found ${results.count} regulations`);
+results.results.forEach(result => {
+  console.log(`- ${result.title}: ${result.label_string}`);
 });
 ```
 
-### Error Handling
+### Federal Register SDK
 
 ```typescript
-import { ecfrClient } from '@beshkenadze/ecfr-sdk';
+import { getDocumentsFormat } from '@beshkenadze/federal-register-sdk';
 
-try {
-  const result = await ecfrClient.getApiSearchV1Results({
-    query: 'test',
-  });
-} catch (error) {
-  if (error.response?.status === 404) {
-    console.error('Resource not found');
-  } else if (error.response?.status === 400) {
-    console.error('Bad request:', error.response.data);
-  } else {
-    console.error('API error:', error.message);
-  }
-}
-```
-
-### Custom Configuration
-
-```typescript
-import { createEcfrClient } from '@beshkenadze/ecfr-sdk';
-
-// Create a custom client with your own Axios config
-const client = createEcfrClient({
-  baseURL: 'https://www.ecfr.gov',
-  timeout: 30000,
-  headers: {
-    'User-Agent': 'MyApp/1.0',
-  },
-});
-
-const results = await client.getApiSearchV1Results({ query: 'test' });
-```
-
-### MCP Server
-
-The MCP server allows AI assistants to interact with the eCFR API.
-
-#### Running with Docker
-
-```bash
-docker run -i --rm beshkenadze/ecfr-mcp-server:latest
-```
-
-#### Running locally
-
-```bash
-# Clone the repository
-git clone https://github.com/beshkenadze/ecfr-sdk.git
-cd ecfr-sdk
-
-# Install dependencies
-bun install
-
-# Run the MCP server
-bun run mcp:server
-```
-
-#### Configure with Claude Desktop
-
-Add to your Claude Desktop configuration:
-
-```json
-{
-  "mcpServers": {
-    "ecfr": {
-      "command": "docker",
-      "args": ["run", "-i", "--rm", "beshkenadze/ecfr-mcp-server:latest"],
-      "disabled": false
+// Search for recent EPA rules
+const documents = await getDocumentsFormat({
+  format: 'json',
+  conditions: {
+    agencies: ['environmental-protection-agency'],
+    type: ['RULE'],
+    publication_date: {
+      gte: '2024-01-01'
     }
   }
-}
+});
+
+console.log(`Found ${documents.count} EPA rules in 2024`);
 ```
 
-Or run locally:
+### CourtListener SDK
+
+```typescript
+import { getSearch } from '@beshkenadze/courtlistener-sdk';
+
+// Search for Supreme Court cases about free speech
+const cases = await getSearch({
+  type: 'o', // opinions
+  q: 'free speech',
+  court: 'scotus',
+  order_by: 'score desc'
+});
+
+console.log(`Found ${cases.count} Supreme Court cases`);
+cases.results.forEach(case => {
+  console.log(`- ${case.caseName} (${case.dateFiled})`);
+});
+```
+
+## 🤖 MCP (Model Context Protocol) Servers
+
+Each SDK includes an MCP server that enables AI assistants to interact with these APIs. MCP servers provide a standardized way for AI tools to access external data sources.
+
+### Running MCP Servers
+
+```bash
+# Run eCFR MCP Server
+cd packages/ecfr-sdk
+bun run mcp:server
+
+# Run Federal Register MCP Server
+cd packages/federal-register-sdk
+bun run mcp:server
+
+# Run CourtListener MCP Server (requires API token)
+cd packages/courtlistener-sdk
+COURTLISTENER_API_TOKEN=your-token bun run mcp:server
+```
+
+### MCP Integration Example
+
+Configure your AI assistant (like Claude) to use these MCP servers:
 
 ```json
 {
   "mcpServers": {
     "ecfr": {
       "command": "bunx",
-      "args": ["@beshkenadze/ecfr-sdk", "mcp"],
-      "disabled": false
+      "args": ["@beshkenadze/ecfr-sdk/mcp"]
+    },
+    "federal-register": {
+      "command": "bunx", 
+      "args": ["@beshkenadze/federal-register-sdk/mcp"]
+    },
+    "courtlistener": {
+      "command": "bunx",
+      "args": ["@beshkenadze/courtlistener-sdk/mcp"],
+      "env": {
+        "COURTLISTENER_API_TOKEN": "your-token"
+      }
     }
   }
 }
 ```
 
-## API Endpoints
+## 🔑 Authentication
 
-### Admin Service
-- `GET /api/admin/v1/agencies.json` - Get all agencies
-- `GET /api/admin/v1/corrections.json` - Get eCFR corrections
-- `GET /api/admin/v1/corrections/title/{title}.json` - Get corrections by title
+### CourtListener API
+Requires an API token from [CourtListener](https://www.courtlistener.com/). Set via:
+- Environment variable: `COURTLISTENER_API_TOKEN`
+- Or pass directly in API calls
 
-### Search Service
-- `GET /api/search/v1/results` - Search regulations
-- `GET /api/search/v1/count` - Get search result count
-- `GET /api/search/v1/summary` - Get search summary
-- `GET /api/search/v1/counts/daily` - Get daily counts
-- `GET /api/search/v1/counts/titles` - Get counts by title
-- `GET /api/search/v1/counts/hierarchy` - Get counts by hierarchy
-- `GET /api/search/v1/suggestions` - Get search suggestions
+### eCFR & Federal Register APIs
+No authentication required - these are public APIs.
 
-### Versioner Service
-- `GET /api/versioner/v1/ancestry/{date}/title-{title}.json` - Get ancestry
-- `GET /api/versioner/v1/full/{date}/title-{title}.xml` - Get full XML
-- `GET /api/versioner/v1/structure/{date}/title-{title}.json` - Get structure
-- `GET /api/versioner/v1/titles.json` - Get all titles
-- `GET /api/versioner/v1/versions/title-{title}.json` - Get versions
+## 🛠️ Development
 
-## Development
-
-### Prerequisites
-
-- [Bun](https://bun.sh) >= 1.0
-- Node.js >= 18 (for compatibility)
-- Docker (optional, for MCP server)
+This is a Turborepo monorepo using Bun for package management.
 
 ### Setup
 
@@ -235,119 +208,98 @@ cd ecfr-sdk
 # Install dependencies
 bun install
 
-# Generate SDK from OpenAPI spec
-bun run generate
+# Generate all SDKs
+turbo generate
+
+# Build all packages
+turbo build
 
 # Run tests
-bun test
-
-# Build the package
-bun run build
+turbo test
 ```
-
-### Scripts
-
-- `bun run dev` - Run development server
-- `bun run build` - Build the SDK
-- `bun run generate` - Regenerate SDK from OpenAPI spec
-- `bun run format` - Format code with Biome
-- `bun run lint` - Lint code with Biome
-- `bun run check` - Run all checks
-- `bun run test` - Run tests
-- `bun run test:watch` - Run tests in watch mode
-- `bun run test:integration` - Run integration tests
-- `bun run test:e2e` - Run end-to-end tests
-- `bun run mcp:server` - Run MCP server locally
-- `bun run docker:build` - Build Docker image
-- `bun run docker:run` - Run Docker container
 
 ### Project Structure
 
 ```
 ecfr-sdk/
-├── src/
-│   ├── api/          # SDK implementation
-│   │   ├── client.ts # Axios client configuration
-│   │   └── generated/ # Auto-generated API clients
-│   ├── mcp/          # MCP server implementation
-│   │   └── server.ts # MCP server entry point
-│   └── index.ts      # Main SDK exports
-├── scripts/          # Build and generation scripts
-├── tests/            # Test files
-└── docs/             # API documentation
+├── packages/
+│   ├── ecfr-sdk/           # eCFR SDK package
+│   ├── federal-register-sdk/ # Federal Register SDK package
+│   └── courtlistener-sdk/   # CourtListener SDK package
+├── turbo.json              # Turborepo configuration
+├── package.json            # Root package.json
+└── README.md              # This file
 ```
 
-## Testing
+### Adding a New SDK
 
-```bash
-# Run all tests
-bun test
+1. Create a new package directory: `packages/your-sdk`
+2. Add orval configuration for OpenAPI code generation
+3. Configure TypeScript and build scripts
+4. Add to root `tsconfig.json` references
+5. Update this README
 
-# Run specific test file
-bun test src/api/client.test.ts
+## 📋 API Coverage
 
-# Run tests in watch mode
-bun test --watch
+### eCFR API Features
+- ✅ Full regulation text retrieval
+- ✅ Advanced search with faceting
+- ✅ Historical version access
+- ✅ Hierarchical navigation
+- ✅ Citation lookup
+- ✅ Recent changes tracking
 
-# Run integration tests
-SKIP_INTEGRATION_TESTS=false bun test src
+### Federal Register API Features
+- ✅ Document search and retrieval
+- ✅ Agency information
+- ✅ Public inspection documents
+- ✅ Presidential documents
+- ✅ Document images
+- ✅ Suggested searches
 
-# Run e2e tests
-SKIP_E2E_TESTS=false bun test tests/e2e
-```
+### CourtListener API Features
+- ✅ Opinion full-text search
+- ✅ Case metadata and citations
+- ✅ Judge biographical data
+- ✅ Oral argument audio
+- ✅ PACER document access
+- ✅ Financial disclosures
+- ✅ Docket alerts
+- ✅ Citation normalization
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please:
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-### Development Guidelines
+## 📄 License
 
-- Write tests for new features
-- Update documentation as needed
-- Follow the existing code style
-- Run `bun run check` before committing
+MIT License - see [LICENSE](./LICENSE) for details.
 
-## Version Management
+## 🔗 Resources
 
-This project uses semantic versioning. To release a new version:
+- [eCFR Website](https://www.ecfr.gov/)
+- [Federal Register Website](https://www.federalregister.gov/)
+- [CourtListener Website](https://www.courtlistener.com/)
+- [Model Context Protocol](https://modelcontext.dev/)
 
-```bash
-# Patch release (1.0.0 -> 1.0.1)
-bun version patch
+## 👤 Author
 
-# Minor release (1.0.0 -> 1.1.0)
-bun version minor
+**Akira Beshkenadze**
 
-# Major release (1.0.0 -> 2.0.0)
-bun version major
-```
+- GitHub: [@beshkenadze](https://github.com/beshkenadze)
 
-This will automatically:
-1. Update the version in package.json
-2. Build the project
-3. Create a git commit and tag
-4. Push to GitHub
-5. Trigger the release workflow
+## 🙏 Acknowledgments
 
-## License
+- [Free Law Project](https://free.law/) for CourtListener
+- U.S. Government Publishing Office for eCFR and Federal Register APIs
+- [Anthropic](https://anthropic.com/) for Model Context Protocol
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+---
 
-## Acknowledgments
-
-- [eCFR API](https://www.ecfr.gov/developers/documentation) - Official eCFR API
-- [Orval](https://orval.dev) - OpenAPI client generator
-- [Model Context Protocol](https://modelcontextprotocol.io) - MCP specification
-- [Bun](https://bun.sh) - JavaScript runtime & toolkit
-
-## Support
-
-- 📚 [API Documentation](https://www.ecfr.gov/developers/documentation)
-- 🐛 [Report Issues](https://github.com/beshkenadze/ecfr-sdk/issues)
-- 💬 [Discussions](https://github.com/beshkenadze/ecfr-sdk/discussions)
+Built with ❤️ using [Turborepo](https://turbo.build/), [Bun](https://bun.sh/), and [Orval](https://orval.dev/)

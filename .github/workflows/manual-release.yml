@@ -1,0 +1,149 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to release'
+        required: true
+        type: choice
+        options:
+          - all
+          - ecfr-sdk
+          - federal-register-sdk
+          - courtlistener-sdk
+      version_bump:
+        description: 'Version bump type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+          - prerelease
+
+jobs:
+  release:
+    name: Manual Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      packages: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Generate SDKs
+        run: turbo generate
+
+      - name: Build packages
+        run: turbo build
+
+      - name: Run tests
+        run: turbo test
+
+      - name: Create changeset
+        run: |
+          if [ "${{ github.event.inputs.package }}" = "all" ]; then
+            echo "---" > .changeset/manual-release.md
+            echo '"@beshkenadze/ecfr-sdk": ${{ github.event.inputs.version_bump }}' >> .changeset/manual-release.md
+            echo '"@beshkenadze/federal-register-sdk": ${{ github.event.inputs.version_bump }}' >> .changeset/manual-release.md
+            echo '"@beshkenadze/courtlistener-sdk": ${{ github.event.inputs.version_bump }}' >> .changeset/manual-release.md
+            echo "---" >> .changeset/manual-release.md
+            echo "" >> .changeset/manual-release.md
+            echo "Manual release: ${{ github.event.inputs.version_bump }} version bump for all packages" >> .changeset/manual-release.md
+          else
+            echo "---" > .changeset/manual-release.md
+            echo '"@beshkenadze/${{ github.event.inputs.package }}": ${{ github.event.inputs.version_bump }}' >> .changeset/manual-release.md
+            echo "---" >> .changeset/manual-release.md
+            echo "" >> .changeset/manual-release.md
+            echo "Manual release: ${{ github.event.inputs.version_bump }} version bump for ${{ github.event.inputs.package }}" >> .changeset/manual-release.md
+          fi
+
+      - name: Version packages
+        run: bun run version-packages
+
+      - name: Commit changes
+        run: |
+          git add .
+          git commit -m "chore: version packages for manual release" || echo "No changes to commit"
+
+      - name: Publish to NPM
+        run: bun run release
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Setup Node.js for GitHub Packages
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@beshkenadze'
+
+      - name: Publish to GitHub Packages
+        run: |
+          if [ "${{ github.event.inputs.package }}" = "all" ]; then
+            for pkg in ecfr-sdk federal-register-sdk courtlistener-sdk; do
+              cd packages/$pkg
+              npm publish --access public
+              cd ../..
+            done
+          else
+            cd packages/${{ github.event.inputs.package }}
+            npm publish --access public
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push changes
+        run: |
+          git push origin main
+          git push --tags
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: manual-release-${{ github.run_number }}
+          release_name: Manual Release #${{ github.run_number }}
+          body: |
+            ## Manual Release
+            
+            - Package(s): ${{ github.event.inputs.package }}
+            - Version bump: ${{ github.event.inputs.version_bump }}
+            - Triggered by: @${{ github.actor }}
+            
+            ### Published Packages
+            Check the package pages for the new versions:
+            - [@beshkenadze/ecfr-sdk](https://www.npmjs.com/package/@beshkenadze/ecfr-sdk)
+            - [@beshkenadze/federal-register-sdk](https://www.npmjs.com/package/@beshkenadze/federal-register-sdk)
+            - [@beshkenadze/courtlistener-sdk](https://www.npmjs.com/package/@beshkenadze/courtlistener-sdk)
+          draft: false
+          prerelease: false

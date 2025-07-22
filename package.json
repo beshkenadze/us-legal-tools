@@ -1,17 +1,20 @@
 {
-  "name": "@beshkenadze/ecfr-sdk",
+  "name": "federal-register-monorepo",
   "version": "0.3.0",
-  "description": "TypeScript SDK and MCP server for the eCFR (Electronic Code of Federal Regulations) API",
+  "description": "Monorepo containing Federal Register and eCFR SDKs with MCP servers",
   "author": "Akira Beshkenadze",
   "license": "MIT",
+  "private": true,
   "keywords": [
     "ecfr",
+    "federal-register",
     "federal",
     "regulations",
     "api",
     "sdk",
     "mcp",
-    "typescript"
+    "typescript",
+    "monorepo"
   ],
   "homepage": "https://github.com/beshkenadze/ecfr-sdk#readme",
   "repository": {
@@ -21,56 +24,35 @@
   "bugs": {
     "url": "https://github.com/beshkenadze/ecfr-sdk/issues"
   },
-  "type": "module",
-  "module": "src/index.ts",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./mcp": {
-      "import": "./dist/mcp/index.js",
-      "types": "./dist/mcp/index.d.ts"
-    }
-  },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
+  "packageManager": "bun@1.2.18",
+  "workspaces": [
+    "packages/*"
   ],
   "scripts": {
-    "dev": "bun run src/index.ts",
-    "build": "bun run build:clean && bun run build:js && bun run build:types",
-    "build:clean": "rm -rf dist",
-    "build:js": "bun build --target=node ./src/index.ts --outdir=dist --splitting",
-    "build:types": "tsc --emitDeclarationOnly --project tsconfig.build.json",
-    "generate": "bun run scripts/fix-and-convert-swagger.ts && orval",
-    "format": "biome format --write .",
-    "lint": "biome lint --write .",
-    "check": "biome check --write .",
-    "check:ci": "biome ci .",
-    "prepublishOnly": "bun run build",
-    "test": "bun test src",
-    "test:watch": "bun test --watch src",
-    "test:integration": "SKIP_INTEGRATION_TESTS=false bun test src",
-    "test:e2e": "SKIP_E2E_TESTS=false bun test tests/e2e",
-    "test:e2e:api": "SKIP_E2E_TESTS=false bun test tests/e2e/api.e2e.test.ts",
-    "test:e2e:mcp": "SKIP_E2E_TESTS=false bun test tests/e2e/mcp-server.e2e.test.ts",
-    "test:e2e:full": "SKIP_E2E_TESTS=false bun test tests/e2e/full-integration.e2e.test.ts",
-    "test:all": "bun test",
-    "mcp:server": "bun run src/mcp/server.ts",
-    "docker:build": "docker build -t ecfr-mcp-server .",
-    "docker:run": "docker run -i --rm ecfr-mcp-server"
+    "build": "turbo build",
+    "generate": "turbo generate",
+    "test": "turbo test",
+    "test:integration": "turbo test:integration",
+    "test:e2e": "turbo test:e2e",
+    "lint": "turbo lint",
+    "format": "turbo format",
+    "check": "turbo check",
+    "check:ci": "turbo check:ci",
+    "dev": "turbo dev",
+    "clean": "turbo clean && rm -rf node_modules",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo build && changeset publish"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.1",
+    "@changesets/cli": "^2.29.5",
     "@types/bun": "latest",
     "@types/node": "^24.0.14",
     "orval": "^7.10.0",
     "playwright": "^1.48.2",
     "swagger2openapi": "^7.0.8",
+    "turbo": "^2.5.5",
     "typescript": "^5.8.3"
   },
   "dependencies": {
