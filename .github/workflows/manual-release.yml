@@ -58,6 +58,9 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Setup Playwright
+        run: bunx playwright install --with-deps chromium
+
       - name: Generate SDKs
         run: bunx turbo generate
 
