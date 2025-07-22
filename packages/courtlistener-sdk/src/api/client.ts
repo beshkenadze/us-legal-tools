@@ -11,7 +11,7 @@ export const axiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'User-Agent': 'CourtListener SDK',
-    ...(API_TOKEN && { 'Authorization': `Token ${API_TOKEN}` }),
+    ...(API_TOKEN && { Authorization: `Token ${API_TOKEN}` }),
   },
 });
 
