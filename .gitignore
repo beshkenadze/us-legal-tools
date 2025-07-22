@@ -71,7 +71,7 @@ packages/courtlistener-sdk/src/client/
 # NOTE: courtlistener-openapi.json must be committed as it cannot be downloaded automatically
 
 # Old structure (for cleanup)
-src/
+/src/
 scripts/
 tests/
 orval.config.ts
