@@ -42,7 +42,9 @@
     "clean": "turbo clean && rm -rf node_modules",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "turbo build && changeset publish"
+    "release": "turbo build && changeset publish",
+    "format-and-lint": "biome check .",
+    "format-and-lint:fix": "biome check . --write"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.1",

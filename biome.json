@@ -7,21 +7,23 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": [
-      "dist",
-      "node_modules",
-      "*.generated.ts",
-      "**/generated/**",
-      "**/api/generated/**",
-      "**/mcp/handlers.ts",
-      "**/mcp/http-client.ts",
-      "**/mcp/server.ts",
-      "**/mcp/tool-schemas.zod.ts",
-      "**/mcp/http-schemas/**",
-      "**/test/**",
-      "**/*.test.ts",
-      "**/test-*.ts",
-      "**/scripts/**"
+    "includes": [
+      "**",
+      "!**/dist/**",
+      "!**/node_modules/**",
+      "!**/*.generated.ts",
+      "!**/generated/**",
+      "!**/api/generated/**",
+      "!**/mcp/handlers.ts",
+      "!**/mcp/http-client.ts",
+      "!**/mcp/server.ts",
+      "!**/mcp/tool-schemas.zod.ts",
+      "!**/mcp/http-schemas/**",
+      "!**/test/**",
+      "!**/*.test.ts",
+      "!**/test-*.ts",
+      "!**/scripts/**",
+      "!**/download-*.ts"
     ]
   },
   "formatter": {

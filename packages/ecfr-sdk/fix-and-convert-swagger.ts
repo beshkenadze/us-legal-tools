@@ -97,11 +97,13 @@ async function fixAndConvert() {
     if (!swagger2.info) {
       swagger2.info = { title: 'eCFR API', version: '1.0.0' };
     }
-    
+
     // Update the title to be more descriptive for SDK generation
     // Note: Orval appends "Server" to the title for MCP generation, so we use just "eCFR SDK"
     swagger2.info.title = 'eCFR SDK';
-    swagger2.info.description = swagger2.info.description || 'TypeScript SDK and Model Context Protocol server for the Electronic Code of Federal Regulations (eCFR) API';
+    swagger2.info.description =
+      swagger2.info.description ||
+      'TypeScript SDK and Model Context Protocol server for the Electronic Code of Federal Regulations (eCFR) API';
 
     console.log('🔄 Converting to OpenAPI 3.0...');
 
