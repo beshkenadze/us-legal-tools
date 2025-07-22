@@ -2,7 +2,7 @@
   "name": "@beshkenadze/federal-register-sdk",
   "version": "0.2.0",
   "description": "TypeScript SDK and MCP server for the Federal Register API",
-  "author": "Akira Beshkenadze",
+  "author": "Aleksandr Beshkenadze <beshkenadze@gmail.com>",
   "license": "MIT",
   "keywords": [
     "federal-register",
@@ -28,14 +28,14 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     },
     "./mcp": {
-      "require": "./dist/mcp/index.js",
+      "types": "./dist/mcp/index.d.ts",
       "import": "./dist/mcp/index.mjs",
-      "types": "./dist/mcp/index.d.ts"
+      "require": "./dist/mcp/index.js"
     }
   },
   "files": [
