@@ -1,0 +1,83 @@
+{
+  "name": "@beshkenadze/courtlistener-sdk",
+  "version": "1.0.0",
+  "description": "TypeScript SDK and MCP server for CourtListener API",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun run build.ts",
+    "generate": "orval",
+    "format": "biome format --write .",
+    "lint": "biome lint --write .",
+    "check": "biome check --write .",
+    "check:ci": "biome ci .",
+    "prepublishOnly": "bun run build",
+    "test": "bun test src",
+    "test:watch": "bun test --watch src",
+    "test:integration": "SKIP_INTEGRATION_TESTS=false bun test src",
+    "test:all": "bun test",
+    "mcp:server": "bun run src/mcp/server.ts",
+    "update-openapi": "bun scripts/update-openapi.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.15.1",
+    "axios": "^1.10.0",
+    "zod": "^4.0.5"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.1",
+    "@types/bun": "latest",
+    "@types/node": "^24.0.14",
+    "orval": "^7.10.0",
+    "playwright": "^1.52.0",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "courtlistener",
+    "legal",
+    "api",
+    "sdk",
+    "mcp",
+    "typescript",
+    "case-law",
+    "judges",
+    "courts"
+  ],
+  "homepage": "https://github.com/beshkenadze/ecfr-sdk#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beshkenadze/ecfr-sdk.git",
+    "directory": "packages/courtlistener-sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/beshkenadze/ecfr-sdk/issues"
+  },
+  "author": "Akira Beshkenadze",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./mcp": {
+      "require": "./dist/mcp/index.js",
+      "import": "./dist/mcp/index.mjs",
+      "types": "./dist/mcp/index.d.ts"
+    }
+  }
+}

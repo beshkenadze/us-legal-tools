@@ -37,10 +37,53 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # Finder (MacOS) folder config
 .DS_Store
 
-# Generated API files
-src/api/generated/
-src/mcp/handlers.ts
-src/mcp/http-client.ts
-src/mcp/http-schemas/
-src/mcp/server.ts
-src/mcp/tool-schemas.zod.ts
+# Generated API files (monorepo structure)
+# eCFR SDK
+packages/ecfr-sdk/src/api/generated/
+packages/ecfr-sdk/api/generated/
+packages/ecfr-sdk/src/mcp/handlers.ts
+packages/ecfr-sdk/src/mcp/http-client.ts
+packages/ecfr-sdk/src/mcp/http-schemas/
+packages/ecfr-sdk/src/mcp/server.ts
+packages/ecfr-sdk/src/mcp/tool-schemas.zod.ts
+packages/ecfr-sdk/mcp/
+packages/ecfr-sdk/docs/v1-openapi3.json
+packages/ecfr-sdk/v1-openapi3.json
+
+# Federal Register SDK
+packages/federal-register-sdk/src/api/generated/
+packages/federal-register-sdk/src/mcp/handlers.ts
+packages/federal-register-sdk/src/mcp/http-client.ts
+packages/federal-register-sdk/src/mcp/http-schemas/
+packages/federal-register-sdk/src/mcp/server.schemas.ts
+packages/federal-register-sdk/src/mcp/server.ts
+packages/federal-register-sdk/src/mcp/tool-schemas.zod.ts
+packages/federal-register-sdk/openapi.json
+
+# CourtListener SDK
+packages/courtlistener-sdk/src/api/generated/
+packages/courtlistener-sdk/src/mcp/handlers.ts
+packages/courtlistener-sdk/src/mcp/http-client.ts
+packages/courtlistener-sdk/src/mcp/http-schemas/
+packages/courtlistener-sdk/src/mcp/server.ts
+packages/courtlistener-sdk/src/mcp/tool-schemas.zod.ts
+packages/courtlistener-sdk/src/client/
+# NOTE: courtlistener-openapi.json must be committed as it cannot be downloaded automatically
+
+# Old structure (for cleanup)
+src/
+scripts/
+tests/
+orval.config.ts
+tsconfig.build.json
+biome.json
+Dockerfile
+docker-compose.yml
+docker-compose.test.yml
+index.ts
+docs/
+
+# Turbo
+.turbo/
+packages/ecfr-sdk/api/generated/
+packages/ecfr-sdk/v1.json

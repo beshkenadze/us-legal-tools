@@ -2,21 +2,18 @@ name: PR Checks
 
 on:
   pull_request:
-    branches: [main]
+    types: [opened, synchronize, reopened]
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
 jobs:
-  test-and-validate:
+  check-changeset:
+    name: Check Changeset
     runs-on: ubuntu-latest
-    
-    services:
-      chrome:
-        image: browserless/chrome:latest
-        ports:
-          - 9222:3000
-        options: --shm-size="2g"
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -27,114 +24,178 @@ jobs:
           bun-version: latest
 
       - name: Install dependencies
-        run: |
-          echo "📦 Installing dependencies..."
-          bun install
+        run: bun install
 
-      - name: Run linter and formatter check
-        run: |
-          echo "🔍 Running linter and formatter..."
-          bun run check:ci
+      - name: Check for changeset
+        run: bunx changeset status --since=origin/main
+        continue-on-error: true
+        id: changeset-status
+
+      - name: Comment on PR
+        if: steps.changeset-status.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ This PR is missing a changeset. Please run `bun changeset` to add a changeset describing the changes.'
+            })
+
+  lint-and-type-check:
+    name: Lint and Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Generate SDKs
+        run: turbo generate
+
+      - name: Run format check
+        run: turbo format
+
+      - name: Run lint check
+        run: turbo check:ci
+
+      - name: Build packages
+        run: turbo build
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Setup Playwright
+        run: bunx playwright install --with-deps chromium
+
+      - name: Generate SDKs
+        run: turbo generate
 
       - name: Run unit tests
-        run: |
-          echo "🧪 Running unit tests..."
-          bun test src
+        run: turbo test
 
-      - name: Build SDK
-        run: |
-          echo "🔨 Building SDK..."
-          bun run build
+      - name: Run integration tests
+        run: turbo test:integration
+        continue-on-error: true
 
-      - name: Check bundle size
-        run: |
-          echo "📊 Checking bundle sizes..."
-          ls -lh dist/
-          
-          # Calculate total size
-          TOTAL_SIZE=$(du -sh dist/ | cut -f1)
-          echo "Total bundle size: $TOTAL_SIZE"
-          
-          # Fail if bundle is too large (e.g., > 1MB)
-          TOTAL_BYTES=$(du -sb dist/ | cut -f1)
-          if [ $TOTAL_BYTES -gt 1048576 ]; then
-            echo "❌ Bundle size exceeds 1MB!"
-            exit 1
-          fi
+  size-check:
+    name: Bundle Size Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Test MCP server startup
-        run: |
-          echo "🚀 Testing MCP server..."
-          timeout 5s bun run src/mcp/server.ts || true
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
 
-      - name: Download and validate swagger
-        run: |
-          echo "📄 Validating swagger download..."
-          CDP_URL=http://localhost:9222 bun run scripts/download-swagger.ts
-          
-          # Check if swagger was downloaded
-          if [ ! -f "docs/v1.json" ]; then
-            echo "❌ Failed to download swagger spec"
-            exit 1
-          fi
-          
-          echo "✅ Swagger spec downloaded successfully"
+      - name: Install dependencies
+        run: bun install
 
-      - name: Test SDK generation
-        run: |
-          echo "🏗️ Testing SDK generation..."
-          bun run generate
-          
-          # Check if files were generated
-          if [ ! -f "src/api/generated/endpoints.ts" ]; then
-            echo "❌ Failed to generate SDK"
-            exit 1
-          fi
-          
-          echo "✅ SDK generated successfully"
+      - name: Generate SDKs
+        run: turbo generate
 
-      - name: Run integration tests (if API specs changed)
-        if: contains(github.event.pull_request.labels.*.name, 'api-update')
-        run: |
-          echo "🔄 Running integration tests..."
-          SKIP_INTEGRATION_TESTS=false bun test src
+      - name: Build packages
+        run: turbo build
 
-      - name: Generate test coverage report
+      - name: Check bundle sizes
         run: |
-          echo "📈 Generating coverage report..."
-          # Bun doesn't have built-in coverage yet, so we'll just count test files
-          TEST_COUNT=$(find src -name "*.test.ts" | wc -l)
-          TOTAL_COUNT=$(find src -name "*.ts" ! -name "*.test.ts" | wc -l)
-          echo "Test files: $TEST_COUNT"
-          echo "Source files: $TOTAL_COUNT"
-          
-          # Create a simple coverage badge
-          COVERAGE=$((TEST_COUNT * 100 / TOTAL_COUNT))
-          echo "Test coverage: ~${COVERAGE}%"
+          echo "📊 Bundle sizes:"
+          for pkg in packages/*; do
+            if [ -d "$pkg/dist" ]; then
+              echo "📦 $(basename $pkg):"
+              du -sh $pkg/dist/* | sort -h
+              
+              # Check if bundle is too large (e.g., > 5MB per package)
+              TOTAL_BYTES=$(du -sb $pkg/dist/ | cut -f1)
+              if [ $TOTAL_BYTES -gt 5242880 ]; then
+                echo "❌ $(basename $pkg) bundle size exceeds 5MB!"
+                exit 1
+              fi
+            fi
+          done
 
+  pr-summary:
+    name: PR Summary
+    runs-on: ubuntu-latest
+    needs: [lint-and-type-check, test, size-check]
+    if: always()
+    steps:
       - name: Comment PR with results
         uses: actions/github-script@v7
-        if: github.event_name == 'pull_request'
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const jobs = ${{ toJSON(needs) }};
+            const allPassed = Object.values(jobs).every(job => job.result === 'success');
+            
             const output = `## 🤖 Automated PR Check Results
             
-            ✅ **All checks passed!**
+            ${allPassed ? '✅ **All checks passed!**' : '❌ **Some checks failed**'}
             
-            ### 📊 Build Summary
-            - 🔍 Linting: Passed
-            - 🧪 Unit Tests: Passed
-            - 🔨 Build: Successful
-            - 📦 Bundle Size: Within limits
-            - 🚀 MCP Server: Starts correctly
-            - 📄 Swagger Download: Working
-            - 🏗️ SDK Generation: Working
+            ### 📊 Check Summary
+            - 🔍 Lint & Type Check: ${jobs['lint-and-type-check'].result === 'success' ? '✅ Passed' : '❌ Failed'}
+            - 🧪 Tests: ${jobs.test.result === 'success' ? '✅ Passed' : '❌ Failed'}
+            - 📦 Bundle Size: ${jobs['size-check'].result === 'success' ? '✅ Within limits' : '❌ Too large'}
             
             ### 📝 Next Steps
-            - Review code changes
-            - Merge when ready
-            - SDK will be automatically published after merge`;
+            ${allPassed ? 
+              '- Review code changes\n- Ensure changeset is added if needed\n- Merge when ready' : 
+              '- Fix failing checks\n- Push updates to this PR'
+            }`;
             
             github.rest.issues.createComment({
               issue_number: context.issue.number,

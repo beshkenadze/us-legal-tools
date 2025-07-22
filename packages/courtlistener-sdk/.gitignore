@@ -1,0 +1,35 @@
+# Generated API files
+src/api/generated/
+src/mcp/handlers.ts
+src/mcp/http-client.ts
+src/mcp/http-schemas/
+src/mcp/server.ts
+src/mcp/tool-schemas.zod.ts
+
+# Old hey-api generated files
+src/client/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+*.lcov

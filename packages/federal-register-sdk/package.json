@@ -1,0 +1,80 @@
+{
+  "name": "@beshkenadze/federal-register-sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK and MCP server for the Federal Register API",
+  "author": "Akira Beshkenadze",
+  "license": "MIT",
+  "keywords": [
+    "federal-register",
+    "federal",
+    "regulations",
+    "api",
+    "sdk",
+    "mcp",
+    "typescript"
+  ],
+  "homepage": "https://github.com/beshkenadze/ecfr-sdk#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beshkenadze/ecfr-sdk.git",
+    "directory": "packages/federal-register-sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/beshkenadze/ecfr-sdk/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./mcp": {
+      "require": "./dist/mcp/index.js",
+      "import": "./dist/mcp/index.mjs",
+      "types": "./dist/mcp/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun run build.ts",
+    "generate": "bun run scripts/download-openapi.ts && orval",
+    "format": "biome format --write .",
+    "lint": "biome lint --write .",
+    "check": "biome check --write .",
+    "check:ci": "biome ci .",
+    "prepublishOnly": "bun run build",
+    "test": "bun test src",
+    "test:watch": "bun test --watch src",
+    "test:integration": "SKIP_INTEGRATION_TESTS=false bun test src",
+    "test:e2e": "SKIP_E2E_TESTS=false bun test tests/e2e",
+    "test:all": "bun test",
+    "mcp:server": "bun run src/mcp/server.ts"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.1",
+    "@types/bun": "latest",
+    "@types/node": "^24.0.14",
+    "orval": "^7.10.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.15.1",
+    "axios": "^1.10.0",
+    "zod": "^4.0.5"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

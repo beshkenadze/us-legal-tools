@@ -1,0 +1,97 @@
+version: '3'
+
+vars:
+  OPENAPI_SPEC: courtlistener-openapi.json
+  CLIENT_DIR: src/client
+
+tasks:
+  default:
+    desc: Show available SDK tasks
+    cmds:
+      - task --list
+
+  build:
+    desc: Build the SDK
+    cmds:
+      - bun run build
+    sources:
+      - src/**/*.ts
+      - tsconfig.json
+      - package.json
+    generates:
+      - dist/**/*
+
+  generate:
+    desc: Generate client from OpenAPI spec
+    cmds:
+      - bun run generate
+    sources:
+      - '{{.OPENAPI_SPEC}}'
+      - hey-api.config.js
+    generates:
+      - '{{.CLIENT_DIR}}/**/*'
+
+  update-openapi:
+    desc: Update OpenAPI spec from CourtListener docs
+    cmds:
+      - bun run update-openapi
+    generates:
+      - '{{.OPENAPI_SPEC}}'
+
+  update:
+    desc: Full update - fetch spec and regenerate
+    cmds:
+      - task: update-openapi
+      - task: generate
+      - task: typecheck
+
+  test:
+    desc: Run SDK tests
+    env:
+      COURTLISTENER_API_KEY: '{{.COURTLISTENER_API_KEY}}'
+    cmds:
+      - bun test
+    sources:
+      - src/**/*.ts
+      - tests/**/*.ts
+
+  test:watch:
+    desc: Run tests in watch mode
+    cmds:
+      - bun test --watch
+
+  typecheck:
+    desc: Check TypeScript types
+    cmds:
+      - bun run typecheck
+
+  clean:
+    desc: Clean generated files and build artifacts
+    cmds:
+      - rm -rf dist
+      - rm -rf {{.CLIENT_DIR}}
+      - rm -f {{.OPENAPI_SPEC}}
+
+  validate:
+    desc: Validate OpenAPI spec
+    cmds:
+      - |
+        if [ -f "{{.OPENAPI_SPEC}}" ]; then
+          echo "Validating OpenAPI spec..."
+          # You could add a proper validator here
+          echo "✓ OpenAPI spec exists"
+        else
+          echo "✗ OpenAPI spec not found. Run 'task update-openapi' first."
+          exit 1
+        fi
+
+  publish:dry:
+    desc: Dry run of npm publish
+    cmds:
+      - npm publish --dry-run
+
+  dev:
+    desc: Development mode with file watching
+    deps: [build]
+    cmds:
+      - bun run build --watch
