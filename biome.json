@@ -25,6 +25,7 @@
       "!**/src/mcp/server.ts", 
       "!**/src/mcp/tool-schemas.zod.ts",
       "!**/src/mcp/http-schemas/**",
+      "!**/src/mcp/types.d.ts",
       "!**/src/client/**",
       "!**/test/**",
       "!**/*.test.ts",
