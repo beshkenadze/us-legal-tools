@@ -59,13 +59,13 @@ jobs:
         run: bun install
 
       - name: Generate SDKs
-        run: turbo generate
+        run: bunx turbo generate
 
       - name: Build packages
-        run: turbo build
+        run: bunx turbo build
 
       - name: Run tests
-        run: turbo test
+        run: bunx turbo test
 
       - name: Create changeset
         run: |

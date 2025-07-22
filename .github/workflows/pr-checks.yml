@@ -78,16 +78,16 @@ jobs:
         run: bun install
 
       - name: Generate SDKs
-        run: turbo generate
+        run: bunx turbo generate
 
       - name: Run format check
-        run: turbo format
+        run: bunx turbo format
 
       - name: Run lint check
-        run: turbo check:ci
+        run: bunx turbo check:ci
 
       - name: Build packages
-        run: turbo build
+        run: bunx turbo build
 
   test:
     name: Test
@@ -122,13 +122,13 @@ jobs:
         run: bunx playwright install --with-deps chromium
 
       - name: Generate SDKs
-        run: turbo generate
+        run: bunx turbo generate
 
       - name: Run unit tests
-        run: turbo test
+        run: bunx turbo test
 
       - name: Run integration tests
-        run: turbo test:integration
+        run: bunx turbo test:integration
         continue-on-error: true
 
   size-check:
@@ -147,10 +147,10 @@ jobs:
         run: bun install
 
       - name: Generate SDKs
-        run: turbo generate
+        run: bunx turbo generate
 
       - name: Build packages
-        run: turbo build
+        run: bunx turbo build
 
       - name: Check bundle sizes
         run: |
