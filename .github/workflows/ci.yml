@@ -68,9 +68,18 @@ jobs:
 
       - name: Run tests
         run: bunx turbo test
+        env:
+          GOV_INFO_API_KEY: ${{ secrets.GOV_INFO_API_KEY }}
 
       - name: Run integration tests
         run: bunx turbo test:integration
+        env:
+          GOV_INFO_API_KEY: ${{ secrets.GOV_INFO_API_KEY }}
+
+      - name: Run e2e tests
+        run: bunx turbo test:e2e
+        env:
+          GOV_INFO_API_KEY: ${{ secrets.GOV_INFO_API_KEY }}
 
       - name: Verify MCP servers
         run: |
