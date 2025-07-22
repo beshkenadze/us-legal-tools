@@ -63,21 +63,21 @@
   "bugs": {
     "url": "https://github.com/beshkenadze/ecfr-sdk/issues"
   },
-  "author": "Akira Beshkenadze",
+  "author": "Aleksandr Beshkenadze <beshkenadze@gmail.com>",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
   },
   "exports": {
     ".": {
-      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     },
     "./mcp": {
-      "require": "./dist/mcp/index.js",
+      "types": "./dist/mcp/index.d.ts",
       "import": "./dist/mcp/index.mjs",
-      "types": "./dist/mcp/index.d.ts"
+      "require": "./dist/mcp/index.js"
     }
   }
 }
