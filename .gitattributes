@@ -1,0 +1,6 @@
+# Mark generated files
+**/src/api/generated/** linguist-generated=true
+**/src/mcp/handlers.ts linguist-generated=true
+**/src/mcp/http-schemas/** linguist-generated=true
+**/generated/** linguist-generated=true
+**/*.generated.ts linguist-generated=true

@@ -83,7 +83,6 @@ packages/govinfo-sdk/openapi.json
 /src/
 scripts/
 tests/
-orval.config.ts
 tsconfig.build.json
 biome.json
 Dockerfile
