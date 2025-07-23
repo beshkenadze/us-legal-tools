@@ -33,11 +33,13 @@ info:
     - Most datasets are updated daily, weekly, or monthly
 
     **Finding Agency and Endpoint Combinations:**
-    - Use the `/datasets` endpoint to discover all available datasets
+    - Use the `/datasets` endpoint to discover all available datasets (note: this endpoint is paginated)
     - Each dataset includes an `agency` object with abbreviation and an `api_url` field
-    - Common agencies include: 'bls' (Bureau of Labor Statistics), 'msha' (Mine Safety and Health Administration), 
-      'osha' (Occupational Safety and Health Administration), 'ebsa' (Employee Benefits Security Administration)
-    - Example combinations: bls/cpi, msha/accident, osha/inspection
+    - Common agencies include: 'msha' (Mine Safety and Health Administration), 'ilab' (Bureau of International Labor Affairs),
+      'wb' (Women's Bureau), 'osha' (Occupational Safety and Health Administration), 'ebsa' (Employee Benefits Security Administration)
+    - Example dataset endpoints: msha/accident, ilab/better_trade_tool_core_data, wb/ndcp
+    - To access all datasets, iterate through pages using the `page` query parameter
+    - Note: Some agencies like BLS may not have datasets in the current catalog
   version: 4.0.0
   contact:
     name: DOL Open Data Portal Support
@@ -65,23 +67,41 @@ paths:
         - Datasets
       summary: List Available Datasets
       description: |
-        Retrieve the complete catalog of datasets available through the DOL API in JSON format.
+        Retrieve the catalog of datasets available through the DOL API in JSON format.
         This endpoint does not require an API key.
+
+        **Important:** This endpoint returns a paginated response. The response is an array where:
+        - All elements except the last are dataset objects
+        - The last element is a pagination metadata object
+
+        **Note on Response Structure:** This is a non-standard pagination approach. When processing 
+        the response, you need to separate the last element (pagination metadata) from the dataset 
+        objects. For example, in JavaScript: `const datasets = response.slice(0, -1); const pagination = response[response.length - 1];`
 
         Use this endpoint to discover:
         - Available agency abbreviations (in the `agency.abbr` field)
         - Dataset endpoints (in the `api_url` field)
         - Dataset descriptions and metadata
       security: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
       responses:
         "200":
-          description: List of available datasets
+          description: Paginated list of available datasets
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Dataset"
+                  oneOf:
+                    - $ref: "#/components/schemas/Dataset"
+                    - $ref: "#/components/schemas/PaginationMetadata"
               example:
                 - id: 10267
                   name: "Better Trade Tool Core Data"
@@ -95,18 +115,41 @@ paths:
                     name: "Child Labor"
                   frequency: "Ad-Hoc"
                   published_at: "2024-10-31T13:18:11"
-                - id: 10268
-                  name: "Consumer Price Index"
+                  tablename: "ILAB_better_trade_tool_core_data"
+                  dataset_type: 1
+                  agency_id: 24
+                  tablename_alias: null
+                  category_id: 6
+                  category_name: "Child Labor"
+                  status: 4
+                  created_at: "2024-10-30T22:01:10"
+                  updated_at: "2024-10-31T13:22:38"
+                - id: 10227
+                  name: "Accident"
                   agency:
-                    name: "Bureau of Labor Statistics"
-                    abbr: "bls"
-                  api_url: "cpi"
-                  description: "Consumer Price Index data for measuring inflation"
-                  tag_list: ["inflation", "prices", "economics"]
+                    name: "Mine Safety and Health Administration"
+                    abbr: "MSHA"
+                  api_url: "accident"
+                  description: "Information on all accidents, injuries and illnesses reported by mine operators"
+                  tag_list: ["accidents", "contractors", "fatalities", "mines"]
                   category:
-                    name: "Economic Data"
-                  frequency: "Monthly"
-                  published_at: "2024-11-01T08:30:00"
+                    name: "Enforcement"
+                  frequency: "Weekly"
+                  published_at: "2024-10-11T19:50:24"
+                  tablename: "MSHA_accident"
+                  dataset_type: 1
+                  agency_id: 20
+                  tablename_alias: null
+                  category_id: 13
+                  category_name: "Enforcement"
+                  status: 4
+                  created_at: "2024-10-11T19:32:18"
+                  updated_at: "2024-10-11T19:50:55"
+                - current_page: 1
+                  next_page: 2
+                  prev_page: null
+                  total_pages: 5
+                  total_count: 42
         "500":
           $ref: "#/components/responses/ServerError"
 
@@ -118,10 +161,8 @@ paths:
       description: |
         Retrieve data from a specific dataset with optional filtering, sorting, and field selection.
 
-        **Response Structure Note:** The response structure may vary by dataset. Some endpoints return 
-        data wrapped in an object with `data` and `metadata` properties, while others may return 
-        the data array directly. Check the specific dataset documentation or test the endpoint
-        to determine the exact response format.
+        **Response Structure:** Data endpoints return responses wrapped in a `{"data": [...]}` object.
+        The `data` property contains an array of records whose structure varies by dataset.
       parameters:
         - $ref: "#/components/parameters/Agency"
         - $ref: "#/components/parameters/Endpoint"
@@ -132,6 +173,15 @@ paths:
         - $ref: "#/components/parameters/Sort"
         - $ref: "#/components/parameters/SortBy"
         - $ref: "#/components/parameters/FilterObject"
+      x-code-samples:
+        - lang: curl
+          label: Basic Request
+          source: |
+            curl 'https://apiprod.dol.gov/v4/get/msha/accident/json?X-API-KEY=your_api_key_here'
+        - lang: curl
+          label: With Parameters
+          source: |
+            curl 'https://apiprod.dol.gov/v4/get/msha/accident/json?X-API-KEY=your_api_key_here&limit=10&fields=mine_id,ai_dt,inj_degr_desc,operator_name,fips_state_cd'
       responses:
         "200":
           description: Dataset records retrieved successfully
@@ -139,6 +189,46 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DataResponse"
+              example:
+                data:
+                  - mine_id: "4601437"
+                    cntctr_id: null
+                    subunit_cd: "02"
+                    subunit_desc: "SURFACE AT UNDERGROUND"
+                    ai_dt: "2013-12-16T00:00:00"
+                    inj_degr_desc: "DAYS AWAY FROM WORK ONLY"
+                    ai_class_desc: "SLIP OR FALL OF PERSON"
+                    ai_occ_desc: "Electrician, Lineman"
+                    ai_acty_desc: "Walking, Running"
+                    exper_tot_calc: 21.0
+                    exper_mine_calc: 10.0
+                    exper_job_calc: 1.0
+                    controller_id: "C13408"
+                    controller_name: "Robert E  Murray"
+                    operator_id: "P18717"
+                    operator_name: "McElroy Coal Company"
+                    document_no: "220140060030"
+                    cal_yr: 2013
+                    degree_injury_cd: "03"
+                    fips_state_cd: "54"
+                    no_injuries: 1
+                    days_lost: 121
+                    coal_metal_ind: "C"
+                    load_dt: "2025-07-19T00:35:36"
+                  - mine_id: "4601438"
+                    cntctr_id: null
+                    subunit_cd: "01"
+                    subunit_desc: "UNDERGROUND"
+                    ai_dt: "1987-03-25T00:00:00"
+                    inj_degr_desc: "DAYS AWAY FROM WORK ONLY"
+                    ai_class_desc: "STEPPING OR KNEELING ON OBJECT"
+                    operator_name: "Consolidation Coal Company"
+                    document_no: "219871460046"
+                    cal_yr: 1987
+                    fips_state_cd: "54"
+                    no_injuries: 1
+                    days_lost: 8
+                    coal_metal_ind: "C"
             application/xml:
               schema:
                 $ref: "#/components/schemas/DataResponse"
@@ -214,16 +304,17 @@ components:
       required: true
       description: |
         Agency name abbreviation. Common values include:
-        - 'bls' - Bureau of Labor Statistics
         - 'msha' - Mine Safety and Health Administration
+        - 'ilab' - Bureau of International Labor Affairs  
+        - 'wb' - Women's Bureau
+        - 'bls' - Bureau of Labor Statistics
         - 'osha' - Occupational Safety and Health Administration
         - 'ebsa' - Employee Benefits Security Administration
-        - 'ilab' - Bureau of International Labor Affairs
 
         Get the complete list from the /datasets endpoint
       schema:
         type: string
-        example: "bls"
+        example: "msha"
 
     Endpoint:
       name: endpoint
@@ -231,12 +322,12 @@ components:
       required: true
       description: |
         Dataset endpoint/identifier from the datasets catalog (the 'api_url' field).
-        Examples: 'cpi', 'accident', 'inspection'
+        Examples: 'accident', 'ndcp', 'better_trade_tool_core_data', 'sweat_toil_goods_data'
 
         Get available endpoints from the /datasets endpoint
       schema:
         type: string
-        example: "cpi"
+        example: "accident"
 
     Format:
       name: format
@@ -273,9 +364,11 @@ components:
       description: |
         Comma-separated list of specific field names to include in response.
         If not specified, all fields are returned.
+
+        Example fields for MSHA accident dataset: mine_id, ai_dt, inj_degr_desc, operator_name, fips_state_cd, days_lost
       schema:
         type: string
-        example: "year,period,value"
+        example: "mine_id,ai_dt,inj_degr_desc,operator_name,fips_state_cd"
 
     Sort:
       name: sort
@@ -292,7 +385,7 @@ components:
       description: Field name to sort records by
       schema:
         type: string
-        example: "year"
+        example: "ai_dt"
 
     FilterObject:
       name: filter_object
@@ -313,12 +406,17 @@ components:
 
         Simple filter:
         ```json
-        {"field":"industry","operator":"eq","value":"B"}
+        {"field":"fips_state_cd","operator":"eq","value":"54"}
+        ```
+
+        Filter by injury type:
+        ```json
+        {"field":"inj_degr_desc","operator":"eq","value":"DAYS AWAY FROM WORK ONLY"}
         ```
 
         Multiple conditions with AND:
         ```json
-        {"and":[{"field":"industry","operator":"eq","value":"B"},{"field":"year","operator":"eq","value":"2020"}]}
+        {"and":[{"field":"coal_metal_ind","operator":"eq","value":"C"},{"field":"cal_yr","operator":"eq","value":"2013"}]}
         ```
 
         Multiple conditions with OR:
@@ -342,7 +440,7 @@ components:
         ```
       schema:
         type: string
-        example: '{"field":"industry","operator":"eq","value":"A"}'
+        example: '{"field":"fips_state_cd","operator":"eq","value":"54"}'
 
   schemas:
     Dataset:
@@ -388,21 +486,74 @@ components:
           type: string
           format: date-time
           description: When the dataset was published
+        tablename:
+          type: string
+          description: Internal database table name
+        dataset_type:
+          type: integer
+          description: Type identifier for the dataset
+        agency_id:
+          type: integer
+          description: Numeric identifier for the agency
+        tablename_alias:
+          type: string
+          nullable: true
+          description: Alternative table name if applicable
+        category_id:
+          type: integer
+          description: Numeric identifier for the category
+        category_name:
+          type: string
+          description: Name of the category
+        status:
+          type: integer
+          description: Status code for the dataset
+        created_at:
+          type: string
+          format: date-time
+          description: When the dataset was created in the system
+        updated_at:
+          type: string
+          format: date-time
+          description: When the dataset was last updated
+
+    PaginationMetadata:
+      type: object
+      description: Pagination metadata included as the last element in the datasets array
+      properties:
+        current_page:
+          type: integer
+          description: Current page number
+        next_page:
+          type: integer
+          nullable: true
+          description: Next page number if available
+        prev_page:
+          type: integer
+          nullable: true
+          description: Previous page number if available
+        total_pages:
+          type: integer
+          description: Total number of pages
+        total_count:
+          type: integer
+          description: Total number of datasets across all pages
 
     DataResponse:
       type: object
       description: |
-        The response structure for data requests. Note that some endpoints may return
-        data directly as an array instead of wrapped in this object structure.
-        Test your specific endpoint to determine the exact format.
+        The standard response structure for data requests. Data is wrapped in a "data" property
+        containing an array of records. The structure of individual records varies by dataset.
       properties:
         data:
           type: array
           items:
             type: object
             description: Individual data records (structure varies by dataset)
+            additionalProperties: true
         metadata:
           type: object
+          description: Optional metadata about the response (not always included)
           properties:
             total_records:
               type: integer
@@ -416,6 +567,8 @@ components:
             offset:
               type: integer
               description: Offset parameter used in the request
+      required:
+        - data
 
     MetadataResponse:
       type: object
@@ -489,9 +642,9 @@ components:
         - operator
         - value
       example:
-        field: "industry"
+        field: "fips_state_cd"
         operator: "eq"
-        value: "Manufacturing"
+        value: "54"
 
     ComplexFilter:
       type: object
@@ -512,16 +665,16 @@ components:
           description: At least one condition must be true
       example:
         and:
-          - field: "year"
+          - field: "cal_yr"
             operator: "eq"
-            value: "2021"
+            value: "2013"
           - or:
-              - field: "industry"
-                operator: "eq"
-                value: "A"
-              - field: "industry"
+              - field: "coal_metal_ind"
                 operator: "eq"
                 value: "C"
+              - field: "coal_metal_ind"
+                operator: "eq"
+                value: "M"
 
     Error:
       type: object
@@ -569,6 +722,10 @@ components:
             error: "Dataset not found"
             code: 404
             details: "The specified agency/endpoint combination does not exist"
+        text/plain:
+          schema:
+            type: string
+          example: "There was a server error querying the dataset.Please ensure the dataset name in the URL is correct."
 
     ServerError:
       description: Internal server error
@@ -584,20 +741,20 @@ components:
   examples:
     SimpleFilter:
       summary: Simple equality filter
-      value: '{"field":"industry","operator":"eq","value":"Manufacturing"}'
+      value: '{"field":"coal_metal_ind","operator":"eq","value":"C"}'
 
     InFilter:
       summary: Filter with IN operator
-      value: '{"field":"state","operator":"in","value":["CA","NY","TX"]}'
+      value: '{"field":"fips_state_cd","operator":"in","value":["54","42","39"]}'
 
     DateRangeFilter:
       summary: Date range filter with AND logic
-      value: '{"and":[{"field":"year","operator":"gt","value":"2020"},{"field":"year","operator":"lt","value":"2023"}]}'
+      value: '{"and":[{"field":"cal_yr","operator":"gt","value":"2010"},{"field":"cal_yr","operator":"lt","value":"2015"}]}'
 
     ComplexFilter:
       summary: Complex filter with AND/OR logic
-      value: '{"and":[{"field":"year","operator":"eq","value":"2021"},{"or":[{"field":"industry","operator":"eq","value":"A"},{"field":"industry","operator":"eq","value":"C"}]}]}'
+      value: '{"and":[{"field":"cal_yr","operator":"eq","value":"2013"},{"or":[{"field":"inj_degr_desc","operator":"eq","value":"FATAL"},{"field":"days_lost","operator":"gt","value":"100"}]}]}'
 
     LikeFilter:
       summary: Pattern matching with LIKE operator
-      value: '{"field":"industry","operator":"like","value":"%manufacturing%"}'
+      value: '{"field":"ai_class_desc","operator":"like","value":"%MACHINERY%"}'
