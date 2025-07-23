@@ -4,38 +4,74 @@ info:
   description: |
     The DOL API is a web service that provides on-demand access to machine readable metadata and data from the U.S. Department of Labor.
 
+    **Important Notice:** This is the v4 API, part of the 2025 API migration from v1/v2. All users must migrate to this version.
+
     **Benefits:**
     - Customizable response - request subsets of data instead of entire datasets
     - Automation - reuse customized data requests for productive workflows  
-    - Live and updated data - always returns the latest data
+    - Live and updated data - always returns the latest data with documented update frequencies
     - Programming-language agnostic - works with Python, R, SAS, and more
+    - Read-only access - all operations are safe, idempotent queries
 
     **Getting Started:**
-    1. Register for an account at https://dataportal.dol.gov/registration
+    1. Register for an account at https://dataportal.dol.gov/registration (registration is required)
     2. Complete the questionnaire to get an API key
-    3. Use your API key as a query parameter (?X-API-KEY=your_key) for all requests
+    3. Use your API key as a query parameter (X-API-KEY=your_key) for all data requests
 
     **Rate Limits:**
     - Up to 5 MB of data or 10,000 records per request (whichever limit is hit first)
     - Up to 5 API keys per account
+    - Rate limit information may be returned in response headers (when implemented):
+      - X-RateLimit-Limit: Maximum requests allowed
+      - X-RateLimit-Remaining: Requests remaining in current window
+      - X-RateLimit-Reset: Unix timestamp when the rate limit resets
+      - Note: Rate limit headers are not implemented on all endpoints
+
+    **Data Freshness:**
+    - Dataset update frequencies vary by source
+    - Check the 'last_updated' field in metadata responses
+    - Most datasets are updated daily, weekly, or monthly
+
+    **Finding Agency and Endpoint Combinations:**
+    - Use the `/datasets` endpoint to discover all available datasets
+    - Each dataset includes an `agency` object with abbreviation and an `api_url` field
+    - Common agencies include: 'bls' (Bureau of Labor Statistics), 'msha' (Mine Safety and Health Administration), 
+      'osha' (Occupational Safety and Health Administration), 'ebsa' (Employee Benefits Security Administration)
+    - Example combinations: bls/cpi, msha/accident, osha/inspection
   version: 4.0.0
   contact:
-    name: DOL Open Data Portal
+    name: DOL Open Data Portal Support
     url: https://dataportal.dol.gov
+    email: opendata@dol.gov
   license:
     name: Public Domain
+    url: https://www.usa.gov/government-works
 servers:
   - url: https://apiprod.dol.gov/v4
     description: Production API Server
 security:
   - ApiKeyAuth: []
+tags:
+  - name: Datasets
+    description: Operations for discovering available datasets
+  - name: Data
+    description: Operations for retrieving dataset data
+  - name: Metadata
+    description: Operations for retrieving dataset metadata
 paths:
   /datasets:
     get:
+      tags:
+        - Datasets
       summary: List Available Datasets
       description: |
         Retrieve the complete catalog of datasets available through the DOL API in JSON format.
         This endpoint does not require an API key.
+
+        Use this endpoint to discover:
+        - Available agency abbreviations (in the `agency.abbr` field)
+        - Dataset endpoints (in the `api_url` field)
+        - Dataset descriptions and metadata
       security: []
       responses:
         "200":
@@ -43,27 +79,49 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  datasets:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Dataset"
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dataset"
               example:
-                datasets:
-                  - id: "accident"
-                    name: "Mine Safety and Health Administration - Accident"
-                    agency: "MSHA"
-                    api_url: "msha/accident"
-                    description: "Information on all accidents, injuries and illnesses reported by mine operators"
+                - id: 10267
+                  name: "Better Trade Tool Core Data"
+                  agency:
+                    name: "Bureau of International Labor Affairs"
+                    abbr: "ILAB"
+                  api_url: "better_trade_tool_core_data"
+                  description: "Information on child labor and forced labor worldwide with U.S. import trade data"
+                  tag_list: ["sector", "other countries", "goods", "trade"]
+                  category:
+                    name: "Child Labor"
+                  frequency: "Ad-Hoc"
+                  published_at: "2024-10-31T13:18:11"
+                - id: 10268
+                  name: "Consumer Price Index"
+                  agency:
+                    name: "Bureau of Labor Statistics"
+                    abbr: "bls"
+                  api_url: "cpi"
+                  description: "Consumer Price Index data for measuring inflation"
+                  tag_list: ["inflation", "prices", "economics"]
+                  category:
+                    name: "Economic Data"
+                  frequency: "Monthly"
+                  published_at: "2024-11-01T08:30:00"
         "500":
           $ref: "#/components/responses/ServerError"
 
   /get/{agency}/{endpoint}/{format}:
     get:
+      tags:
+        - Data
       summary: Retrieve Dataset Data
       description: |
         Retrieve data from a specific dataset with optional filtering, sorting, and field selection.
+
+        **Response Structure Note:** The response structure may vary by dataset. Some endpoints return 
+        data wrapped in an object with `data` and `metadata` properties, while others may return 
+        the data array directly. Check the specific dataset documentation or test the endpoint
+        to determine the exact response format.
       parameters:
         - $ref: "#/components/parameters/Agency"
         - $ref: "#/components/parameters/Endpoint"
@@ -99,14 +157,25 @@ paths:
 
   /get/{agency}/{endpoint}/{format}/metadata:
     get:
+      tags:
+        - Metadata
       summary: Retrieve Dataset Metadata
       description: |
         Retrieve comprehensive metadata about a dataset including field descriptions,
         data types, and other characteristics that help understand the dataset structure.
+
+        **Note:** XML format is not supported for metadata endpoints. Use JSON or CSV format only.
       parameters:
         - $ref: "#/components/parameters/Agency"
         - $ref: "#/components/parameters/Endpoint"
-        - $ref: "#/components/parameters/Format"
+        - name: format
+          in: path
+          required: true
+          description: Response format for the metadata (XML not supported)
+          schema:
+            type: string
+            enum: [json, csv]
+            default: json
       responses:
         "200":
           description: Metadata retrieved successfully
@@ -136,25 +205,38 @@ components:
       description: |
         API key for authentication. Required for all data and metadata requests.
         Get your API key by registering at https://dataportal.dol.gov/registration
+        As part of the 2025 API migration, the API key must now be sent as a query parameter.
 
   parameters:
     Agency:
       name: agency
       in: path
       required: true
-      description: Agency name abbreviation (e.g., 'msha', 'osha', 'ebsa')
+      description: |
+        Agency name abbreviation. Common values include:
+        - 'bls' - Bureau of Labor Statistics
+        - 'msha' - Mine Safety and Health Administration
+        - 'osha' - Occupational Safety and Health Administration
+        - 'ebsa' - Employee Benefits Security Administration
+        - 'ilab' - Bureau of International Labor Affairs
+
+        Get the complete list from the /datasets endpoint
       schema:
         type: string
-        example: "msha"
+        example: "bls"
 
     Endpoint:
       name: endpoint
       in: path
       required: true
-      description: Dataset endpoint/identifier from the datasets catalog
+      description: |
+        Dataset endpoint/identifier from the datasets catalog (the 'api_url' field).
+        Examples: 'cpi', 'accident', 'inspection'
+
+        Get available endpoints from the /datasets endpoint
       schema:
         type: string
-        example: "accident"
+        example: "cpi"
 
     Format:
       name: format
@@ -193,7 +275,7 @@ components:
         If not specified, all fields are returned.
       schema:
         type: string
-        example: "case_identifier,naics_code,back_wages"
+        example: "year,period,value"
 
     Sort:
       name: sort
@@ -217,8 +299,47 @@ components:
       in: query
       description: |
         JSON formatted string specifying conditional filters to apply.
-        Supports operators: eq, neq, gt, lt, in, not_in, like.
-        Can combine multiple conditions with 'and' and 'or' logic.
+
+        **Supported operators:**
+        - `eq` - equals
+        - `neq` - not equals
+        - `gt` - greater than
+        - `lt` - less than
+        - `in` - value is in array
+        - `not_in` - value is not in array
+        - `like` - pattern matching (use % as wildcard)
+
+        **Examples:**
+
+        Simple filter:
+        ```json
+        {"field":"industry","operator":"eq","value":"B"}
+        ```
+
+        Multiple conditions with AND:
+        ```json
+        {"and":[{"field":"industry","operator":"eq","value":"B"},{"field":"year","operator":"eq","value":"2020"}]}
+        ```
+
+        Multiple conditions with OR:
+        ```json
+        {"or":[{"field":"value","operator":"lt","value":500},{"field":"value","operator":"gt","value":999}]}
+        ```
+
+        Complex nested conditions:
+        ```json
+        {"and":[{"field":"year","operator":"eq","value":"2021"},{"or":[{"field":"industry","operator":"eq","value":"A"},{"field":"industry","operator":"eq","value":"C"}]}]}
+        ```
+
+        Pattern matching with LIKE:
+        ```json
+        {"field":"industry","operator":"like","value":"%A%"}
+        ```
+
+        IN operator with array:
+        ```json
+        {"field":"state","operator":"in","value":["CA","NY","TX"]}
+        ```
       schema:
         type: string
         example: '{"field":"industry","operator":"eq","value":"A"}'
@@ -228,31 +349,52 @@ components:
       type: object
       properties:
         id:
-          type: string
+          type: integer
           description: Unique dataset identifier
         name:
           type: string
           description: Human-readable dataset name
         agency:
-          type: string
+          type: object
+          properties:
+            name:
+              type: string
+              description: Full agency name
+            abbr:
+              type: string
+              description: Agency abbreviation (use this value for API calls)
           description: Agency that owns the dataset
         api_url:
           type: string
-          description: URL path for accessing this dataset via API
+          description: URL endpoint for accessing this dataset via API (use this value for API calls)
         description:
           type: string
           description: Description of the dataset contents
-        tags:
+        tag_list:
           type: array
           items:
             type: string
           description: Tags associated with the dataset
         category:
-          type: string
+          type: object
+          properties:
+            name:
+              type: string
           description: Dataset category
+        frequency:
+          type: string
+          description: Update frequency of the dataset
+        published_at:
+          type: string
+          format: date-time
+          description: When the dataset was published
 
     DataResponse:
       type: object
+      description: |
+        The response structure for data requests. Note that some endpoints may return
+        data directly as an array instead of wrapped in this object structure.
+        Test your specific endpoint to determine the exact format.
       properties:
         data:
           type: array
@@ -415,7 +557,7 @@ components:
           example:
             error: "Authentication required"
             code: 401
-            details: "Valid X-API-KEY query parameter is required"
+            details: "Valid X-API-KEY query parameter is required for data and metadata requests"
 
     NotFound:
       description: Dataset or endpoint not found
@@ -455,3 +597,7 @@ components:
     ComplexFilter:
       summary: Complex filter with AND/OR logic
       value: '{"and":[{"field":"year","operator":"eq","value":"2021"},{"or":[{"field":"industry","operator":"eq","value":"A"},{"field":"industry","operator":"eq","value":"C"}]}]}'
+
+    LikeFilter:
+      summary: Pattern matching with LIKE operator
+      value: '{"field":"industry","operator":"like","value":"%manufacturing%"}'
