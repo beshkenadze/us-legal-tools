@@ -205,6 +205,66 @@ async function fixAndConvert() {
         openapi3.info = { ...openapi3.info, version: '1.0.0' };
       }
 
+      // Add global Accept header for JSON responses
+      if (!openapi3.components) {
+        openapi3.components = {};
+      }
+      
+      if (!openapi3.components.parameters) {
+        openapi3.components.parameters = {};
+      }
+      
+      // Add Accept header parameter
+      openapi3.components.parameters.AcceptHeader = {
+        name: 'Accept',
+        in: 'header',
+        description: 'Media type to request from the server',
+        required: false,
+        schema: {
+          type: 'string',
+          default: 'application/json',
+          enum: ['application/json']
+        }
+      };
+      
+      // Add Accept header to all operations
+      if (openapi3.paths) {
+        for (const [, pathValue] of Object.entries(openapi3.paths)) {
+          if (pathValue && typeof pathValue === 'object') {
+            for (const [methodName, operation] of Object.entries(pathValue)) {
+              if (
+                typeof operation === 'object' &&
+                operation !== null &&
+                methodName !== 'parameters' &&
+                methodName !== 'servers' &&
+                methodName !== 'summary' &&
+                methodName !== 'description'
+              ) {
+                const op = operation as Record<string, unknown> & {
+                  parameters?: unknown[];
+                };
+                
+                // Initialize parameters array if it doesn't exist
+                if (!op.parameters) {
+                  op.parameters = [];
+                }
+                
+                // Add reference to Accept header parameter
+                const hasAcceptHeader = op.parameters.some((param: any) => 
+                  param.name === 'Accept' || param.$ref === '#/components/parameters/AcceptHeader'
+                );
+                
+                if (!hasAcceptHeader) {
+                  op.parameters.push({
+                    $ref: '#/components/parameters/AcceptHeader'
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+
       // Save the converted file
       await fs.writeFile(OUTPUT_FILE, JSON.stringify(openapi3, null, 2));
 
