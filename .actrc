@@ -1,3 +1,2 @@
 # Act configuration for testing GitHub Actions locally
 -P ubuntu-latest=catthehacker/ubuntu:act-latest
---container-architecture linux/amd64
