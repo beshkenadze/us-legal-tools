@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -16,13 +16,13 @@
       "!**/api/generated/**",
       "!**/src/api/generated/**",
       "!**/mcp/handlers.ts",
-      "!**/mcp/http-client.ts", 
+      "!**/mcp/http-client.ts",
       "!**/mcp/server.ts",
       "!**/mcp/tool-schemas.zod.ts",
       "!**/mcp/http-schemas/**",
       "!**/src/mcp/handlers.ts",
       "!**/src/mcp/http-client.ts",
-      "!**/src/mcp/server.ts", 
+      "!**/src/mcp/server.ts",
       "!**/src/mcp/tool-schemas.zod.ts",
       "!**/src/mcp/http-schemas/**",
       "!**/src/mcp/types.d.ts",
