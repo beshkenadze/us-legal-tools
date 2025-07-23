@@ -68,6 +68,7 @@
     "@biomejs/biome": "^2.1.1",
     "@types/bun": "latest",
     "@types/node": "^24.0.14",
+    "@us-legal-tools/tsconfig": "workspace:*",
     "orval": "^7.10.0",
     "playwright": "^1.48.2",
     "swagger2openapi": "^7.0.8",
