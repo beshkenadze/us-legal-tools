@@ -3,9 +3,6 @@
   "include": ["src/**/*", "scripts/**/*", "tests/**/*"],
   "exclude": [
     "node_modules",
-    "dist",
-    "src/api/generated/**/*",
-    "src/mcp/handlers.ts",
-    "src/mcp/http-schemas/**/*"
+    "dist"
   ]
 }
