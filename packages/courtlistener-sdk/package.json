@@ -20,7 +20,7 @@
     "test:integration": "SKIP_INTEGRATION_TESTS=false bun test src",
     "test:all": "bun test",
     "mcp:server": "bun run src/mcp/server.ts",
-    "update-openapi": "bun scripts/update-openapi.js"
+    "download": "echo 'No download script defined, use `bun run generate` to generate the SDK from the API specification.'"
   },
   "files": [
     "dist",

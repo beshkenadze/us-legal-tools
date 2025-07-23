@@ -47,7 +47,9 @@ packages/ecfr-sdk/src/mcp/http-schemas/
 packages/ecfr-sdk/src/mcp/server.ts
 packages/ecfr-sdk/src/mcp/tool-schemas.zod.ts
 packages/ecfr-sdk/mcp/
-packages/ecfr-sdk/docs/v1-openapi3.json
+# packages/ecfr-sdk/docs/v1.json is downloaded temporarily
+packages/ecfr-sdk/docs/v1.json
+# packages/ecfr-sdk/docs/v1-openapi3.json is the converted file that should be committed
 packages/ecfr-sdk/v1-openapi3.json
 
 # Federal Register SDK

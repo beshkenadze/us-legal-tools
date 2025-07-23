@@ -1,26 +1,26 @@
 #!/usr/bin/env bun
 
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import converter from 'swagger2openapi';
+import fs from "node:fs/promises";
+import path from "node:path";
+import converter from "swagger2openapi";
 
-const INPUT_FILE = path.join(process.cwd(), 'docs', 'v1.json');
-const OUTPUT_FILE = path.join(process.cwd(), 'docs', 'v1-openapi3.json');
+const INPUT_FILE = path.join(process.cwd(), "docs", "v1.json");
+const OUTPUT_FILE = path.join(process.cwd(), "docs", "v1-openapi3.json");
 
 async function fixAndConvert() {
   try {
-    console.log('📝 Reading Swagger 2.0 file...');
+    console.log("📝 Reading Swagger 2.0 file...");
 
-    const swaggerContent = await fs.readFile(INPUT_FILE, 'utf-8');
+    const swaggerContent = await fs.readFile(INPUT_FILE, "utf-8");
     const swagger2 = JSON.parse(swaggerContent);
 
-    console.log('🔧 Fixing common issues...');
+    console.log("🔧 Fixing common issues...");
 
     // Fix common issues in the swagger file
     if (swagger2.paths) {
       for (const [pathKey, pathValue] of Object.entries(swagger2.paths)) {
         for (const [method, operation] of Object.entries(pathValue)) {
-          if (typeof operation === 'object' && operation !== null) {
+          if (typeof operation === "object" && operation !== null) {
             // Fix parameters
             if (operation.parameters) {
               operation.parameters = operation.parameters.map((param: any) => {
@@ -30,7 +30,7 @@ async function fixAndConvert() {
                 }
 
                 // Fix missing schema for non-body parameters
-                if (param.type && !param.schema && param.in !== 'body') {
+                if (param.type && !param.schema && param.in !== "body") {
                   const { type, format, enum: enumValues, ...rest } = param;
                   return {
                     ...rest,
@@ -48,21 +48,32 @@ async function fixAndConvert() {
 
             // Fix responses
             if (operation.responses) {
-              for (const [statusCode, response] of Object.entries(operation.responses)) {
-                if (typeof response === 'object' && response !== null && !response.$ref) {
+              for (const [statusCode, response] of Object.entries(
+                operation.responses
+              )) {
+                if (
+                  typeof response === "object" &&
+                  response !== null &&
+                  !response.$ref
+                ) {
                   // Fix invalid headers
                   if (response.headers) {
                     const fixedHeaders: any = {};
-                    for (const [headerName, headerValue] of Object.entries(response.headers)) {
-                      if (typeof headerValue === 'string') {
+                    for (const [headerName, headerValue] of Object.entries(
+                      response.headers
+                    )) {
+                      if (typeof headerValue === "string") {
                         // Convert string header to proper format
                         fixedHeaders[headerName] = {
                           schema: {
-                            type: 'string',
+                            type: "string",
                             default: headerValue,
                           },
                         };
-                      } else if (typeof headerValue === 'object' && headerValue !== null) {
+                      } else if (
+                        typeof headerValue === "object" &&
+                        headerValue !== null
+                      ) {
                         // Ensure header has proper schema
                         if (!headerValue.schema && headerValue.type) {
                           const { type, format, ...rest } = headerValue;
@@ -95,21 +106,23 @@ async function fixAndConvert() {
 
     // Ensure all required fields exist and set proper title
     if (!swagger2.info) {
-      swagger2.info = { title: 'eCFR API', version: '1.0.0' };
+      swagger2.info = { title: "eCFR API", version: "1.0.0" };
     }
-    
+
     // Update the title to be more descriptive for SDK generation
     // Note: Orval appends "Server" to the title for MCP generation, so we use just "eCFR SDK"
-    swagger2.info.title = 'eCFR SDK';
-    swagger2.info.description = swagger2.info.description || 'TypeScript SDK and Model Context Protocol server for the Electronic Code of Federal Regulations (eCFR) API';
+    swagger2.info.title = "eCFR SDK";
+    swagger2.info.description =
+      swagger2.info.description ||
+      "TypeScript SDK and Model Context Protocol server for the Electronic Code of Federal Regulations (eCFR) API";
 
-    console.log('🔄 Converting to OpenAPI 3.0...');
+    console.log("🔄 Converting to OpenAPI 3.0...");
 
     // Convert to OpenAPI 3.0
     const options = {
       patch: true,
       warnOnly: true,
-      refSiblings: 'preserve',
+      refSiblings: "preserve",
     };
 
     const result = await converter.convertObj(swagger2, options);
@@ -121,12 +134,12 @@ async function fixAndConvert() {
       // Fix OpenAPI 3.0 specific issues
       if (openapi3.paths) {
         for (const [, pathValue] of Object.entries(openapi3.paths)) {
-          if (pathValue && typeof pathValue === 'object') {
+          if (pathValue && typeof pathValue === "object") {
             for (const [, operation] of Object.entries(pathValue)) {
               if (
-                typeof operation === 'object' &&
+                typeof operation === "object" &&
                 operation !== null &&
-                'parameters' in operation
+                "parameters" in operation
               ) {
                 const op = operation as any;
 
@@ -146,14 +159,17 @@ async function fixAndConvert() {
                     }
 
                     // Fix per_page and page parameters - should be integers
-                    if (param.name === 'per_page' || param.name === 'page') {
+                    if (param.name === "per_page" || param.name === "page") {
                       return {
                         ...param,
                         schema: {
                           ...param.schema,
-                          type: 'integer',
-                          ...(param.name === 'per_page' && { minimum: 1, maximum: 1000 }),
-                          ...(param.name === 'page' && { minimum: 1 }),
+                          type: "integer",
+                          ...(param.name === "per_page" && {
+                            minimum: 1,
+                            maximum: 1000,
+                          }),
+                          ...(param.name === "page" && { minimum: 1 }),
                         },
                       };
                     }
@@ -166,9 +182,9 @@ async function fixAndConvert() {
                 if (op.responses) {
                   for (const [, response] of Object.entries(op.responses)) {
                     if (
-                      typeof response === 'object' &&
+                      typeof response === "object" &&
                       response !== null &&
-                      !('$ref' in response)
+                      !("$ref" in response)
                     ) {
                       const resp = response as any;
                       // Remove duplicate descripton field if it exists
@@ -186,26 +202,26 @@ async function fixAndConvert() {
 
       // Ensure info.version is set
       if (!openapi3.info?.version) {
-        openapi3.info = { ...openapi3.info, version: '1.0.0' };
+        openapi3.info = { ...openapi3.info, version: "1.0.0" };
       }
 
       // Save the converted file
       await fs.writeFile(OUTPUT_FILE, JSON.stringify(openapi3, null, 2));
 
-      console.log('\n✅ Conversion successful!');
+      console.log("\n✅ Conversion successful!");
       console.log(`📁 OpenAPI 3.0 saved to: ${OUTPUT_FILE}`);
 
       if (result.warnings && result.warnings.length > 0) {
-        console.log('\n⚠️  Warnings:');
+        console.log("\n⚠️  Warnings:");
         result.warnings.forEach((warning: any) => {
           console.log(`  - ${warning}`);
         });
       }
     } else {
-      throw new Error('Conversion failed - no OpenAPI output');
+      throw new Error("Conversion failed - no OpenAPI output");
     }
   } catch (error) {
-    console.error('❌ Error:', error);
+    console.error("❌ Error:", error);
     process.exit(1);
   }
 }
