@@ -1,7 +1,7 @@
 // CourtListener SDK
 export * from './api/client';
 
-// MCP Server exports  
+// MCP Server exports
 export * from './mcp';
 
 // Re-export generated types and functions when available

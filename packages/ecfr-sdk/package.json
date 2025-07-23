@@ -65,19 +65,19 @@
     "docker:run": "docker run -i --rm ecfr-mcp-server"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.1",
+    "@biomejs/biome": "^2.1.2",
     "@types/bun": "latest",
-    "@types/node": "^24.0.14",
+    "@types/node": "^24.1.0",
     "@us-legal-tools/tsconfig": "workspace:*",
     "orval": "^7.10.0",
-    "playwright": "^1.48.2",
+    "playwright": "^1.54.1",
     "swagger2openapi": "^7.0.8",
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.15.1",
+    "@modelcontextprotocol/sdk": "^1.16.0",
     "axios": "^1.10.0",
-    "zod": "^4.0.5"
+    "zod": "^3.24.1"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

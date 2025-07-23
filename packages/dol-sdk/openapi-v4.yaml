@@ -1,0 +1,457 @@
+openapi: 3.0.3
+info:
+  title: Department of Labor (DOL) Open Data API
+  description: |
+    The DOL API is a web service that provides on-demand access to machine readable metadata and data from the U.S. Department of Labor.
+
+    **Benefits:**
+    - Customizable response - request subsets of data instead of entire datasets
+    - Automation - reuse customized data requests for productive workflows  
+    - Live and updated data - always returns the latest data
+    - Programming-language agnostic - works with Python, R, SAS, and more
+
+    **Getting Started:**
+    1. Register for an account at https://dataportal.dol.gov/registration
+    2. Complete the questionnaire to get an API key
+    3. Use your API key as a query parameter (?X-API-KEY=your_key) for all requests
+
+    **Rate Limits:**
+    - Up to 5 MB of data or 10,000 records per request (whichever limit is hit first)
+    - Up to 5 API keys per account
+  version: 4.0.0
+  contact:
+    name: DOL Open Data Portal
+    url: https://dataportal.dol.gov
+  license:
+    name: Public Domain
+servers:
+  - url: https://apiprod.dol.gov/v4
+    description: Production API Server
+security:
+  - ApiKeyAuth: []
+paths:
+  /datasets:
+    get:
+      summary: List Available Datasets
+      description: |
+        Retrieve the complete catalog of datasets available through the DOL API in JSON format.
+        This endpoint does not require an API key.
+      security: []
+      responses:
+        "200":
+          description: List of available datasets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  datasets:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Dataset"
+              example:
+                datasets:
+                  - id: "accident"
+                    name: "Mine Safety and Health Administration - Accident"
+                    agency: "MSHA"
+                    api_url: "msha/accident"
+                    description: "Information on all accidents, injuries and illnesses reported by mine operators"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /get/{agency}/{endpoint}/{format}:
+    get:
+      summary: Retrieve Dataset Data
+      description: |
+        Retrieve data from a specific dataset with optional filtering, sorting, and field selection.
+      parameters:
+        - $ref: "#/components/parameters/Agency"
+        - $ref: "#/components/parameters/Endpoint"
+        - $ref: "#/components/parameters/Format"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Fields"
+        - $ref: "#/components/parameters/Sort"
+        - $ref: "#/components/parameters/SortBy"
+        - $ref: "#/components/parameters/FilterObject"
+      responses:
+        "200":
+          description: Dataset records retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataResponse"
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/DataResponse"
+            text/csv:
+              schema:
+                type: string
+                description: CSV formatted data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /get/{agency}/{endpoint}/{format}/metadata:
+    get:
+      summary: Retrieve Dataset Metadata
+      description: |
+        Retrieve comprehensive metadata about a dataset including field descriptions,
+        data types, and other characteristics that help understand the dataset structure.
+      parameters:
+        - $ref: "#/components/parameters/Agency"
+        - $ref: "#/components/parameters/Endpoint"
+        - $ref: "#/components/parameters/Format"
+      responses:
+        "200":
+          description: Metadata retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetadataResponse"
+            text/csv:
+              schema:
+                type: string
+                description: CSV formatted metadata
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: query
+      name: X-API-KEY
+      description: |
+        API key for authentication. Required for all data and metadata requests.
+        Get your API key by registering at https://dataportal.dol.gov/registration
+
+  parameters:
+    Agency:
+      name: agency
+      in: path
+      required: true
+      description: Agency name abbreviation (e.g., 'msha', 'osha', 'ebsa')
+      schema:
+        type: string
+        example: "msha"
+
+    Endpoint:
+      name: endpoint
+      in: path
+      required: true
+      description: Dataset endpoint/identifier from the datasets catalog
+      schema:
+        type: string
+        example: "accident"
+
+    Format:
+      name: format
+      in: path
+      required: true
+      description: Response format for the data
+      schema:
+        type: string
+        enum: [json, xml, csv]
+        default: json
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of records to return (max 10,000 records or 5MB)
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 10000
+        default: 10
+
+    Offset:
+      name: offset
+      in: query
+      description: Number of records to skip from the top of the dataset
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+
+    Fields:
+      name: fields
+      in: query
+      description: |
+        Comma-separated list of specific field names to include in response.
+        If not specified, all fields are returned.
+      schema:
+        type: string
+        example: "case_identifier,naics_code,back_wages"
+
+    Sort:
+      name: sort
+      in: query
+      description: Sort direction for the returned records
+      schema:
+        type: string
+        enum: [asc, desc]
+        example: "asc"
+
+    SortBy:
+      name: sort_by
+      in: query
+      description: Field name to sort records by
+      schema:
+        type: string
+        example: "year"
+
+    FilterObject:
+      name: filter_object
+      in: query
+      description: |
+        JSON formatted string specifying conditional filters to apply.
+        Supports operators: eq, neq, gt, lt, in, not_in, like.
+        Can combine multiple conditions with 'and' and 'or' logic.
+      schema:
+        type: string
+        example: '{"field":"industry","operator":"eq","value":"A"}'
+
+  schemas:
+    Dataset:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique dataset identifier
+        name:
+          type: string
+          description: Human-readable dataset name
+        agency:
+          type: string
+          description: Agency that owns the dataset
+        api_url:
+          type: string
+          description: URL path for accessing this dataset via API
+        description:
+          type: string
+          description: Description of the dataset contents
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the dataset
+        category:
+          type: string
+          description: Dataset category
+
+    DataResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            description: Individual data records (structure varies by dataset)
+        metadata:
+          type: object
+          properties:
+            total_records:
+              type: integer
+              description: Total number of records in the complete dataset
+            returned_records:
+              type: integer
+              description: Number of records returned in this response
+            limit:
+              type: integer
+              description: Limit parameter used in the request
+            offset:
+              type: integer
+              description: Offset parameter used in the request
+
+    MetadataResponse:
+      type: object
+      properties:
+        fields:
+          type: array
+          items:
+            $ref: "#/components/schemas/FieldMetadata"
+        dataset_info:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            last_updated:
+              type: string
+              format: date-time
+            record_count:
+              type: integer
+
+    FieldMetadata:
+      type: object
+      properties:
+        field_name:
+          type: string
+          description: Name of the field/column
+        data_type:
+          type: string
+          description: Data type of the field
+        description:
+          type: string
+          description: Description of what the field contains
+        is_nullable:
+          type: boolean
+          description: Whether the field can contain null values
+        max_length:
+          type: integer
+          description: Maximum length for string fields
+
+    FilterCondition:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Field name to apply the filter on
+        operator:
+          type: string
+          enum: [eq, neq, gt, lt, in, not_in, like]
+          description: |
+            Filter operator:
+            - eq: equals
+            - neq: not equals  
+            - gt: greater than
+            - lt: less than
+            - in: value is in array
+            - not_in: value is not in array
+            - like: pattern matching (use % as wildcard)
+        value:
+          oneOf:
+            - type: string
+            - type: number
+            - type: array
+              items:
+                oneOf:
+                  - type: string
+                  - type: number
+          description: Value(s) to compare against
+      required:
+        - field
+        - operator
+        - value
+      example:
+        field: "industry"
+        operator: "eq"
+        value: "Manufacturing"
+
+    ComplexFilter:
+      type: object
+      properties:
+        and:
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/FilterCondition"
+              - $ref: "#/components/schemas/ComplexFilter"
+          description: All conditions must be true
+        or:
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/FilterCondition"
+              - $ref: "#/components/schemas/ComplexFilter"
+          description: At least one condition must be true
+      example:
+        and:
+          - field: "year"
+            operator: "eq"
+            value: "2021"
+          - or:
+              - field: "industry"
+                operator: "eq"
+                value: "A"
+              - field: "industry"
+                operator: "eq"
+                value: "C"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        code:
+          type: integer
+          description: HTTP status code
+        details:
+          type: string
+          description: Additional error details
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "Invalid parameter value"
+            code: 400
+            details: "The 'limit' parameter must be between 1 and 10000"
+
+    Unauthorized:
+      description: Invalid or missing API key
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "Authentication required"
+            code: 401
+            details: "Valid X-API-KEY query parameter is required"
+
+    NotFound:
+      description: Dataset or endpoint not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "Dataset not found"
+            code: 404
+            details: "The specified agency/endpoint combination does not exist"
+
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "Internal server error"
+            code: 500
+            details: "An unexpected error occurred while processing your request"
+
+  examples:
+    SimpleFilter:
+      summary: Simple equality filter
+      value: '{"field":"industry","operator":"eq","value":"Manufacturing"}'
+
+    InFilter:
+      summary: Filter with IN operator
+      value: '{"field":"state","operator":"in","value":["CA","NY","TX"]}'
+
+    DateRangeFilter:
+      summary: Date range filter with AND logic
+      value: '{"and":[{"field":"year","operator":"gt","value":"2020"},{"field":"year","operator":"lt","value":"2023"}]}'
+
+    ComplexFilter:
+      summary: Complex filter with AND/OR logic
+      value: '{"and":[{"field":"year","operator":"eq","value":"2021"},{"or":[{"field":"industry","operator":"eq","value":"A"},{"field":"industry","operator":"eq","value":"C"}]}]}'
