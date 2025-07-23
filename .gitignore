@@ -88,7 +88,6 @@ packages/dol-sdk/src/mcp/tool-schemas.zod.ts
 
 # Old structure (for cleanup)
 /src/
-scripts/
 tests/
 tsconfig.build.json
 Dockerfile
