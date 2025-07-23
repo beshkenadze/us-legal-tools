@@ -18,9 +18,9 @@ export const axiosInstance = axios.create({
 // Add request interceptor for authentication
 axiosInstance.interceptors.request.use((config) => {
   // Allow runtime token override
-  const token = config.headers?.['Authorization'] || API_TOKEN;
-  if (token && !config.headers['Authorization']) {
-    config.headers['Authorization'] = `Token ${token}`;
+  const token = config.headers?.Authorization || API_TOKEN;
+  if (token && !config.headers.Authorization) {
+    config.headers.Authorization = `Token ${token}`;
   }
   return config;
 });

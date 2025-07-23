@@ -6,7 +6,7 @@ try {
   if (typeof Bun === 'undefined' && require.resolve('dotenv')) {
     require('dotenv').config();
   }
-} catch (e) {
+} catch (_e) {
   // dotenv not available, continue without it
 }
 
