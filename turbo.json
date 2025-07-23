@@ -16,6 +16,9 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "download": {
+      "cache": false
+    },
     "generate": {
       "cache": false
     },

@@ -47,7 +47,8 @@
   "scripts": {
     "dev": "bun run src/index.ts",
     "build": "bun run build.ts",
-    "generate": "bun run scripts/download-openapi.ts && orval",
+    "download": "bun run scripts/download-openapi.ts",
+    "generate": "orval",
     "format": "biome format --write .",
     "lint": "biome lint --write .",
     "check": "biome check --write .",
