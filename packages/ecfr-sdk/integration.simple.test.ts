@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { getECFRAPIDocumentation } from "./api/generated/endpoints";
+import { getEcfrsdk } from "./api/generated/endpoints";
 import { VERSION } from "./index";
 
 describe("eCFR SDK - Integration Tests", () => {
@@ -11,14 +11,14 @@ describe("eCFR SDK - Integration Tests", () => {
     });
 
     it("should export API client factory", () => {
-      expect(getECFRAPIDocumentation).toBeDefined();
-      expect(typeof getECFRAPIDocumentation).toBe("function");
+      expect(getEcfrsdk).toBeDefined();
+      expect(typeof getEcfrsdk).toBe("function");
     });
   });
 
   describe("API Client Integration", () => {
     it("should create working API client", () => {
-      const api = getECFRAPIDocumentation();
+      const api = getEcfrsdk();
 
       // Check that all expected methods exist
       const expectedMethods = [
@@ -50,7 +50,7 @@ describe("eCFR SDK - Integration Tests", () => {
 
   describe("Parameter Validation", () => {
     it("should validate search parameters", () => {
-      const api = getECFRAPIDocumentation();
+      const api = getEcfrsdk();
 
       // Valid parameters should not throw
       expect(() => {
@@ -65,7 +65,7 @@ describe("eCFR SDK - Integration Tests", () => {
     });
 
     it("should validate versioner parameters", () => {
-      const api = getECFRAPIDocumentation();
+      const api = getEcfrsdk();
 
       // Valid parameters should not throw
       expect(() => {
@@ -78,7 +78,7 @@ describe("eCFR SDK - Integration Tests", () => {
     });
 
     it("should validate admin parameters", () => {
-      const api = getECFRAPIDocumentation();
+      const api = getEcfrsdk();
 
       // Valid parameters should not throw
       expect(() => {
@@ -92,7 +92,7 @@ describe("eCFR SDK - Integration Tests", () => {
 
   describe("Real-world Usage Patterns", () => {
     it("should support finding specific regulations", () => {
-      const api = getECFRAPIDocumentation();
+      const api = getEcfrsdk();
 
       // Pattern: Search for specific regulation
       expect(typeof api.getApiSearchV1Results).toBe("function");
@@ -112,7 +112,7 @@ describe("eCFR SDK - Integration Tests", () => {
     });
 
     it("should support getting title structure", () => {
-      const api = getECFRAPIDocumentation();
+      const api = getEcfrsdk();
 
       // Pattern: Get title structure
       expect(typeof api.getApiVersionerV1StructureDateTitleTitleJson).toBe(
@@ -124,7 +124,7 @@ describe("eCFR SDK - Integration Tests", () => {
     });
 
     it("should support getting ancestry information", () => {
-      const api = getECFRAPIDocumentation();
+      const api = getEcfrsdk();
 
       // Pattern: Get ancestry for specific part
       expect(typeof api.getApiVersionerV1AncestryDateTitleTitleJson).toBe(

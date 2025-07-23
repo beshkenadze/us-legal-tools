@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'bun:test';
 import { customInstance } from './client';
-import { getECFRAPIDocumentation } from './generated/endpoints';
+import { getEcfrsdk } from './generated/endpoints';
 
 describe('eCFR SDK - Simple Tests', () => {
   describe('API Client Factory', () => {
     it('should create API client with all methods', () => {
-      const api = getECFRAPIDocumentation();
+      const api = getEcfrsdk();
 
       expect(api).toBeDefined();
       expect(typeof api.getApiAdminV1AgenciesJson).toBe('function');
@@ -30,7 +30,7 @@ describe('eCFR SDK - Simple Tests', () => {
 
   describe('Parameter Validation', () => {
     it('should handle search parameters correctly', () => {
-      const api = getECFRAPIDocumentation();
+      const api = getEcfrsdk();
 
       // These should not throw errors when called
       expect(() => {
@@ -43,7 +43,7 @@ describe('eCFR SDK - Simple Tests', () => {
     });
 
     it('should handle versioner parameters correctly', () => {
-      const api = getECFRAPIDocumentation();
+      const api = getEcfrsdk();
 
       // These should not throw errors when called
       expect(() => {
@@ -58,7 +58,7 @@ describe('eCFR SDK - Simple Tests', () => {
     });
 
     it('should handle admin parameters correctly', () => {
-      const api = getECFRAPIDocumentation();
+      const api = getEcfrsdk();
 
       // These should not throw errors when called
       expect(() => {
@@ -76,7 +76,7 @@ describe('eCFR SDK - Simple Tests', () => {
 
   describe('Type Safety', () => {
     it('should enforce parameter types at compile time', () => {
-      const api = getECFRAPIDocumentation();
+      const api = getEcfrsdk();
 
       // These would cause TypeScript errors if types are wrong
       const searchParams = {

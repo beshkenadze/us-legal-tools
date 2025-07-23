@@ -4,5 +4,5 @@
     "types": ["bun-types"]
   },
   "include": ["src/**/*", "scripts/**/*", "tests/**/*"],
-  "exclude": ["node_modules", "dist", "src/api/generated/**/*", "src/mcp/http-schemas/**/*"]
+  "exclude": ["node_modules", "dist"]
 }

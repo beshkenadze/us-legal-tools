@@ -6,8 +6,6 @@
   "include": ["src/**/*", "test/**/*"],
   "exclude": [
     "node_modules",
-    "dist",
-    "src/api/generated/**/*",
-    "src/mcp/http-schemas/**/*"
+    "dist"
   ]
 }
