@@ -1,0 +1,22 @@
+{
+  "name": "@us-legal-tools/scalar-ui",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run src/server.ts",
+    "build": "bun build src/server.ts --outdir=dist --target=bun",
+    "start": "bun run dist/server.js",
+    "test": "bun run scripts/test-server.ts",
+    "docker:build": "docker build -t scalar-ui -f Dockerfile ../..",
+    "docker:run": "docker run -p 3000:3000 scalar-ui"
+  },
+  "dependencies": {
+    "@scalar/hono-api-reference": "^0.5.0",
+    "hono": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.8.3"
+  }
+}
