@@ -57,11 +57,6 @@
     "turbo": "^2.5.5",
     "typescript": "^5.8.3"
   },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.16.0",
-    "axios": "^1.10.0",
-    "zod": "^4.0.5"
-  },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },

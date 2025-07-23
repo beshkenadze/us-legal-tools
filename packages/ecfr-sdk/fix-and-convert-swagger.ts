@@ -141,7 +141,10 @@ async function fixAndConvert() {
                 operation !== null &&
                 'parameters' in operation
               ) {
-                const op = operation as Record<string, unknown> & { parameters?: unknown[]; responses?: Record<string, unknown> };
+                const op = operation as Record<string, unknown> & {
+                  parameters?: unknown[];
+                  responses?: Record<string, unknown>;
+                };
 
                 // Fix parameters
                 if (op.parameters && Array.isArray(op.parameters)) {

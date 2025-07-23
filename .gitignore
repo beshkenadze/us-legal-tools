@@ -79,12 +79,18 @@ packages/govinfo-sdk/src/mcp/server.ts
 packages/govinfo-sdk/src/mcp/tool-schemas.zod.ts
 packages/govinfo-sdk/openapi.json
 
+# DOL SDK
+packages/dol-sdk/src/api/generated/
+packages/dol-sdk/src/mcp/handlers.ts
+packages/dol-sdk/src/mcp/http-client.ts
+packages/dol-sdk/src/mcp/http-schemas/
+packages/dol-sdk/src/mcp/tool-schemas.zod.ts
+
 # Old structure (for cleanup)
 /src/
 scripts/
 tests/
 tsconfig.build.json
-biome.json
 Dockerfile
 docker-compose.yml
 docker-compose.test.yml
