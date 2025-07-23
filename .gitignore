@@ -91,7 +91,6 @@ packages/dol-sdk/src/mcp/tool-schemas.zod.ts
 # Old structure (for cleanup)
 /src/
 tests/
-tsconfig.build.json
 Dockerfile
 docker-compose.yml
 docker-compose.test.yml
