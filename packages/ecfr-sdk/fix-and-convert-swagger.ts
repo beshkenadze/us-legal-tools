@@ -4,6 +4,17 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import converter from 'swagger2openapi';
 
+interface SwaggerParameter {
+  $ref?: string;
+  name?: string;
+  in?: string;
+  type?: string;
+  format?: string;
+  enum?: string[];
+  schema?: unknown;
+  [key: string]: unknown;
+}
+
 const INPUT_FILE = path.join(process.cwd(), 'docs', 'v1.json');
 const OUTPUT_FILE = path.join(process.cwd(), 'docs', 'v1-openapi3.json');
 
@@ -18,12 +29,12 @@ async function fixAndConvert() {
 
     // Fix common issues in the swagger file
     if (swagger2.paths) {
-      for (const [pathKey, pathValue] of Object.entries(swagger2.paths)) {
-        for (const [method, operation] of Object.entries(pathValue)) {
+      for (const [_pathKey, pathValue] of Object.entries(swagger2.paths)) {
+        for (const [_method, operation] of Object.entries(pathValue)) {
           if (typeof operation === 'object' && operation !== null) {
             // Fix parameters
             if (operation.parameters) {
-              operation.parameters = operation.parameters.map((param: any) => {
+              operation.parameters = operation.parameters.map((param: SwaggerParameter) => {
                 // Skip if it's a reference
                 if (param.$ref) {
                   return param;
@@ -52,7 +63,7 @@ async function fixAndConvert() {
                 if (typeof response === 'object' && response !== null && !response.$ref) {
                   // Fix invalid headers
                   if (response.headers) {
-                    const fixedHeaders: any = {};
+                    const fixedHeaders: Record<string, unknown> = {};
                     for (const [headerName, headerValue] of Object.entries(response.headers)) {
                       if (typeof headerValue === 'string') {
                         // Convert string header to proper format
@@ -130,11 +141,11 @@ async function fixAndConvert() {
                 operation !== null &&
                 'parameters' in operation
               ) {
-                const op = operation as any;
+                const op = operation as Record<string, unknown> & { parameters?: unknown[]; responses?: Record<string, unknown> };
 
                 // Fix parameters
                 if (op.parameters && Array.isArray(op.parameters)) {
-                  op.parameters = op.parameters.map((param: any) => {
+                  op.parameters = op.parameters.map((param: SwaggerParameter) => {
                     // Fix array parameters with conflicting items and schema
                     if (param.items && param.schema) {
                       const { items, ...rest } = param;
@@ -172,7 +183,7 @@ async function fixAndConvert() {
                       response !== null &&
                       !('$ref' in response)
                     ) {
-                      const resp = response as any;
+                      const resp = response as Record<string, unknown>;
                       // Remove duplicate descripton field if it exists
                       if (resp.descripton && resp.description) {
                         delete resp.descripton;
@@ -199,7 +210,7 @@ async function fixAndConvert() {
 
       if (result.warnings && result.warnings.length > 0) {
         console.log('\n⚠️  Warnings:');
-        result.warnings.forEach((warning: any) => {
+        result.warnings.forEach((warning: unknown) => {
           console.log(`  - ${warning}`);
         });
       }
