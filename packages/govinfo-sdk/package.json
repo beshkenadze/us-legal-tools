@@ -66,6 +66,7 @@
     "@biomejs/biome": "^2.1.1",
     "@types/bun": "latest",
     "@types/node": "^24.0.14",
+    "@us-legal-tools/tsconfig": "workspace:*",
     "orval": "^7.10.0",
     "typescript": "^5.8.3"
   },

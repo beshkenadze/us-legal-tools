@@ -1,0 +1,13 @@
+{
+  "name": "@us-legal-tools/tsconfig",
+  "version": "1.0.0",
+  "description": "Shared TypeScript configuration for US Legal Tools packages",
+  "private": true,
+  "files": [
+    "tsconfig.json",
+    "tsconfig.build.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
