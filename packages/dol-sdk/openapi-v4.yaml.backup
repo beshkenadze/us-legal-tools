@@ -92,7 +92,7 @@ paths:
             minimum: 1
             default: 1
       responses:
-        '200':
+        "200":
           description: Paginated list of available datasets
           content:
             application/json:
@@ -100,67 +100,60 @@ paths:
                 type: array
                 items:
                   oneOf:
-                    - $ref: '#/components/schemas/Dataset'
-                    - $ref: '#/components/schemas/PaginationMetadata'
+                    - $ref: "#/components/schemas/Dataset"
+                    - $ref: "#/components/schemas/PaginationMetadata"
               example:
                 - id: 10267
-                  name: Better Trade Tool Core Data
+                  name: "Better Trade Tool Core Data"
                   agency:
-                    name: Bureau of International Labor Affairs
-                    abbr: ILAB
-                  api_url: better_trade_tool_core_data
-                  description: Information on child labor and forced labor worldwide with U.S. import trade data
-                  tag_list:
-                    - sector
-                    - other countries
-                    - goods
-                    - trade
+                    name: "Bureau of International Labor Affairs"
+                    abbr: "ILAB"
+                  api_url: "better_trade_tool_core_data"
+                  description: "Information on child labor and forced labor worldwide with U.S. import trade data"
+                  tag_list: ["sector", "other countries", "goods", "trade"]
                   category:
-                    name: Child Labor
-                  frequency: Ad-Hoc
-                  published_at: '2024-10-31T13:18:11'
-                  tablename: ILAB_better_trade_tool_core_data
+                    name: "Child Labor"
+                  frequency: "Ad-Hoc"
+                  published_at: "2024-10-31T13:18:11"
+                  tablename: "ILAB_better_trade_tool_core_data"
                   dataset_type: 1
                   agency_id: 24
                   tablename_alias: null
                   category_id: 6
-                  category_name: Child Labor
+                  category_name: "Child Labor"
                   status: 4
-                  created_at: '2024-10-30T22:01:10'
-                  updated_at: '2024-10-31T13:22:38'
+                  created_at: "2024-10-30T22:01:10"
+                  updated_at: "2024-10-31T13:22:38"
                 - id: 10227
-                  name: Accident
+                  name: "Accident"
                   agency:
-                    name: Mine Safety and Health Administration
-                    abbr: MSHA
-                  api_url: accident
-                  description: Information on all accidents, injuries and illnesses reported by mine operators
-                  tag_list:
-                    - accidents
-                    - contractors
-                    - fatalities
-                    - mines
+                    name: "Mine Safety and Health Administration"
+                    abbr: "MSHA"
+                  api_url: "accident"
+                  description: "Information on all accidents, injuries and illnesses reported by mine operators"
+                  tag_list: ["accidents", "contractors", "fatalities", "mines"]
                   category:
-                    name: Enforcement
-                  frequency: Weekly
-                  published_at: '2024-10-11T19:50:24'
-                  tablename: MSHA_accident
+                    name: "Enforcement"
+                  frequency: "Weekly"
+                  published_at: "2024-10-11T19:50:24"
+                  tablename: "MSHA_accident"
                   dataset_type: 1
                   agency_id: 20
                   tablename_alias: null
                   category_id: 13
-                  category_name: Enforcement
+                  category_name: "Enforcement"
                   status: 4
-                  created_at: '2024-10-11T19:32:18'
-                  updated_at: '2024-10-11T19:50:55'
+                  created_at: "2024-10-11T19:32:18"
+                  updated_at: "2024-10-11T19:50:55"
                 - current_page: 1
                   next_page: 2
                   prev_page: null
                   total_pages: 5
                   total_count: 42
-        '500':
-          $ref: '#/components/responses/ServerError'
-  /get/{agency}/{endpoint}/json:
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /get/{agency}/{endpoint}/{format}:
     get:
       tags:
         - Data
@@ -171,14 +164,15 @@ paths:
         **Response Structure:** Data endpoints return responses wrapped in a `{"data": [...]}` object.
         The `data` property contains an array of records whose structure varies by dataset.
       parameters:
-        - $ref: '#/components/parameters/Agency'
-        - $ref: '#/components/parameters/Endpoint'
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/Offset'
-        - $ref: '#/components/parameters/Fields'
-        - $ref: '#/components/parameters/Sort'
-        - $ref: '#/components/parameters/SortBy'
-        - $ref: '#/components/parameters/FilterObject'
+        - $ref: "#/components/parameters/Agency"
+        - $ref: "#/components/parameters/Endpoint"
+        - $ref: "#/components/parameters/Format"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Fields"
+        - $ref: "#/components/parameters/Sort"
+        - $ref: "#/components/parameters/SortBy"
+        - $ref: "#/components/parameters/FilterObject"
       x-code-samples:
         - lang: curl
           label: Basic Request
@@ -189,151 +183,69 @@ paths:
           source: |
             curl 'https://apiprod.dol.gov/v4/get/msha/accident/json?X-API-KEY=your_api_key_here&limit=10&fields=mine_id,ai_dt,inj_degr_desc,operator_name,fips_state_cd'
       responses:
-        '200':
+        "200":
           description: Dataset records retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DataResponse'
+                $ref: "#/components/schemas/DataResponse"
               example:
                 data:
-                  - mine_id: '4601437'
+                  - mine_id: "4601437"
                     cntctr_id: null
-                    subunit_cd: '02'
-                    subunit_desc: SURFACE AT UNDERGROUND
-                    ai_dt: '2013-12-16T00:00:00'
-                    inj_degr_desc: DAYS AWAY FROM WORK ONLY
-                    ai_class_desc: SLIP OR FALL OF PERSON
-                    ai_occ_desc: Electrician, Lineman
-                    ai_acty_desc: Walking, Running
-                    exper_tot_calc: 21
-                    exper_mine_calc: 10
-                    exper_job_calc: 1
-                    controller_id: C13408
-                    controller_name: Robert E  Murray
-                    operator_id: P18717
-                    operator_name: McElroy Coal Company
-                    document_no: '220140060030'
+                    subunit_cd: "02"
+                    subunit_desc: "SURFACE AT UNDERGROUND"
+                    ai_dt: "2013-12-16T00:00:00"
+                    inj_degr_desc: "DAYS AWAY FROM WORK ONLY"
+                    ai_class_desc: "SLIP OR FALL OF PERSON"
+                    ai_occ_desc: "Electrician, Lineman"
+                    ai_acty_desc: "Walking, Running"
+                    exper_tot_calc: 21.0
+                    exper_mine_calc: 10.0
+                    exper_job_calc: 1.0
+                    controller_id: "C13408"
+                    controller_name: "Robert E  Murray"
+                    operator_id: "P18717"
+                    operator_name: "McElroy Coal Company"
+                    document_no: "220140060030"
                     cal_yr: 2013
-                    degree_injury_cd: '03'
-                    fips_state_cd: '54'
+                    degree_injury_cd: "03"
+                    fips_state_cd: "54"
                     no_injuries: 1
                     days_lost: 121
-                    coal_metal_ind: C
-                    load_dt: '2025-07-19T00:35:36'
-                  - mine_id: '4601438'
+                    coal_metal_ind: "C"
+                    load_dt: "2025-07-19T00:35:36"
+                  - mine_id: "4601438"
                     cntctr_id: null
-                    subunit_cd: '01'
-                    subunit_desc: UNDERGROUND
-                    ai_dt: '1987-03-25T00:00:00'
-                    inj_degr_desc: DAYS AWAY FROM WORK ONLY
-                    ai_class_desc: STEPPING OR KNEELING ON OBJECT
-                    operator_name: Consolidation Coal Company
-                    document_no: '219871460046'
+                    subunit_cd: "01"
+                    subunit_desc: "UNDERGROUND"
+                    ai_dt: "1987-03-25T00:00:00"
+                    inj_degr_desc: "DAYS AWAY FROM WORK ONLY"
+                    ai_class_desc: "STEPPING OR KNEELING ON OBJECT"
+                    operator_name: "Consolidation Coal Company"
+                    document_no: "219871460046"
                     cal_yr: 1987
-                    fips_state_cd: '54'
+                    fips_state_cd: "54"
                     no_injuries: 1
                     days_lost: 8
-                    coal_metal_ind: C
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/ServerError'
-      operationId: getAgencyEndpointDataJson
-  /get/{agency}/{endpoint}/xml:
-    get:
-      tags:
-        - Data
-      summary: Retrieve Dataset Data
-      description: |
-        Retrieve data from a specific dataset with optional filtering, sorting, and field selection.
-
-        **Response Structure:** Data endpoints return responses wrapped in a `{"data": [...]}` object.
-        The `data` property contains an array of records whose structure varies by dataset.
-      parameters:
-        - $ref: '#/components/parameters/Agency'
-        - $ref: '#/components/parameters/Endpoint'
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/Offset'
-        - $ref: '#/components/parameters/Fields'
-        - $ref: '#/components/parameters/Sort'
-        - $ref: '#/components/parameters/SortBy'
-        - $ref: '#/components/parameters/FilterObject'
-      x-code-samples:
-        - lang: curl
-          label: Basic Request
-          source: |
-            curl 'https://apiprod.dol.gov/v4/get/msha/accident/json?X-API-KEY=your_api_key_here'
-        - lang: curl
-          label: With Parameters
-          source: |
-            curl 'https://apiprod.dol.gov/v4/get/msha/accident/json?X-API-KEY=your_api_key_here&limit=10&fields=mine_id,ai_dt,inj_degr_desc,operator_name,fips_state_cd'
-      responses:
-        '200':
-          description: Dataset records retrieved successfully
-          content:
+                    coal_metal_ind: "C"
             application/xml:
               schema:
-                $ref: '#/components/schemas/DataResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/ServerError'
-      operationId: getAgencyEndpointDataXml
-  /get/{agency}/{endpoint}/csv:
-    get:
-      tags:
-        - Data
-      summary: Retrieve Dataset Data
-      description: |
-        Retrieve data from a specific dataset with optional filtering, sorting, and field selection.
-
-        **Response Structure:** Data endpoints return responses wrapped in a `{"data": [...]}` object.
-        The `data` property contains an array of records whose structure varies by dataset.
-      parameters:
-        - $ref: '#/components/parameters/Agency'
-        - $ref: '#/components/parameters/Endpoint'
-        - $ref: '#/components/parameters/Limit'
-        - $ref: '#/components/parameters/Offset'
-        - $ref: '#/components/parameters/Fields'
-        - $ref: '#/components/parameters/Sort'
-        - $ref: '#/components/parameters/SortBy'
-        - $ref: '#/components/parameters/FilterObject'
-      x-code-samples:
-        - lang: curl
-          label: Basic Request
-          source: |
-            curl 'https://apiprod.dol.gov/v4/get/msha/accident/json?X-API-KEY=your_api_key_here'
-        - lang: curl
-          label: With Parameters
-          source: |
-            curl 'https://apiprod.dol.gov/v4/get/msha/accident/json?X-API-KEY=your_api_key_here&limit=10&fields=mine_id,ai_dt,inj_degr_desc,operator_name,fips_state_cd'
-      responses:
-        '200':
-          description: Dataset records retrieved successfully
-          content:
+                $ref: "#/components/schemas/DataResponse"
             text/csv:
               schema:
                 type: string
                 description: CSV formatted data
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/ServerError'
-      operationId: getAgencyEndpointDataCsv
-  /get/{agency}/{endpoint}/json/metadata:
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
+  /get/{agency}/{endpoint}/{format}/metadata:
     get:
       tags:
         - Metadata
@@ -344,54 +256,35 @@ paths:
 
         **Note:** XML format is not supported for metadata endpoints. Use JSON or CSV format only.
       parameters:
-        - $ref: '#/components/parameters/Agency'
-        - $ref: '#/components/parameters/Endpoint'
+        - $ref: "#/components/parameters/Agency"
+        - $ref: "#/components/parameters/Endpoint"
+        - name: format
+          in: path
+          required: true
+          description: Response format for the metadata (XML not supported)
+          schema:
+            type: string
+            enum: [json, csv]
       responses:
-        '200':
+        "200":
           description: Metadata retrieved successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MetadataResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/ServerError'
-      operationId: getAgencyEndpointMetadataJson
-  /get/{agency}/{endpoint}/csv/metadata:
-    get:
-      tags:
-        - Metadata
-      summary: Retrieve Dataset Metadata
-      description: |
-        Retrieve comprehensive metadata about a dataset including field descriptions,
-        data types, and other characteristics that help understand the dataset structure.
-
-        **Note:** XML format is not supported for metadata endpoints. Use JSON or CSV format only.
-      parameters:
-        - $ref: '#/components/parameters/Agency'
-        - $ref: '#/components/parameters/Endpoint'
-      responses:
-        '200':
-          description: Metadata retrieved successfully
-          content:
+                $ref: "#/components/schemas/MetadataResponse"
             text/csv:
               schema:
                 type: string
                 description: CSV formatted metadata
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/ServerError'
-      operationId: getAgencyEndpointMetadataCsv
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
 components:
   securitySchemes:
     ApiKeyAuth:
@@ -402,6 +295,7 @@ components:
         API key for authentication. Required for all data and metadata requests.
         Get your API key by registering at https://dataportal.dol.gov/registration
         As part of the 2025 API migration, the API key must now be sent as a query parameter.
+
   parameters:
     Agency:
       name: agency
@@ -419,7 +313,8 @@ components:
         Get the complete list from the /datasets endpoint
       schema:
         type: string
-        example: msha
+        example: "msha"
+
     Endpoint:
       name: endpoint
       in: path
@@ -431,7 +326,17 @@ components:
         Get available endpoints from the /datasets endpoint
       schema:
         type: string
-        example: accident
+        example: "accident"
+
+    Format:
+      name: format
+      in: path
+      required: true
+      description: Response format for the data
+      schema:
+        type: string
+        enum: [json, xml, csv]
+
     Limit:
       name: limit
       in: query
@@ -441,6 +346,7 @@ components:
         minimum: 1
         maximum: 10000
         default: 10
+
     Offset:
       name: offset
       in: query
@@ -449,6 +355,7 @@ components:
         type: integer
         minimum: 0
         default: 0
+
     Fields:
       name: fields
       in: query
@@ -459,24 +366,25 @@ components:
         Example fields for MSHA accident dataset: mine_id, ai_dt, inj_degr_desc, operator_name, fips_state_cd, days_lost
       schema:
         type: string
-        example: mine_id,ai_dt,inj_degr_desc,operator_name,fips_state_cd
+        example: "mine_id,ai_dt,inj_degr_desc,operator_name,fips_state_cd"
+
     Sort:
       name: sort
       in: query
       description: Sort direction for the returned records
       schema:
         type: string
-        enum:
-          - asc
-          - desc
-        example: asc
+        enum: [asc, desc]
+        example: "asc"
+
     SortBy:
       name: sort_by
       in: query
       description: Field name to sort records by
       schema:
         type: string
-        example: ai_dt
+        example: "ai_dt"
+
     FilterObject:
       name: filter_object
       in: query
@@ -531,6 +439,7 @@ components:
       schema:
         type: string
         example: '{"field":"fips_state_cd","operator":"eq","value":"54"}'
+
   schemas:
     Dataset:
       type: object
@@ -605,6 +514,7 @@ components:
           type: string
           format: date-time
           description: When the dataset was last updated
+
     PaginationMetadata:
       type: object
       description: Pagination metadata included as the last element in the datasets array
@@ -626,6 +536,7 @@ components:
         total_count:
           type: integer
           description: Total number of datasets across all pages
+
     DataResponse:
       type: object
       description: |
@@ -656,13 +567,14 @@ components:
               description: Offset parameter used in the request
       required:
         - data
+
     MetadataResponse:
       type: object
       properties:
         fields:
           type: array
           items:
-            $ref: '#/components/schemas/FieldMetadata'
+            $ref: "#/components/schemas/FieldMetadata"
         dataset_info:
           type: object
           properties:
@@ -675,6 +587,7 @@ components:
               format: date-time
             record_count:
               type: integer
+
     FieldMetadata:
       type: object
       properties:
@@ -693,6 +606,7 @@ components:
         max_length:
           type: integer
           description: Maximum length for string fields
+
     FilterCondition:
       type: object
       properties:
@@ -701,14 +615,7 @@ components:
           description: Field name to apply the filter on
         operator:
           type: string
-          enum:
-            - eq
-            - neq
-            - gt
-            - lt
-            - in
-            - not_in
-            - like
+          enum: [eq, neq, gt, lt, in, not_in, like]
           description: |
             Filter operator:
             - eq: equals
@@ -733,9 +640,10 @@ components:
         - operator
         - value
       example:
-        field: fips_state_cd
-        operator: eq
-        value: '54'
+        field: "fips_state_cd"
+        operator: "eq"
+        value: "54"
+
     ComplexFilter:
       type: object
       properties:
@@ -743,28 +651,29 @@ components:
           type: array
           items:
             oneOf:
-              - $ref: '#/components/schemas/FilterCondition'
-              - $ref: '#/components/schemas/ComplexFilter'
+              - $ref: "#/components/schemas/FilterCondition"
+              - $ref: "#/components/schemas/ComplexFilter"
           description: All conditions must be true
         or:
           type: array
           items:
             oneOf:
-              - $ref: '#/components/schemas/FilterCondition'
-              - $ref: '#/components/schemas/ComplexFilter'
+              - $ref: "#/components/schemas/FilterCondition"
+              - $ref: "#/components/schemas/ComplexFilter"
           description: At least one condition must be true
       example:
         and:
-          - field: cal_yr
-            operator: eq
-            value: '2013'
+          - field: "cal_yr"
+            operator: "eq"
+            value: "2013"
           - or:
-              - field: coal_metal_ind
-                operator: eq
-                value: C
-              - field: coal_metal_ind
-                operator: eq
-                value: M
+              - field: "coal_metal_ind"
+                operator: "eq"
+                value: "C"
+              - field: "coal_metal_ind"
+                operator: "eq"
+                value: "M"
+
     Error:
       type: object
       properties:
@@ -777,64 +686,73 @@ components:
         details:
           type: string
           description: Additional error details
+
   responses:
     BadRequest:
       description: Invalid request parameters
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
-            error: Invalid parameter value
+            error: "Invalid parameter value"
             code: 400
-            details: The 'limit' parameter must be between 1 and 10000
+            details: "The 'limit' parameter must be between 1 and 10000"
+
     Unauthorized:
       description: Invalid or missing API key
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
-            error: Authentication required
+            error: "Authentication required"
             code: 401
-            details: Valid X-API-KEY query parameter is required for data and metadata requests
+            details: "Valid X-API-KEY query parameter is required for data and metadata requests"
+
     NotFound:
       description: Dataset or endpoint not found
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
-            error: Dataset not found
+            error: "Dataset not found"
             code: 404
-            details: The specified agency/endpoint combination does not exist
+            details: "The specified agency/endpoint combination does not exist"
         text/plain:
           schema:
             type: string
-          example: There was a server error querying the dataset.Please ensure the dataset name in the URL is correct.
+          example: "There was a server error querying the dataset.Please ensure the dataset name in the URL is correct."
+
     ServerError:
       description: Internal server error
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
-            error: Internal server error
+            error: "Internal server error"
             code: 500
-            details: An unexpected error occurred while processing your request
+            details: "An unexpected error occurred while processing your request"
+
   examples:
     SimpleFilter:
       summary: Simple equality filter
       value: '{"field":"coal_metal_ind","operator":"eq","value":"C"}'
+
     InFilter:
       summary: Filter with IN operator
       value: '{"field":"fips_state_cd","operator":"in","value":["54","42","39"]}'
+
     DateRangeFilter:
       summary: Date range filter with AND logic
       value: '{"and":[{"field":"cal_yr","operator":"gt","value":"2010"},{"field":"cal_yr","operator":"lt","value":"2015"}]}'
+
     ComplexFilter:
       summary: Complex filter with AND/OR logic
       value: '{"and":[{"field":"cal_yr","operator":"eq","value":"2013"},{"or":[{"field":"inj_degr_desc","operator":"eq","value":"FATAL"},{"field":"days_lost","operator":"gt","value":"100"}]}]}'
+
     LikeFilter:
       summary: Pattern matching with LIKE operator
       value: '{"field":"ai_class_desc","operator":"like","value":"%MACHINERY%"}'
