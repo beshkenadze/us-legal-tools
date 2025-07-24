@@ -36,9 +36,10 @@ export default defineConfig({
       validation: false,
     },
     output: {
-      mode: 'split',
-      target: './src/mcp/http-client.ts',
-      client: 'fetch',
+      mode: 'single',
+      target: './src/mcp/handlers.ts',
+      client: 'mcp',
+      baseUrl: 'https://api.dol.gov',
       schemas: './src/mcp/http-schemas',
       override: {
         header: () => [
@@ -55,9 +56,6 @@ export default defineConfig({
         ],
         useNativeEnums: true,
       },
-    },
-    hooks: {
-      afterAllFilesWrite: 'bun run scripts/fix-mcp-types.ts',
     },
   },
 });
