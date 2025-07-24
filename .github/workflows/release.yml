@@ -97,6 +97,9 @@ jobs:
 
       - name: Run tests
         run: bunx turbo run test
+        env:
+          GOV_INFO_API_KEY: ${{ secrets.GOV_INFO_API_KEY }}
+          DOL_API_KEY: ${{ secrets.DOL_API_KEY }}
 
       - name: Build packages
         run: bunx turbo run build
