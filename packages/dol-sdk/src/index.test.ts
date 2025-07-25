@@ -7,7 +7,7 @@ describe('DOL SDK', () => {
   });
 
   test('should export package name', () => {
-    expect(packageName).toBe('@us-legal-tools/dol-sdk');
+    expect(packageName).toBe('@beshkenadze/dol-sdk');
   });
 
   // Additional tests will be added after generating the API client

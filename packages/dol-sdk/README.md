@@ -5,11 +5,11 @@ TypeScript SDK for the Department of Labor API with MCP (Model Context Protocol)
 ## Installation
 
 ```bash
-npm install @us-legal-tools/dol-sdk
+npm install @beshkenadze/dol-sdk
 # or
-yarn add @us-legal-tools/dol-sdk
+yarn add @beshkenadze/dol-sdk
 # or
-bun add @us-legal-tools/dol-sdk
+bun add @beshkenadze/dol-sdk
 ```
 
 ## Usage
@@ -17,7 +17,7 @@ bun add @us-legal-tools/dol-sdk
 ### Basic Usage
 
 ```typescript
-import { getAgencies, getDatasets, getStatistics } from '@us-legal-tools/dol-sdk';
+import { getAgencies, getDatasets, getStatistics } from '@beshkenadze/dol-sdk';
 
 // Get all DOL agencies
 const agencies = await getAgencies();
@@ -46,7 +46,7 @@ export DOL_API_KEY=your-api-key-here
 Or configure it programmatically:
 
 ```typescript
-import { apiClient } from '@us-legal-tools/dol-sdk';
+import { apiClient } from '@beshkenadze/dol-sdk';
 
 apiClient.defaults.headers['X-API-Key'] = 'your-api-key-here';
 ```
@@ -59,7 +59,7 @@ This package includes an MCP server for use with Claude Desktop or other MCP cli
 
 ```bash
 # Using npx
-npx @us-legal-tools/dol-sdk
+npx @beshkenadze/dol-sdk
 
 # Or directly
 dol-mcp-server
