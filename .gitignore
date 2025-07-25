@@ -98,5 +98,3 @@ docs/
 
 # Turbo
 .turbo/
-packages/ecfr-sdk/api/generated/
-packages/ecfr-sdk/v1.json
