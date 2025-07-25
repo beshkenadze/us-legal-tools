@@ -1,6 +1,6 @@
+import type { AxiosRequestConfig } from 'axios';
 import INSTANCE from './api/client';
 import { getEcfrsdk } from './api/generated/endpoints';
-import type { AxiosRequestConfig } from 'axios';
 
 // Create API client that returns full Axios responses for consistency with tests
 export const createApiClient = (config?: AxiosRequestConfig) => {
@@ -8,10 +8,10 @@ export const createApiClient = (config?: AxiosRequestConfig) => {
   if (config?.baseURL) {
     INSTANCE.defaults.baseURL = config.baseURL;
   }
-  
+
   // Get the generated API functions
   const generatedAPI = getEcfrsdk();
-  
+
   return {
     getApiVersionerV1TitlesJson: () => {
       return INSTANCE({
@@ -19,7 +19,7 @@ export const createApiClient = (config?: AxiosRequestConfig) => {
         method: 'GET',
       });
     },
-    
+
     getApiSearchV1Results: (params?: Parameters<typeof generatedAPI.getApiSearchV1Results>[0]) => {
       return INSTANCE({
         url: '/api/search/v1/results',

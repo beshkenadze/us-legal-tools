@@ -1,6 +1,6 @@
+import type { AxiosRequestConfig } from 'axios';
 import { AXIOS_INSTANCE } from './api/client';
 import { getDepartmentOfLaborDOLOpenDataAPI as getGeneratedAPI } from './api/generated/endpoints';
-import type { AxiosRequestConfig } from 'axios';
 
 // Create a version that returns full Axios responses for consistency with tests
 export const createApiClient = (config?: AxiosRequestConfig) => {

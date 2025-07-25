@@ -4,7 +4,7 @@
     "": {
       "name": "ecfr-sdk",
       "devDependencies": {
-        "@biomejs/biome": "^2.1.2",
+        "@biomejs/biome": "2.1.2",
         "@changesets/cli": "^2.29.5",
         "@types/bun": "latest",
         "@types/node": "^24.1.0",
