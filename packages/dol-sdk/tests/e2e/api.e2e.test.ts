@@ -18,12 +18,16 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
 
       expect(response).toBeDefined();
       expect(response.data).toBeDefined();
-      expect(Array.isArray(response.data)).toBe(true);
-      expect(response.data.length).toBeGreaterThan(0);
+      
+      // The DOL API returns an object with datasets array and meta object
+      expect(response.data).toHaveProperty('datasets');
+      expect(response.data).toHaveProperty('meta');
+      expect(Array.isArray(response.data.datasets)).toBe(true);
+      expect(response.data.datasets.length).toBeGreaterThan(0);
 
-      // The DOL API returns an array where the last element is pagination metadata
-      const datasets = response.data.slice(0, -1);
-      const pagination = response.data[response.data.length - 1];
+      // Extract datasets and pagination metadata
+      const datasets = response.data.datasets;
+      const pagination = response.data.meta;
 
       // Verify dataset structure
       const firstDataset = datasets[0];
@@ -47,10 +51,11 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
 
       const response = await api.getDatasets();
       expect(response.data).toBeDefined();
-      expect(Array.isArray(response.data)).toBe(true);
-      expect(response.data.length).toBeGreaterThan(0);
+      expect(response.data.datasets).toBeDefined();
+      expect(Array.isArray(response.data.datasets)).toBe(true);
+      expect(response.data.datasets.length).toBeGreaterThan(0);
       
-      const datasets = response.data.slice(0, -1);
+      const datasets = response.data.datasets;
       const firstDataset = datasets[0];
       
       if (firstDataset.agency && firstDataset.api_url) {
@@ -100,21 +105,21 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
       const datasetsResponse = await api.getDatasets();
       expect(datasetsResponse.data).toBeDefined();
       
-      // Check if data is an array before slicing
-      if (!Array.isArray(datasetsResponse.data)) {
-        console.log('Datasets response is not an array, skipping test');
+      // Check if datasets property exists
+      if (!datasetsResponse.data.datasets || !Array.isArray(datasetsResponse.data.datasets)) {
+        console.log('Datasets response structure invalid, skipping test');
         return;
       }
       
-      const datasets = datasetsResponse.data.slice(0, -1);
-      console.log('Available datasets:', datasets.slice(0, 5).map(d => ({ 
+      const datasets = datasetsResponse.data.datasets;
+      console.log('Available datasets:', datasets.slice(0, 5).map((d: any) => ({ 
         name: d.name, 
         agency: d.agency,
         api_url: d.api_url
       })));
       
       // Find a testable dataset
-      const testDataset = datasets.find(d => 
+      const testDataset = datasets.find((d: any) => 
         d.agency?.abbr && 
         d.api_url && 
         d.agency.abbr.toLowerCase() !== 'dol'

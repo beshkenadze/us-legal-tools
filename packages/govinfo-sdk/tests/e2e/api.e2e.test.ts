@@ -1,10 +1,16 @@
 import { describe, test, expect, beforeAll } from 'bun:test';
 import { getGovInfoAPI } from '../../src/api/generated/endpoints';
 
-describe('GovInfo API E2E Tests', () => {
+const SKIP_E2E_TESTS = process.env.SKIP_E2E_TESTS !== 'false';
+const hasApiKey = !!(process.env.GOV_INFO_API_KEY || process.env.GOVINFO_API_KEY);
+
+describe.skipIf(SKIP_E2E_TESTS || !hasApiKey)('GovInfo API E2E Tests', () => {
   let api: ReturnType<typeof getGovInfoAPI>;
 
   beforeAll(() => {
+    if (!hasApiKey) {
+      console.log('⚠️  Skipping GovInfo E2E tests: GOV_INFO_API_KEY not set');
+    }
     // Initialize the API client
     api = getGovInfoAPI();
   });
