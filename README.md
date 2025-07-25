@@ -8,10 +8,10 @@ A comprehensive TypeScript monorepo containing SDKs and Model Context Protocol (
 
 ## 📦 Packages
 
-This monorepo contains three powerful SDKs for accessing federal legal information:
+This monorepo contains five powerful SDKs for accessing federal legal and government information:
 
 ### [@beshkenadze/ecfr-sdk](./packages/ecfr-sdk)
-[![npm version](https://badge.fury.io/js/@beshkenadze%2Fecfr-sdk.svg)](https://badge.fury.io/js/@beshkenadze%2Fecfr-sdk)
+[![npm version](https://img.shields.io/npm/v/@beshkenadze/ecfr-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/ecfr-sdk)
 
 **Electronic Code of Federal Regulations (eCFR) SDK**
 
@@ -24,7 +24,7 @@ Access the complete, continuously updated digital version of the Code of Federal
 - 🤖 **MCP Server**: `eCFRSDKServer` for AI integration
 
 ### [@beshkenadze/federal-register-sdk](./packages/federal-register-sdk)
-[![npm version](https://badge.fury.io/js/@beshkenadze%2Ffederal-register-sdk.svg)](https://badge.fury.io/js/@beshkenadze%2Ffederal-register-sdk)
+[![npm version](https://img.shields.io/npm/v/@beshkenadze/federal-register-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/federal-register-sdk)
 
 **Federal Register SDK**
 
@@ -37,7 +37,7 @@ Access the daily journal of the United States government, including all proposed
 - 🤖 **MCP Server**: `FederalRegisterServer` for AI integration
 
 ### [@beshkenadze/courtlistener-sdk](./packages/courtlistener-sdk)
-[![npm version](https://badge.fury.io/js/@beshkenadze%2Fcourtlistener-sdk.svg)](https://badge.fury.io/js/@beshkenadze%2Fcourtlistener-sdk)
+[![npm version](https://img.shields.io/npm/v/@beshkenadze/courtlistener-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/courtlistener-sdk)
 
 **CourtListener SDK**
 
@@ -50,6 +50,32 @@ Access the largest free legal database, containing millions of legal opinions, o
 - 💼 **PACER Integration**: Access federal court dockets
 - 🔔 **Alerts**: Track changes to cases and dockets
 - 🤖 **MCP Server**: `CourtListenerRESTAPIServer` for AI integration
+
+### [@beshkenadze/govinfo-sdk](./packages/govinfo-sdk)
+[![npm version](https://img.shields.io/npm/v/@beshkenadze/govinfo-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/govinfo-sdk)
+
+**GovInfo SDK**
+
+Access the U.S. Government Publishing Office's official repository for federal government information.
+
+- 📚 **Collections**: Access to all Congressional, judicial, and executive branch publications
+- 🔍 **Search**: Full-text search across all government documents
+- 📄 **Download**: Multiple format options (PDF, XML, HTML, etc.)
+- 🏛️ **Coverage**: Bills, laws, regulations, court opinions, and more
+- 🤖 **MCP Server**: `GovInfoServer` for AI integration
+
+### [@beshkenadze/dol-sdk](./packages/dol-sdk)
+[![npm version](https://img.shields.io/npm/v/@beshkenadze/dol-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/dol-sdk)
+
+**Department of Labor (DOL) SDK**
+
+Access comprehensive labor statistics and datasets from the U.S. Department of Labor.
+
+- 📊 **Statistics**: Employment, wages, inflation, and productivity data
+- 📈 **Time Series**: Historical labor market data
+- 🏭 **Industries**: Detailed industry-specific statistics
+- 🗺️ **Geography**: State and metropolitan area data
+- 🤖 **MCP Server**: `DOLDataServer` for AI integration
 
 ## 🚀 Installation
 
@@ -64,6 +90,12 @@ npm install @beshkenadze/federal-register-sdk
 
 # CourtListener SDK
 npm install @beshkenadze/courtlistener-sdk
+
+# GovInfo SDK
+npm install @beshkenadze/govinfo-sdk
+
+# DOL SDK
+npm install @beshkenadze/dol-sdk
 ```
 
 Or using other package managers:
@@ -138,6 +170,48 @@ cases.results.forEach(case => {
 });
 ```
 
+### GovInfo SDK
+
+```typescript
+import { createApiClient } from '@beshkenadze/govinfo-sdk';
+
+const client = createApiClient({
+  headers: {
+    'X-Api-Key': process.env.GOV_INFO_API_KEY
+  }
+});
+
+// Search for recent legislation
+const results = await client.searchPublished({
+  query: 'infrastructure',
+  pageSize: 10,
+  offsetMark: '*',
+  collection: 'BILLS'
+});
+
+console.log(`Found ${results.data.count} bills about infrastructure`);
+```
+
+### DOL SDK
+
+```typescript
+import { createApiClient } from '@beshkenadze/dol-sdk';
+
+const client = createApiClient({
+  headers: {
+    'X-API-KEY': process.env.DOL_API_KEY
+  }
+});
+
+// Get available datasets
+const datasets = await client.getDatasets();
+
+console.log(`Available DOL datasets: ${datasets.data.datasets.length}`);
+datasets.data.datasets.forEach(dataset => {
+  console.log(`- ${dataset.dataset_title}`);
+});
+```
+
 ## 🤖 MCP (Model Context Protocol) Servers
 
 Each SDK includes an MCP server that enables AI assistants to interact with these APIs. MCP servers provide a standardized way for AI tools to access external data sources.
@@ -156,6 +230,14 @@ bun run mcp:server
 # Run CourtListener MCP Server (requires API token)
 cd packages/courtlistener-sdk
 COURTLISTENER_API_TOKEN=your-token bun run mcp:server
+
+# Run GovInfo MCP Server (requires API key)
+cd packages/govinfo-sdk
+GOV_INFO_API_KEY=your-key bun run mcp:server
+
+# Run DOL MCP Server (requires API key)
+cd packages/dol-sdk
+DOL_API_KEY=your-key bun run mcp:server
 ```
 
 ### MCP Integration Example
@@ -179,6 +261,20 @@ Configure your AI assistant (like Claude) to use these MCP servers:
       "env": {
         "COURTLISTENER_API_TOKEN": "your-token"
       }
+    },
+    "govinfo": {
+      "command": "bunx",
+      "args": ["@beshkenadze/govinfo-sdk/mcp"],
+      "env": {
+        "GOV_INFO_API_KEY": "your-key"
+      }
+    },
+    "dol": {
+      "command": "bunx",
+      "args": ["@beshkenadze/dol-sdk/mcp"],
+      "env": {
+        "DOL_API_KEY": "your-key"
+      }
     }
   }
 }
@@ -190,6 +286,16 @@ Configure your AI assistant (like Claude) to use these MCP servers:
 Requires an API token from [CourtListener](https://www.courtlistener.com/). Set via:
 - Environment variable: `COURTLISTENER_API_TOKEN`
 - Or pass directly in API calls
+
+### GovInfo API
+Requires an API key from [GovInfo](https://api.govinfo.gov/docs/). Set via:
+- Environment variable: `GOV_INFO_API_KEY`
+- Or pass in request headers
+
+### DOL API
+Requires an API key from [DOL Developer](https://developer.dol.gov/). Set via:
+- Environment variable: `DOL_API_KEY`
+- Or pass in request headers
 
 ### eCFR & Federal Register APIs
 No authentication required - these are public APIs.
@@ -223,12 +329,14 @@ turbo test
 ```
 ecfr-sdk/
 ├── packages/
-│   ├── ecfr-sdk/           # eCFR SDK package
-│   ├── federal-register-sdk/ # Federal Register SDK package
-│   └── courtlistener-sdk/   # CourtListener SDK package
-├── turbo.json              # Turborepo configuration
-├── package.json            # Root package.json
-└── README.md              # This file
+│   ├── ecfr-sdk/              # eCFR SDK package
+│   ├── federal-register-sdk/  # Federal Register SDK package
+│   ├── courtlistener-sdk/     # CourtListener SDK package
+│   ├── govinfo-sdk/           # GovInfo SDK package
+│   └── dol-sdk/               # Department of Labor SDK package
+├── turbo.json                 # Turborepo configuration
+├── package.json               # Root package.json
+└── README.md                  # This file
 ```
 
 ### Adding a New SDK

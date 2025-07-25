@@ -2,7 +2,7 @@
 
 TypeScript SDK and MCP (Model Context Protocol) server for the CourtListener API - the largest free legal database.
 
-[![npm version](https://badge.fury.io/js/@beshkenadze%2Fcourtlistener-sdk.svg)](https://badge.fury.io/js/@beshkenadze%2Fcourtlistener-sdk)
+[![npm version](https://img.shields.io/npm/v/@beshkenadze/courtlistener-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/courtlistener-sdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features

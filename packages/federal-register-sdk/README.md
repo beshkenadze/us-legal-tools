@@ -2,7 +2,7 @@
 
 TypeScript SDK and MCP (Model Context Protocol) server for the Federal Register API.
 
-[![npm version](https://badge.fury.io/js/@beshkenadze%2Ffederal-register-sdk.svg)](https://badge.fury.io/js/@beshkenadze%2Ffederal-register-sdk)
+[![npm version](https://img.shields.io/npm/v/@beshkenadze/federal-register-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/federal-register-sdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
