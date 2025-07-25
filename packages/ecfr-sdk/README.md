@@ -2,7 +2,7 @@
 
 TypeScript SDK and MCP (Model Context Protocol) server for the eCFR (Electronic Code of Federal Regulations) API.
 
-[![npm version](https://badge.fury.io/js/@beshkenadze%2Fecfr-sdk.svg)](https://badge.fury.io/js/@beshkenadze%2Fecfr-sdk)
+[![npm version](https://img.shields.io/npm/v/@beshkenadze/ecfr-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/ecfr-sdk)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
