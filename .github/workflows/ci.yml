@@ -83,6 +83,27 @@ jobs:
 
       - name: Verify MCP servers
         run: |
-          cd packages/ecfr-sdk && bun run scripts/test-mcp-server.ts
-          cd packages/federal-register-sdk && echo "Federal Register MCP server test - TODO"
-          cd packages/courtlistener-sdk && echo "CourtListener MCP server test - TODO"
+          # Test eCFR MCP server using MCP Inspector
+          echo "Testing eCFR MCP server..."
+          cd packages/ecfr-sdk
+          bunx @modelcontextprotocol/inspector --cli bun src/mcp/server.ts --method tools/list
+          
+          # Test Federal Register MCP server
+          echo "Testing Federal Register MCP server..."
+          cd ../federal-register-sdk
+          bunx @modelcontextprotocol/inspector --cli bun src/mcp/server.ts --method tools/list
+          
+          # Test CourtListener MCP server
+          echo "Testing CourtListener MCP server..."
+          cd ../courtlistener-sdk
+          bunx @modelcontextprotocol/inspector --cli bun src/mcp/server.ts --method tools/list
+          
+          # Test GovInfo MCP server
+          echo "Testing GovInfo MCP server..."
+          cd ../govinfo-sdk
+          bunx @modelcontextprotocol/inspector --cli bun src/mcp/server.ts --method tools/list
+          
+          # Test DOL MCP server
+          echo "Testing DOL MCP server..."
+          cd ../dol-sdk
+          bunx @modelcontextprotocol/inspector --cli bun src/mcp/server.ts --method tools/list
