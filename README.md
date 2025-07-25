@@ -64,8 +64,8 @@ Access the U.S. Government Publishing Office's official repository for federal g
 - 🏛️ **Coverage**: Bills, laws, regulations, court opinions, and more
 - 🤖 **MCP Server**: `GovInfoServer` for AI integration
 
-### [@beshkenadze/dol-sdk](./packages/dol-sdk)
-[![npm version](https://img.shields.io/npm/v/@beshkenadze/dol-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/dol-sdk)
+### [@us-legal-tools/dol-sdk](./packages/dol-sdk)
+[![npm version](https://img.shields.io/npm/v/@us-legal-tools/dol-sdk.svg)](https://www.npmjs.com/package/@us-legal-tools/dol-sdk)
 
 **Department of Labor (DOL) SDK**
 
@@ -95,7 +95,7 @@ npm install @beshkenadze/courtlistener-sdk
 npm install @beshkenadze/govinfo-sdk
 
 # DOL SDK
-npm install @beshkenadze/dol-sdk
+npm install @us-legal-tools/dol-sdk
 ```
 
 Or using other package managers:
@@ -195,7 +195,7 @@ console.log(`Found ${results.data.count} bills about infrastructure`);
 ### DOL SDK
 
 ```typescript
-import { createApiClient } from '@beshkenadze/dol-sdk';
+import { createApiClient } from '@us-legal-tools/dol-sdk';
 
 const client = createApiClient({
   headers: {
@@ -271,7 +271,7 @@ Configure your AI assistant (like Claude) to use these MCP servers:
     },
     "dol": {
       "command": "bunx",
-      "args": ["@beshkenadze/dol-sdk/mcp"],
+      "args": ["@us-legal-tools/dol-sdk/mcp"],
       "env": {
         "DOL_API_KEY": "your-key"
       }
