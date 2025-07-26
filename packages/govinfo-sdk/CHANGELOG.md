@@ -1,6 +1,6 @@
-# @beshkenadze/courtlistener-sdk
+# @beshkenadze/govinfo-sdk
 
-## 1.2.0
+## 0.2.0
 
 ### Minor Changes
 
@@ -13,9 +13,3 @@
   - Fix import ordering and linting issues across all packages
   - Add API wrapper functions for e2e tests
   - Improve test reliability and skip tests when API keys are missing
-
-## 1.1.0
-
-### Minor Changes
-
-- 808a6ac: Init monorepo release
