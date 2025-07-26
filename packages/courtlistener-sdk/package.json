@@ -33,7 +33,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.2",
+    "@biomejs/biome": "2.1.2",
     "@types/bun": "latest",
     "@types/node": "^24.1.0",
     "@us-legal-tools/tsconfig": "workspace:*",
@@ -79,5 +79,8 @@
       "import": "./dist/mcp/index.mjs",
       "require": "./dist/mcp/index.js"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

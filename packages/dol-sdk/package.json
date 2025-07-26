@@ -65,7 +65,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.2",
+    "@biomejs/biome": "2.1.2",
     "@types/bun": "^1.1.14",
     "@types/js-yaml": "^4.0.9",
     "@us-legal-tools/tsconfig": "workspace:*",
