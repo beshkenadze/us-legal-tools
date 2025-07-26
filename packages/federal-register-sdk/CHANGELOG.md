@@ -1,5 +1,14 @@
 # @beshkenadze/federal-register-sdk
 
+## 0.4.0
+
+### Minor Changes
+
+- [`2510a08`](https://github.com/beshkenadze/us-legal-tools/commit/2510a08f87d35c7cf37ebc6197045d562e34a314) Thanks [@beshkenadze](https://github.com/beshkenadze)! - - Configure Changesets for automated per-package releases
+  - Add publishConfig for public npm access to all SDK packages
+  - Set up GitHub changelog generation with PR links
+  - Ensure each package can be released independently
+
 ## 0.3.0
 
 ### Minor Changes
