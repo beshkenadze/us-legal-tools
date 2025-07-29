@@ -4,7 +4,7 @@
   "author": "Akira Beshkenadze",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/beshkenadze/ecfr-sdk.git"
+    "url": "git+https://github.com/beshkenadze/us-legal-tools.git"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.2",
@@ -22,13 +22,13 @@
     "typescript": "^5.0.0"
   },
   "bugs": {
-    "url": "https://github.com/beshkenadze/ecfr-sdk/issues"
+    "url": "https://github.com/beshkenadze/us-legal-tools/issues"
   },
   "description": "Monorepo containing Federal Register and eCFR SDKs with MCP servers",
   "engines": {
     "node": ">=22.0.0"
   },
-  "homepage": "https://github.com/beshkenadze/ecfr-sdk#readme",
+  "homepage": "https://github.com/beshkenadze/us-legal-tools#readme",
   "keywords": [
     "ecfr",
     "federal-register",
