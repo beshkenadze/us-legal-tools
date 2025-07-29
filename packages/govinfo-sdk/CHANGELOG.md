@@ -1,5 +1,11 @@
 # @beshkenadze/govinfo-sdk
 
+## 0.4.0
+
+### Minor Changes
+
+- [#4](https://github.com/beshkenadze/us-legal-tools/pull/4) [`c8d0749`](https://github.com/beshkenadze/us-legal-tools/commit/c8d0749b85fc7b89ca269953e3a3ea3298f6229c) Thanks [@beshkenadze](https://github.com/beshkenadze)! - fix: resolve TypeScript declaration generation issues
+
 ## 0.3.0
 
 ### Minor Changes
