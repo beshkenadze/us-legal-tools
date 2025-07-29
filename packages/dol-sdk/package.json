@@ -61,15 +61,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.16.0",
+    "@modelcontextprotocol/sdk": "^1.17.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.2",
-    "@types/bun": "^1.1.14",
+    "@types/bun": "^1.2.19",
     "@types/js-yaml": "^4.0.9",
     "@us-legal-tools/tsconfig": "workspace:*",
-    "bun-types": "^1.1.38",
+    "bun-types": "^1.2.19",
     "js-yaml": "^4.1.0",
     "orval": "^7.10.0",
     "typescript": "^5.8.3"

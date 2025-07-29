@@ -41,6 +41,6 @@ await Bun.build({
 
 // Generate TypeScript declarations
 console.log('Generating TypeScript declarations...');
-await $`tsc --emitDeclarationOnly --declaration --outDir dist --project tsconfig.build.json`;
+await $`bunx tsc --emitDeclarationOnly --declaration --outDir dist --project tsconfig.build.json`;
 
 console.log('✅ Build complete!');
