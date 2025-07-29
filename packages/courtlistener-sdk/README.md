@@ -1,9 +1,8 @@
-# @beshkenadze/courtlistener-sdk
+# @us-legal-tools/courtlistener-sdk
 
-TypeScript SDK and MCP (Model Context Protocol) server for the CourtListener API - the largest free legal database.
+TypeScript SDK and MCP server for the CourtListener API - the largest free legal database.
 
-[![npm version](https://img.shields.io/npm/v/@beshkenadze/courtlistener-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/courtlistener-sdk)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm version](https://img.shields.io/npm/v/@us-legal-tools/courtlistener-sdk.svg)](https://www.npmjs.com/package/@us-legal-tools/courtlistener-sdk)
 
 ## Features
 
@@ -20,16 +19,16 @@ TypeScript SDK and MCP (Model Context Protocol) server for the CourtListener API
 
 ```bash
 # npm
-npm install @beshkenadze/courtlistener-sdk
+npm install @us-legal-tools/courtlistener-sdk
 
 # yarn
-yarn add @beshkenadze/courtlistener-sdk
+yarn add @us-legal-tools/courtlistener-sdk
 
 # pnpm
-pnpm add @beshkenadze/courtlistener-sdk
+pnpm add @us-legal-tools/courtlistener-sdk
 
 # bun
-bun add @beshkenadze/courtlistener-sdk
+bun add @us-legal-tools/courtlistener-sdk
 ```
 
 ## Authentication
@@ -41,7 +40,7 @@ The CourtListener API requires authentication for most endpoints. Get your API t
 process.env.COURTLISTENER_API_TOKEN = 'your-token';
 
 // Or configure the axios instance directly
-import { axiosInstance } from '@beshkenadze/courtlistener-sdk';
+import { axiosInstance } from '@us-legal-tools/courtlistener-sdk';
 axiosInstance.defaults.headers.common['Authorization'] = 'Token your-token';
 ```
 
@@ -50,7 +49,7 @@ axiosInstance.defaults.headers.common['Authorization'] = 'Token your-token';
 ### Basic Search
 
 ```typescript
-import { getSearch } from '@beshkenadze/courtlistener-sdk';
+import { getSearch } from '@us-legal-tools/courtlistener-sdk';
 
 // Search for Supreme Court cases
 const results = await getSearch({
@@ -73,7 +72,7 @@ results.results.forEach(result => {
 ### Citation Lookup
 
 ```typescript
-import { postCitationLookup } from '@beshkenadze/courtlistener-sdk';
+import { postCitationLookup } from '@us-legal-tools/courtlistener-sdk';
 
 // Look up citations
 const citations = await postCitationLookup({
@@ -92,7 +91,7 @@ citations.citations.forEach(cite => {
 ### Judge Information
 
 ```typescript
-import { getPeople, getPositions } from '@beshkenadze/courtlistener-sdk';
+import { getPeople, getPositions } from '@us-legal-tools/courtlistener-sdk';
 
 // Search for judges
 const judges = await getPeople({
@@ -115,7 +114,7 @@ for (const judge of judges.results) {
 ### Docket Monitoring
 
 ```typescript
-import { getDockets, postDocketAlerts } from '@beshkenadze/courtlistener-sdk';
+import { getDockets, postDocketAlerts } from '@us-legal-tools/courtlistener-sdk';
 
 // Search for dockets
 const dockets = await getDockets({
@@ -182,10 +181,10 @@ The MCP server allows AI assistants to interact with the CourtListener API.
 
 ```bash
 # With authentication token
-COURTLISTENER_API_TOKEN=your-token npx @beshkenadze/courtlistener-sdk/mcp
+COURTLISTENER_API_TOKEN=your-token npx @us-legal-tools/courtlistener-sdk/mcp
 
 # Or if installed locally
-cd node_modules/@beshkenadze/courtlistener-sdk
+cd node_modules/@us-legal-tools/courtlistener-sdk
 COURTLISTENER_API_TOKEN=your-token npm run mcp:server
 ```
 
@@ -198,7 +197,7 @@ Add to your Claude configuration:
   "mcpServers": {
     "courtlistener": {
       "command": "npx",
-      "args": ["@beshkenadze/courtlistener-sdk/mcp"],
+      "args": ["@us-legal-tools/courtlistener-sdk/mcp"],
       "env": {
         "COURTLISTENER_API_TOKEN": "your-token"
       }
@@ -246,7 +245,7 @@ The SDK includes automatic retry logic for rate-limited requests.
 ## Error Handling
 
 ```typescript
-import { getSearch } from '@beshkenadze/courtlistener-sdk';
+import { getSearch } from '@us-legal-tools/courtlistener-sdk';
 
 try {
   const results = await getSearch({
@@ -264,14 +263,9 @@ try {
 }
 ```
 
-## License
-
-MIT License - see [LICENSE](../../LICENSE) for details
-
 ## Links
 
-- [GitHub Repository](https://github.com/beshkenadze/ecfr-sdk)
-- [npm Package](https://www.npmjs.com/package/@beshkenadze/courtlistener-sdk)
+- [npm Package](https://www.npmjs.com/package/@us-legal-tools/courtlistener-sdk)
 - [CourtListener Website](https://www.courtlistener.com/)
 - [CourtListener API Documentation](https://www.courtlistener.com/help/api/rest/)
 - [Free Law Project](https://free.law/)

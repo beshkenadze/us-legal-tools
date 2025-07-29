@@ -1,9 +1,8 @@
-# @beshkenadze/ecfr-sdk
+# @us-legal-tools/ecfr-sdk
 
-TypeScript SDK and MCP (Model Context Protocol) server for the eCFR (Electronic Code of Federal Regulations) API.
+TypeScript SDK and MCP server for the eCFR (Electronic Code of Federal Regulations) API.
 
-[![npm version](https://img.shields.io/npm/v/@beshkenadze/ecfr-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/ecfr-sdk)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm version](https://img.shields.io/npm/v/@us-legal-tools/ecfr-sdk.svg)](https://www.npmjs.com/package/@us-legal-tools/ecfr-sdk)
 
 ## Features
 
@@ -19,16 +18,16 @@ TypeScript SDK and MCP (Model Context Protocol) server for the eCFR (Electronic 
 
 ```bash
 # npm
-npm install @beshkenadze/ecfr-sdk
+npm install @us-legal-tools/ecfr-sdk
 
 # yarn
-yarn add @beshkenadze/ecfr-sdk
+yarn add @us-legal-tools/ecfr-sdk
 
 # pnpm
-pnpm add @beshkenadze/ecfr-sdk
+pnpm add @us-legal-tools/ecfr-sdk
 
 # bun
-bun add @beshkenadze/ecfr-sdk
+bun add @us-legal-tools/ecfr-sdk
 ```
 
 ## Quick Start
@@ -36,7 +35,7 @@ bun add @beshkenadze/ecfr-sdk
 ### Basic Usage
 
 ```typescript
-import { getApiSearchV1Results, getApiVersionerV1TitlesJson } from '@beshkenadze/ecfr-sdk';
+import { getApiSearchV1Results, getApiVersionerV1TitlesJson } from '@us-legal-tools/ecfr-sdk';
 
 // Search for regulations
 const searchResults = await getApiSearchV1Results({
@@ -58,7 +57,7 @@ console.log(`Available titles: ${titles.titles.length}`);
 ### Advanced Search
 
 ```typescript
-import { getApiSearchV1Results } from '@beshkenadze/ecfr-sdk';
+import { getApiSearchV1Results } from '@us-legal-tools/ecfr-sdk';
 
 // Search with filters
 const results = await getApiSearchV1Results({
@@ -77,7 +76,7 @@ console.log('Search facets:', results.meta?.facets);
 ### Historical Versions
 
 ```typescript
-import { getApiVersionerV1FullDateTitleTitleXml } from '@beshkenadze/ecfr-sdk';
+import { getApiVersionerV1FullDateTitleTitleXml } from '@us-legal-tools/ecfr-sdk';
 
 // Get a specific version of a regulation
 const historicalVersion = await getApiVersionerV1FullDateTitleTitleXml({
@@ -122,10 +121,10 @@ The MCP server allows AI assistants to interact with the eCFR API.
 
 ```bash
 # Using the SDK directly
-npx @beshkenadze/ecfr-sdk/mcp
+npx @us-legal-tools/ecfr-sdk/mcp
 
 # Or if installed locally
-cd node_modules/@beshkenadze/ecfr-sdk
+cd node_modules/@us-legal-tools/ecfr-sdk
 npm run mcp:server
 ```
 
@@ -145,7 +144,7 @@ Add to your Claude configuration:
   "mcpServers": {
     "ecfr": {
       "command": "npx",
-      "args": ["@beshkenadze/ecfr-sdk/mcp"]
+      "args": ["@us-legal-tools/ecfr-sdk/mcp"]
     }
   }
 }
@@ -154,7 +153,7 @@ Add to your Claude configuration:
 ## Error Handling
 
 ```typescript
-import { getApiSearchV1Results } from '@beshkenadze/ecfr-sdk';
+import { getApiSearchV1Results } from '@us-legal-tools/ecfr-sdk';
 
 try {
   const results = await getApiSearchV1Results({
@@ -177,7 +176,7 @@ try {
 The SDK uses axios under the hood. You can access and modify the axios instance:
 
 ```typescript
-import { axiosInstance } from '@beshkenadze/ecfr-sdk';
+import { axiosInstance } from '@us-legal-tools/ecfr-sdk';
 
 // Add request interceptor
 axiosInstance.interceptors.request.use(config => {
@@ -189,13 +188,8 @@ axiosInstance.interceptors.request.use(config => {
 axiosInstance.defaults.timeout = 60000; // 60 seconds
 ```
 
-## License
-
-MIT License - see [LICENSE](../../LICENSE) for details
-
 ## Links
 
-- [GitHub Repository](https://github.com/beshkenadze/ecfr-sdk)
-- [npm Package](https://www.npmjs.com/package/@beshkenadze/ecfr-sdk)
+- [npm Package](https://www.npmjs.com/package/@us-legal-tools/ecfr-sdk)
 - [eCFR Website](https://www.ecfr.gov/)
 - [eCFR API Documentation](https://www.ecfr.gov/api/docs)

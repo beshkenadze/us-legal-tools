@@ -1,4 +1,4 @@
-# @beshkenadze/ecfr-sdk
+# @us-legal-tools/ecfr-sdk
 
 ## 0.7.1
 

@@ -1,4 +1,4 @@
-# @beshkenadze/dol-sdk
+# @us-legal-tools/dol-sdk
 
 ## 0.4.1
 

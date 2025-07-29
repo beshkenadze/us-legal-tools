@@ -88,6 +88,8 @@ async function runTests() {
     await testMCPServer('ecfr-sdk', 'eCFRSDKServer');
     await testMCPServer('federal-register-sdk', 'FederalRegisterServer');
     await testMCPServer('courtlistener-sdk', 'CourtListenerRESTAPIServer');
+    await testMCPServer('govinfo-sdk', 'GovInfoServer');
+    await testMCPServer('dol-sdk', 'DOLServer');
     
     console.log('🎉 All MCP server tests completed!\n');
   } catch (error) {

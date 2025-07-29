@@ -33,7 +33,7 @@ jobs:
           bun-version: latest
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: Check for changesets
         id: check
@@ -87,10 +87,7 @@ jobs:
             ${{ runner.os }}-bun-
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Setup Playwright
-        run: bunx playwright install --with-deps chromium
+        run: bun install
 
       - name: Generate SDKs
         run: bunx turbo run generate
@@ -127,7 +124,7 @@ jobs:
           
           # Parse published packages and publish to GitHub Packages
           echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[] | .name' | while read package; do
-            cd packages/${package#@beshkenadze/}
+            cd packages/${package#@us-legal-tools/}
             npm publish --registry=https://npm.pkg.github.com --access public
             cd ../..
           done

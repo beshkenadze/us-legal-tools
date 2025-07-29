@@ -1,4 +1,4 @@
-# @beshkenadze/govinfo-sdk
+# @us-legal-tools/govinfo-sdk
 
 ## 0.4.1
 

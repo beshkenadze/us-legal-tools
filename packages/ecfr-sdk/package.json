@@ -1,5 +1,5 @@
 {
-  "name": "@beshkenadze/ecfr-sdk",
+  "name": "@us-legal-tools/ecfr-sdk",
   "version": "0.7.1",
   "description": "TypeScript SDK and MCP server for the eCFR (Electronic Code of Federal Regulations) API",
   "author": "Aleksandr Beshkenadze <beshkenadze@gmail.com>",

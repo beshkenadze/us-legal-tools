@@ -1,4 +1,4 @@
-# @beshkenadze/federal-register-sdk
+# @us-legal-tools/federal-register-sdk
 
 ## 0.5.1
 

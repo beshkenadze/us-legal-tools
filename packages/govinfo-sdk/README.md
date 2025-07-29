@@ -1,15 +1,15 @@
-# @beshkenadze/govinfo-sdk
+# @us-legal-tools/govinfo-sdk
 
 TypeScript SDK and MCP server for the GovInfo API - providing programmatic access to federal government information from the U.S. Government Publishing Office.
 
 ## Installation
 
 ```bash
-npm install @beshkenadze/govinfo-sdk
+npm install @us-legal-tools/govinfo-sdk
 # or
-yarn add @beshkenadze/govinfo-sdk
+yarn add @us-legal-tools/govinfo-sdk
 # or
-bun add @beshkenadze/govinfo-sdk
+bun add @us-legal-tools/govinfo-sdk
 ```
 
 ## Features
@@ -24,7 +24,7 @@ bun add @beshkenadze/govinfo-sdk
 ## Quick Start
 
 ```typescript
-import { createGovInfoClient } from '@beshkenadze/govinfo-sdk';
+import { createGovInfoClient } from '@us-legal-tools/govinfo-sdk';
 
 // Initialize the client
 const client = createGovInfoClient({
@@ -43,7 +43,7 @@ const searchResults = await client.search({
 ### Configuration
 
 ```typescript
-import { createGovInfoClient } from '@beshkenadze/govinfo-sdk';
+import { createGovInfoClient } from '@us-legal-tools/govinfo-sdk';
 
 const client = createGovInfoClient({
   apiKey: 'YOUR_API_KEY',
@@ -69,7 +69,7 @@ Add to your Claude Desktop configuration:
   "mcpServers": {
     "govinfo": {
       "command": "npx",
-      "args": ["@beshkenadze/govinfo-sdk/mcp"],
+      "args": ["@us-legal-tools/govinfo-sdk/mcp"],
       "env": {
         "GOVINFO_API_KEY": "YOUR_API_KEY"
       }
@@ -136,14 +136,8 @@ For detailed API documentation, visit:
 - [GovInfo API Documentation](https://api.govinfo.gov/docs/)
 - [GovInfo Developer Resources](https://www.govinfo.gov/developers)
 
-## License
+## Links
 
-MIT
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Support
-
-For issues and feature requests, please use the [GitHub issue tracker](https://github.com/beshkenadze/ecfr-sdk/issues).
+- [npm Package](https://www.npmjs.com/package/@us-legal-tools/govinfo-sdk)
+- [GovInfo API Documentation](https://api.govinfo.gov/docs/)
+- [GovInfo Developer Resources](https://www.govinfo.gov/developers)

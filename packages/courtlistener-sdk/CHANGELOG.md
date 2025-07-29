@@ -1,4 +1,4 @@
-# @beshkenadze/courtlistener-sdk
+# @us-legal-tools/courtlistener-sdk
 
 ## 1.4.1
 

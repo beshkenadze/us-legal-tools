@@ -1,9 +1,8 @@
-# @beshkenadze/federal-register-sdk
+# @us-legal-tools/federal-register-sdk
 
-TypeScript SDK and MCP (Model Context Protocol) server for the Federal Register API.
+TypeScript SDK and MCP server for the Federal Register API.
 
-[![npm version](https://img.shields.io/npm/v/@beshkenadze/federal-register-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/federal-register-sdk)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm version](https://img.shields.io/npm/v/@us-legal-tools/federal-register-sdk.svg)](https://www.npmjs.com/package/@us-legal-tools/federal-register-sdk)
 
 ## Features
 
@@ -19,16 +18,16 @@ TypeScript SDK and MCP (Model Context Protocol) server for the Federal Register 
 
 ```bash
 # npm
-npm install @beshkenadze/federal-register-sdk
+npm install @us-legal-tools/federal-register-sdk
 
 # yarn
-yarn add @beshkenadze/federal-register-sdk
+yarn add @us-legal-tools/federal-register-sdk
 
 # pnpm
-pnpm add @beshkenadze/federal-register-sdk
+pnpm add @us-legal-tools/federal-register-sdk
 
 # bun
-bun add @beshkenadze/federal-register-sdk
+bun add @us-legal-tools/federal-register-sdk
 ```
 
 ## Quick Start
@@ -36,7 +35,7 @@ bun add @beshkenadze/federal-register-sdk
 ### Basic Usage
 
 ```typescript
-import { getDocumentsFormat, getAgencies } from '@beshkenadze/federal-register-sdk';
+import { getDocumentsFormat, getAgencies } from '@us-legal-tools/federal-register-sdk';
 
 // Search for documents
 const documents = await getDocumentsFormat({
@@ -60,7 +59,7 @@ console.log(`Total agencies: ${agencies.length}`);
 ### Advanced Search
 
 ```typescript
-import { getDocumentsFormat } from '@beshkenadze/federal-register-sdk';
+import { getDocumentsFormat } from '@us-legal-tools/federal-register-sdk';
 
 // Search with multiple filters
 const results = await getDocumentsFormat({
@@ -85,7 +84,7 @@ console.log('Available facets:', results.aggregations);
 ### Document Details
 
 ```typescript
-import { getDocumentsDocumentNumberFormat } from '@beshkenadze/federal-register-sdk';
+import { getDocumentsDocumentNumberFormat } from '@us-legal-tools/federal-register-sdk';
 
 // Get a specific document
 const document = await getDocumentsDocumentNumberFormat({
@@ -102,7 +101,7 @@ console.log(`PDF URL: ${document.pdf_url}`);
 ### Public Inspection Documents
 
 ```typescript
-import { getPublicInspectionDocumentsCurrentFormat } from '@beshkenadze/federal-register-sdk';
+import { getPublicInspectionDocumentsCurrentFormat } from '@us-legal-tools/federal-register-sdk';
 
 // Get current public inspection documents
 const piDocuments = await getPublicInspectionDocumentsCurrentFormat({
@@ -149,10 +148,10 @@ The MCP server allows AI assistants to interact with the Federal Register API.
 
 ```bash
 # Using the SDK directly
-npx @beshkenadze/federal-register-sdk/mcp
+npx @us-legal-tools/federal-register-sdk/mcp
 
 # Or if installed locally
-cd node_modules/@beshkenadze/federal-register-sdk
+cd node_modules/@us-legal-tools/federal-register-sdk
 npm run mcp:server
 ```
 
@@ -165,7 +164,7 @@ Add to your Claude configuration:
   "mcpServers": {
     "federal-register": {
       "command": "npx",
-      "args": ["@beshkenadze/federal-register-sdk/mcp"]
+      "args": ["@us-legal-tools/federal-register-sdk/mcp"]
     }
   }
 }
@@ -199,7 +198,7 @@ const results = await getDocumentsFormat({
 ## Error Handling
 
 ```typescript
-import { getDocumentsFormat } from '@beshkenadze/federal-register-sdk';
+import { getDocumentsFormat } from '@us-legal-tools/federal-register-sdk';
 
 try {
   const results = await getDocumentsFormat({
@@ -221,13 +220,8 @@ try {
 
 The Federal Register API has rate limits. The SDK automatically includes appropriate headers, but be mindful of making too many requests in a short period.
 
-## License
-
-MIT License - see [LICENSE](../../LICENSE) for details
-
 ## Links
 
-- [GitHub Repository](https://github.com/beshkenadze/ecfr-sdk)
-- [npm Package](https://www.npmjs.com/package/@beshkenadze/federal-register-sdk)
+- [npm Package](https://www.npmjs.com/package/@us-legal-tools/federal-register-sdk)
 - [Federal Register Website](https://www.federalregister.gov/)
 - [Federal Register API Documentation](https://www.federalregister.gov/developers/api/v1)

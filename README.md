@@ -1,122 +1,125 @@
-# Federal Legal APIs Monorepo
+<div align="center">
+  <h1>🏛️ Federal Legal APIs Monorepo</h1>
+  <p>
+    <strong>TypeScript SDKs and MCP servers for U.S. federal legal and regulatory APIs</strong>
+  </p>
+  <p>
+    <a href="https://github.com/beshkenadze/ecfr-sdk/actions/workflows/ci.yml">
+      <img alt="CI Status" src="https://github.com/beshkenadze/ecfr-sdk/actions/workflows/ci.yml/badge.svg">
+    </a>
+    <a href="https://github.com/beshkenadze/ecfr-sdk/actions/workflows/release.yml">
+      <img alt="Release Status" src="https://github.com/beshkenadze/ecfr-sdk/actions/workflows/release.yml/badge.svg">
+    </a>
+    <a href="https://opensource.org/licenses/MIT">
+      <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg">
+    </a>
+    <a href="https://github.com/beshkenadze/ecfr-sdk">
+      <img alt="GitHub Stars" src="https://img.shields.io/github/stars/beshkenadze/ecfr-sdk?style=social">
+    </a>
+  </p>
+</div>
 
-A comprehensive TypeScript monorepo containing SDKs and Model Context Protocol (MCP) servers for major U.S. federal legal and regulatory APIs.
+<hr>
 
-[![CI](https://github.com/beshkenadze/ecfr-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/beshkenadze/ecfr-sdk/actions/workflows/ci.yml)
-[![Release](https://github.com/beshkenadze/ecfr-sdk/actions/workflows/release.yml/badge.svg)](https://github.com/beshkenadze/ecfr-sdk/actions/workflows/release.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+## 📑 Table of Contents
+
+- [Quick Start](#-quick-start)
+- [Packages](#-packages)
+- [Key Features](#-key-features)
+- [Usage Examples](#-usage-examples)
+- [MCP Servers](#-mcp-model-context-protocol-servers)
+- [Authentication](#-authentication)
+- [Development](#️-development)
+- [Contributing](#-contributing)
+- [Resources](#-resources)
+
+## 🚀 Quick Start
+
+```bash
+# Install any SDK
+npm install @us-legal-tools/ecfr-sdk
+npm install @us-legal-tools/federal-register-sdk
+npm install @us-legal-tools/courtlistener-sdk
+npm install @us-legal-tools/govinfo-sdk
+npm install @us-legal-tools/dol-sdk
+
+# Or clone and run locally
+git clone https://github.com/beshkenadze/ecfr-sdk.git
+cd ecfr-sdk
+bun install
+turbo build
+```
 
 ## 📦 Packages
 
-This monorepo contains five powerful SDKs for accessing federal legal and government information:
+<table>
+<tr>
+<th align="center">Package</th>
+<th align="center">Version</th>
+<th align="center">Description</th>
+</tr>
+<tr>
+<td><a href="./packages/ecfr-sdk"><b>@us-legal-tools/ecfr-sdk</b></a></td>
+<td align="center"><a href="https://www.npmjs.com/package/@us-legal-tools/ecfr-sdk"><img src="https://img.shields.io/npm/v/@us-legal-tools/ecfr-sdk.svg" alt="npm version"></a></td>
+<td>Electronic Code of Federal Regulations API</td>
+</tr>
+<tr>
+<td><a href="./packages/federal-register-sdk"><b>@us-legal-tools/federal-register-sdk</b></a></td>
+<td align="center"><a href="https://www.npmjs.com/package/@us-legal-tools/federal-register-sdk"><img src="https://img.shields.io/npm/v/@us-legal-tools/federal-register-sdk.svg" alt="npm version"></a></td>
+<td>Federal Register documents and notices API</td>
+</tr>
+<tr>
+<td><a href="./packages/courtlistener-sdk"><b>@us-legal-tools/courtlistener-sdk</b></a></td>
+<td align="center"><a href="https://www.npmjs.com/package/@us-legal-tools/courtlistener-sdk"><img src="https://img.shields.io/npm/v/@us-legal-tools/courtlistener-sdk.svg" alt="npm version"></a></td>
+<td>Legal opinions, PACER data, and judge info API</td>
+</tr>
+<tr>
+<td><a href="./packages/govinfo-sdk"><b>@us-legal-tools/govinfo-sdk</b></a></td>
+<td align="center"><a href="https://www.npmjs.com/package/@us-legal-tools/govinfo-sdk"><img src="https://img.shields.io/npm/v/@us-legal-tools/govinfo-sdk.svg" alt="npm version"></a></td>
+<td>Government Publishing Office documents API</td>
+</tr>
+<tr>
+<td><a href="./packages/dol-sdk"><b>@us-legal-tools/dol-sdk</b></a></td>
+<td align="center"><a href="https://www.npmjs.com/package/@us-legal-tools/dol-sdk"><img src="https://img.shields.io/npm/v/@us-legal-tools/dol-sdk.svg" alt="npm version"></a></td>
+<td>Department of Labor statistics and data API</td>
+</tr>
+</table>
 
-### [@beshkenadze/ecfr-sdk](./packages/ecfr-sdk)
-[![npm version](https://img.shields.io/npm/v/@beshkenadze/ecfr-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/ecfr-sdk)
+## 📚 Key Features
 
-**Electronic Code of Federal Regulations (eCFR) SDK**
+### **[@us-legal-tools/ecfr-sdk](./packages/ecfr-sdk)** - Electronic Code of Federal Regulations
+- Full text of all 50 CFR titles with advanced search
+- Historical versions and change tracking
+- MCP Server: `eCFRSDKServer`
 
-Access the complete, continuously updated digital version of the Code of Federal Regulations (CFR).
+### **[@us-legal-tools/federal-register-sdk](./packages/federal-register-sdk)** - Federal Register
+- All documents published since 1994 with agency information
+- Public inspection documents before publication
+- MCP Server: `FederalRegisterServer`
 
-- 📖 **API Coverage**: Full text of all 50 CFR titles
-- 🔍 **Search**: Advanced search across all federal regulations
-- 📅 **Versioning**: Access historical versions and track changes
-- 🏗️ **Structure**: Navigate hierarchical regulation structure
-- 🤖 **MCP Server**: `eCFRSDKServer` for AI integration
+### **[@us-legal-tools/courtlistener-sdk](./packages/courtlistener-sdk)** - CourtListener
+- Millions of legal opinions from federal and state courts
+- Judge profiles, oral arguments, PACER integration
+- Citation lookup and docket alerts
+- MCP Server: `CourtListenerRESTAPIServer`
 
-### [@beshkenadze/federal-register-sdk](./packages/federal-register-sdk)
-[![npm version](https://img.shields.io/npm/v/@beshkenadze/federal-register-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/federal-register-sdk)
+### **[@us-legal-tools/govinfo-sdk](./packages/govinfo-sdk)** - GovInfo
+- Congressional, judicial, and executive branch publications
+- Full-text search with multiple download formats
+- MCP Server: `GovInfoServer`
 
-**Federal Register SDK**
+### **[@us-legal-tools/dol-sdk](./packages/dol-sdk)** - Department of Labor
+- Employment, wages, inflation, and productivity statistics
+- Industry-specific and geographic data
+- MCP Server: `DOLDataServer`
 
-Access the daily journal of the United States government, including all proposed and final rules, notices, and presidential documents.
 
-- 📄 **Documents**: Search all documents published since 1994
-- 🏛️ **Agencies**: Comprehensive agency information
-- 📋 **Public Inspection**: Access documents before publication
-- 🖼️ **Images**: Document images and metadata
-- 🤖 **MCP Server**: `FederalRegisterServer` for AI integration
-
-### [@beshkenadze/courtlistener-sdk](./packages/courtlistener-sdk)
-[![npm version](https://img.shields.io/npm/v/@beshkenadze/courtlistener-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/courtlistener-sdk)
-
-**CourtListener SDK**
-
-Access the largest free legal database, containing millions of legal opinions, oral arguments, judges, and more.
-
-- ⚖️ **Case Law**: Millions of legal opinions from federal and state courts
-- 👨‍⚖️ **Judges**: Comprehensive judge profiles and biographical data
-- 🎙️ **Oral Arguments**: Audio recordings and metadata
-- 📚 **Citations**: Advanced citation lookup and normalization
-- 💼 **PACER Integration**: Access federal court dockets
-- 🔔 **Alerts**: Track changes to cases and dockets
-- 🤖 **MCP Server**: `CourtListenerRESTAPIServer` for AI integration
-
-### [@beshkenadze/govinfo-sdk](./packages/govinfo-sdk)
-[![npm version](https://img.shields.io/npm/v/@beshkenadze/govinfo-sdk.svg)](https://www.npmjs.com/package/@beshkenadze/govinfo-sdk)
-
-**GovInfo SDK**
-
-Access the U.S. Government Publishing Office's official repository for federal government information.
-
-- 📚 **Collections**: Access to all Congressional, judicial, and executive branch publications
-- 🔍 **Search**: Full-text search across all government documents
-- 📄 **Download**: Multiple format options (PDF, XML, HTML, etc.)
-- 🏛️ **Coverage**: Bills, laws, regulations, court opinions, and more
-- 🤖 **MCP Server**: `GovInfoServer` for AI integration
-
-### [@us-legal-tools/dol-sdk](./packages/dol-sdk)
-[![npm version](https://img.shields.io/npm/v/@us-legal-tools/dol-sdk.svg)](https://www.npmjs.com/package/@us-legal-tools/dol-sdk)
-
-**Department of Labor (DOL) SDK**
-
-Access comprehensive labor statistics and datasets from the U.S. Department of Labor.
-
-- 📊 **Statistics**: Employment, wages, inflation, and productivity data
-- 📈 **Time Series**: Historical labor market data
-- 🏭 **Industries**: Detailed industry-specific statistics
-- 🗺️ **Geography**: State and metropolitan area data
-- 🤖 **MCP Server**: `DOLDataServer` for AI integration
-
-## 🚀 Installation
-
-Each SDK can be installed independently from npm:
-
-```bash
-# eCFR SDK
-npm install @beshkenadze/ecfr-sdk
-
-# Federal Register SDK  
-npm install @beshkenadze/federal-register-sdk
-
-# CourtListener SDK
-npm install @beshkenadze/courtlistener-sdk
-
-# GovInfo SDK
-npm install @beshkenadze/govinfo-sdk
-
-# DOL SDK
-npm install @us-legal-tools/dol-sdk
-```
-
-Or using other package managers:
-
-```bash
-# Using Bun
-bun add @beshkenadze/ecfr-sdk
-
-# Using Yarn
-yarn add @beshkenadze/federal-register-sdk
-
-# Using PNPM
-pnpm add @beshkenadze/courtlistener-sdk
-```
-
-## 📖 Quick Start
+## 📖 Usage Examples
 
 ### eCFR SDK
 
 ```typescript
-import { getApiSearchV1Results } from '@beshkenadze/ecfr-sdk';
+import { getApiSearchV1Results } from '@us-legal-tools/ecfr-sdk';
 
 // Search for regulations about "clean air"
 const results = await getApiSearchV1Results({
@@ -134,7 +137,7 @@ results.results.forEach(result => {
 ### Federal Register SDK
 
 ```typescript
-import { getDocumentsFormat } from '@beshkenadze/federal-register-sdk';
+import { getDocumentsFormat } from '@us-legal-tools/federal-register-sdk';
 
 // Search for recent EPA rules
 const documents = await getDocumentsFormat({
@@ -154,7 +157,7 @@ console.log(`Found ${documents.count} EPA rules in 2024`);
 ### CourtListener SDK
 
 ```typescript
-import { getSearch } from '@beshkenadze/courtlistener-sdk';
+import { getSearch } from '@us-legal-tools/courtlistener-sdk';
 
 // Search for Supreme Court cases about free speech
 const cases = await getSearch({
@@ -173,7 +176,7 @@ cases.results.forEach(case => {
 ### GovInfo SDK
 
 ```typescript
-import { createApiClient } from '@beshkenadze/govinfo-sdk';
+import { createApiClient } from '@us-legal-tools/govinfo-sdk';
 
 const client = createApiClient({
   headers: {
@@ -249,22 +252,22 @@ Configure your AI assistant (like Claude) to use these MCP servers:
   "mcpServers": {
     "ecfr": {
       "command": "bunx",
-      "args": ["@beshkenadze/ecfr-sdk/mcp"]
+      "args": ["@us-legal-tools/ecfr-sdk/mcp"]
     },
     "federal-register": {
       "command": "bunx", 
-      "args": ["@beshkenadze/federal-register-sdk/mcp"]
+      "args": ["@us-legal-tools/federal-register-sdk/mcp"]
     },
     "courtlistener": {
       "command": "bunx",
-      "args": ["@beshkenadze/courtlistener-sdk/mcp"],
+      "args": ["@us-legal-tools/courtlistener-sdk/mcp"],
       "env": {
         "COURTLISTENER_API_TOKEN": "your-token"
       }
     },
     "govinfo": {
       "command": "bunx",
-      "args": ["@beshkenadze/govinfo-sdk/mcp"],
+      "args": ["@us-legal-tools/govinfo-sdk/mcp"],
       "env": {
         "GOV_INFO_API_KEY": "your-key"
       }
@@ -329,13 +332,16 @@ turbo test
 ```
 ecfr-sdk/
 ├── packages/
-│   ├── ecfr-sdk/              # eCFR SDK package
-│   ├── federal-register-sdk/  # Federal Register SDK package
-│   ├── courtlistener-sdk/     # CourtListener SDK package
-│   ├── govinfo-sdk/           # GovInfo SDK package
-│   └── dol-sdk/               # Department of Labor SDK package
+│   ├── ecfr-sdk/              # eCFR SDK
+│   ├── federal-register-sdk/  # Federal Register SDK
+│   ├── courtlistener-sdk/     # CourtListener SDK
+│   ├── govinfo-sdk/           # GovInfo SDK
+│   ├── dol-sdk/               # Department of Labor SDK
+│   └── tsconfig/              # Shared TypeScript configs
 ├── turbo.json                 # Turborepo configuration
 ├── package.json               # Root package.json
+├── biome.json                 # Code formatter/linter config
+├── tsconfig.json              # Root TypeScript config
 └── README.md                  # This file
 ```
 
@@ -347,33 +353,38 @@ ecfr-sdk/
 4. Add to root `tsconfig.json` references
 5. Update this README
 
-## 📋 API Coverage
+## 📋 Commands
 
-### eCFR API Features
-- ✅ Full regulation text retrieval
-- ✅ Advanced search with faceting
-- ✅ Historical version access
-- ✅ Hierarchical navigation
-- ✅ Citation lookup
-- ✅ Recent changes tracking
+```bash
+# Install dependencies
+bun install
 
-### Federal Register API Features
-- ✅ Document search and retrieval
-- ✅ Agency information
-- ✅ Public inspection documents
-- ✅ Presidential documents
-- ✅ Document images
-- ✅ Suggested searches
+# Generate all SDKs from OpenAPI specs
+turbo generate
 
-### CourtListener API Features
-- ✅ Opinion full-text search
-- ✅ Case metadata and citations
-- ✅ Judge biographical data
-- ✅ Oral argument audio
-- ✅ PACER document access
-- ✅ Financial disclosures
-- ✅ Docket alerts
-- ✅ Citation normalization
+# Build all packages
+turbo build
+
+# Run tests
+turbo test
+turbo test:integration
+turbo test:e2e
+
+# Format and lint
+turbo format
+turbo lint
+```
+
+### Working with Packages
+
+```bash
+# Run a specific package's command
+turbo run build --filter=@us-legal-tools/ecfr-sdk
+
+# Work on a specific package
+cd packages/ecfr-sdk
+bun test
+```
 
 ## 🤝 Contributing
 
@@ -391,22 +402,29 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 ## 🔗 Resources
 
+### API Documentation
+- [eCFR API Documentation](https://www.ecfr.gov/api/docs)
+- [Federal Register API Documentation](https://www.federalregister.gov/developers/api/v1)
+- [CourtListener API Documentation](https://www.courtlistener.com/help/api/rest/)
+- [GovInfo API Documentation](https://api.govinfo.gov/docs/)
+- [DOL API Documentation](https://developer.dol.gov/)
+
+### Websites
 - [eCFR Website](https://www.ecfr.gov/)
 - [Federal Register Website](https://www.federalregister.gov/)
 - [CourtListener Website](https://www.courtlistener.com/)
+- [GovInfo Website](https://www.govinfo.gov/)
+- [DOL Developer Portal](https://developer.dol.gov/)
+
+### MCP Resources
 - [Model Context Protocol](https://modelcontext.dev/)
+- [Getting Started with Custom Connectors Using Remote MCP](https://support.anthropic.com/en/articles/11175166-getting-started-with-custom-connectors-using-remote-mcp)
 
 ## 👤 Author
 
-**Akira Beshkenadze**
+**Aleksandr Beshkenadze <beshkenadze@gmail.com>**
 
 - GitHub: [@beshkenadze](https://github.com/beshkenadze)
-
-## 🙏 Acknowledgments
-
-- [Free Law Project](https://free.law/) for CourtListener
-- U.S. Government Publishing Office for eCFR and Federal Register APIs
-- [Anthropic](https://anthropic.com/) for Model Context Protocol
 
 ---
 

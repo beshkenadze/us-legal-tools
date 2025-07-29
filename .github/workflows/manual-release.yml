@@ -97,7 +97,7 @@ jobs:
           for package in "${PACKAGE_ARRAY[@]}"; do
             # Add @ prefix if not present
             if [[ ! "$package" =~ ^@ ]]; then
-              package="@beshkenadze/$package"
+              package="@us-legal-tools/$package"
             fi
             echo "\"$package\": ${{ inputs.release-type }}" >> $CHANGESET_FILE
           done

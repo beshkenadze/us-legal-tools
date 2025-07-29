@@ -62,19 +62,19 @@ bun changeset
 ```bash
 # Bug fix in ecfr-sdk
 bun changeset
-# Select: @beshkenadze/ecfr-sdk
+# Select: @us-legal-tools/ecfr-sdk
 # Type: patch
 # Summary: Fix API endpoint URL generation
 
 # New feature across multiple packages
 bun changeset
-# Select: @beshkenadze/ecfr-sdk, @beshkenadze/federal-register-sdk
+# Select: @us-legal-tools/ecfr-sdk, @us-legal-tools/federal-register-sdk
 # Type: minor
 # Summary: Add pagination support to search endpoints
 
 # Breaking change
 bun changeset
-# Select: @beshkenadze/govinfo-sdk
+# Select: @us-legal-tools/govinfo-sdk
 # Type: major
 # Summary: Refactor client API to use async/await pattern
 ```
@@ -220,8 +220,8 @@ git push origin main
 
 ```bash
 # Within 72 hours
-npm unpublish @beshkenadze/package-name@version
+npm unpublish @us-legal-tools/package-name@version
 
 # After 72 hours - deprecate instead
-npm deprecate @beshkenadze/package-name@version "Critical bug, use version x.x.x"
+npm deprecate @us-legal-tools/package-name@version "Critical bug, use version x.x.x"
 ```
