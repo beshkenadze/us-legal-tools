@@ -43,12 +43,14 @@ await Bun.build({
 console.log('Generating TypeScript declarations...');
 // Find all TypeScript files excluding tests
 const srcFiles = await Array.fromAsync(
-  new Bun.Glob("src/**/*.ts").scan({ 
+  new Bun.Glob('src/**/*.ts').scan({
     cwd: process.cwd(),
-    onlyFiles: true 
-  })
+    onlyFiles: true,
+  }),
 );
-const nonTestFiles = srcFiles.filter(f => !f.includes('.test.') && !f.includes('.spec.') && !f.includes('test-'));
+const nonTestFiles = srcFiles.filter(
+  (f) => !f.includes('.test.') && !f.includes('.spec.') && !f.includes('test-'),
+);
 
 if (nonTestFiles.length > 0) {
   await $`bunx tsc ${nonTestFiles} --declaration --emitDeclarationOnly --outDir dist --moduleResolution node --skipLibCheck --module esnext --target esnext --allowJs false`;
