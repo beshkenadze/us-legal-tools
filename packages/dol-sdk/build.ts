@@ -29,4 +29,9 @@ const serverPath = join(import.meta.dir, 'dist/mcp/server.js');
 const serverContent = await Bun.file(serverPath).text();
 await Bun.write(serverPath, `#!/usr/bin/env node\n${serverContent}`);
 
+// Generate TypeScript declarations
+console.log('Generating TypeScript declarations...');
+const { $ } = await import('bun');
+await $`bunx tsc --emitDeclarationOnly --declaration --outDir dist --project tsconfig.build.json`;
+
 console.log('Build completed successfully!');
