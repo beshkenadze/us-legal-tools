@@ -1,6 +1,6 @@
 {
   "name": "@beshkenadze/federal-register-sdk",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "TypeScript SDK and MCP server for the Federal Register API",
   "author": "Aleksandr Beshkenadze <beshkenadze@gmail.com>",
   "license": "MIT",

@@ -1,6 +1,6 @@
 {
   "name": "@beshkenadze/dol-sdk",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "TypeScript SDK for the Department of Labor API",
   "keywords": [
     "dol",
