@@ -1,6 +1,6 @@
 {
   "name": "@beshkenadze/courtlistener-sdk",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "TypeScript SDK and MCP server for CourtListener API",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

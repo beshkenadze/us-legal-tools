@@ -1,5 +1,16 @@
 # @beshkenadze/govinfo-sdk
 
+## 0.4.1
+
+### Patch Changes
+
+- [`179069e`](https://github.com/beshkenadze/us-legal-tools/commit/179069ecf7ce58d3b17da75497a17fa37a332159) Thanks [@beshkenadze](https://github.com/beshkenadze)! - Fix TypeScript declaration file generation for all packages
+
+  - Resolved missing .d.ts files in published packages
+  - Updated build scripts to use bunx tsc for consistent TypeScript versions
+  - Fixed tsconfig.build.json configuration for proper declaration generation
+  - All packages now include complete TypeScript type definitions
+
 ## 0.4.0
 
 ### Minor Changes
