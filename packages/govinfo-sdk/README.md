@@ -88,7 +88,7 @@ The MCP server exposes GovInfo API operations as tools that can be called by Cla
 
 ```bash
 # Clone the repository
-git clone https://github.com/beshkenadze/ecfr-sdk.git
+git clone https://github.com/beshkenadze/us-legal-tools.git
 cd ecfr-sdk/packages/govinfo-sdk
 
 # Install dependencies

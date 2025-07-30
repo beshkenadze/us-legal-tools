@@ -4,17 +4,17 @@
     <strong>TypeScript SDKs and MCP servers for U.S. federal legal and regulatory APIs</strong>
   </p>
   <p>
-    <a href="https://github.com/beshkenadze/ecfr-sdk/actions/workflows/ci.yml">
-      <img alt="CI Status" src="https://github.com/beshkenadze/ecfr-sdk/actions/workflows/ci.yml/badge.svg">
+    <a href="https://github.com/beshkenadze/us-legal-tools/actions/workflows/ci.yml">
+      <img alt="CI Status" src="https://github.com/beshkenadze/us-legal-tools/actions/workflows/ci.yml/badge.svg">
     </a>
-    <a href="https://github.com/beshkenadze/ecfr-sdk/actions/workflows/release.yml">
-      <img alt="Release Status" src="https://github.com/beshkenadze/ecfr-sdk/actions/workflows/release.yml/badge.svg">
+    <a href="https://github.com/beshkenadze/us-legal-tools/actions/workflows/release.yml">
+      <img alt="Release Status" src="https://github.com/beshkenadze/us-legal-tools/actions/workflows/release.yml/badge.svg">
     </a>
     <a href="https://opensource.org/licenses/MIT">
       <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg">
     </a>
-    <a href="https://github.com/beshkenadze/ecfr-sdk">
-      <img alt="GitHub Stars" src="https://img.shields.io/github/stars/beshkenadze/ecfr-sdk?style=social">
+    <a href="https://github.com/beshkenadze/us-legal-tools">
+      <img alt="GitHub Stars" src="https://img.shields.io/github/stars/beshkenadze/us-legal-tools?style=social">
     </a>
   </p>
 </div>
@@ -44,7 +44,7 @@ npm install @us-legal-tools/govinfo-sdk
 npm install @us-legal-tools/dol-sdk
 
 # Or clone and run locally
-git clone https://github.com/beshkenadze/ecfr-sdk.git
+git clone https://github.com/beshkenadze/us-legal-tools.git
 cd ecfr-sdk
 bun install
 turbo build
@@ -311,7 +311,7 @@ This is a Turborepo monorepo using Bun for package management.
 
 ```bash
 # Clone the repository
-git clone https://github.com/beshkenadze/ecfr-sdk.git
+git clone https://github.com/beshkenadze/us-legal-tools.git
 cd ecfr-sdk
 
 # Install dependencies

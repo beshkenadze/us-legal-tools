@@ -198,8 +198,8 @@ This ensures dependent packages always have their dependencies available.
 ## Monitoring Releases
 
 - **npm**: https://www.npmjs.com/~beshkenadze
-- **GitHub Packages**: https://github.com/beshkenadze/ecfr-sdk/packages
-- **GitHub Releases**: https://github.com/beshkenadze/ecfr-sdk/releases
+- **GitHub Packages**: https://github.com/beshkenadze/us-legal-tools/packages
+- **GitHub Releases**: https://github.com/beshkenadze/us-legal-tools/releases
 
 ## Emergency Procedures
 
