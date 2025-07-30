@@ -1,5 +1,19 @@
 # @us-legal-tools/federal-register-sdk
 
+## 0.6.0
+
+### Minor Changes
+
+- [`ca101bb`](https://github.com/beshkenadze/us-legal-tools/commit/ca101bbd93fcc4dc03d8dac82686ba9d4a10e50b) Thanks [@beshkenadze](https://github.com/beshkenadze)! - - BREAKING: All packages renamed to use @us-legal-tools namespace:
+  - courtlistener-sdk → @us-legal-tools/courtlistener-sdk
+  - dol-sdk → @us-legal-tools/dol-sdk
+  - ecfr-sdk → @us-legal-tools/ecfr-sdk
+  - federal-register-sdk → @us-legal-tools/federal-register-sdk
+  - govinfo-sdk → @us-legal-tools/govinfo-sdk
+  - Updated all imports and cross-package references to use new namespace
+  - Updated author information across all packages
+  - Standardized package metadata and documentation
+
 ## 0.5.1
 
 ### Patch Changes
