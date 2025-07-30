@@ -4,8 +4,8 @@
     <strong>TypeScript SDKs and MCP servers for U.S. federal legal and regulatory APIs</strong>
   </p>
   <p>
-    <a href="https://github.com/beshkenadze/us-legal-tools/actions/workflows/ci.yml">
-      <img alt="CI Status" src="https://github.com/beshkenadze/us-legal-tools/actions/workflows/ci.yml/badge.svg">
+    <a href="https://github.com/beshkenadze/us-legal-tools/actions/workflows/validate.yml">
+      <img alt="CI Status" src="https://github.com/beshkenadze/us-legal-tools/actions/workflows/validate.yml/badge.svg">
     </a>
     <a href="https://github.com/beshkenadze/us-legal-tools/actions/workflows/release.yml">
       <img alt="Release Status" src="https://github.com/beshkenadze/us-legal-tools/actions/workflows/release.yml/badge.svg">

@@ -1,0 +1,271 @@
+name: Validate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  # Build once and share artifacts with all other jobs
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Generate SDKs
+        run: bunx turbo generate
+
+      - name: Build packages
+        run: bunx turbo build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            packages/*/dist
+            packages/*/generated
+            packages/*/tsconfig.tsbuildinfo
+            node_modules
+            .turbo
+          retention-days: 1
+
+  # Parallel jobs that use build artifacts
+  lint:
+    name: Lint & Format
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Run format check
+        run: bunx turbo format
+
+      - name: Run lint check
+        run: bunx turbo check:ci
+
+  test:
+    name: Test
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        test-suite: [unit, integration, e2e]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Setup Playwright
+        if: matrix.test-suite == 'e2e'
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run ${{ matrix.test-suite }} tests
+        run: |
+          if [ "${{ matrix.test-suite }}" == "unit" ]; then
+            bunx turbo test
+          elif [ "${{ matrix.test-suite }}" == "integration" ]; then
+            bunx turbo test:integration
+          else
+            bunx turbo test:e2e
+          fi
+        env:
+          GOV_INFO_API_KEY: ${{ secrets.GOV_INFO_API_KEY }}
+          DOL_API_KEY: ${{ secrets.DOL_API_KEY }}
+
+  verify-mcp:
+    name: Verify MCP Servers
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Verify MCP servers
+        run: |
+          # Test each MCP server
+          for pkg in ecfr-sdk federal-register-sdk courtlistener-sdk govinfo-sdk dol-sdk; do
+            echo "Testing $pkg MCP server..."
+            cd packages/$pkg
+            bunx @modelcontextprotocol/inspector --cli bun src/mcp/server.ts --method tools/list
+            cd ../..
+          done
+
+  size-check:
+    name: Bundle Size Check
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Check bundle sizes
+        run: |
+          echo "📊 Bundle sizes:"
+          for pkg in packages/*; do
+            if [ -d "$pkg/dist" ]; then
+              echo "📦 $(basename $pkg):"
+              du -sh $pkg/dist/* | sort -h
+              
+              # Check if bundle is too large (e.g., > 5MB per package)
+              TOTAL_BYTES=$(du -sb $pkg/dist/ | cut -f1)
+              if [ $TOTAL_BYTES -gt 5242880 ]; then
+                echo "❌ $(basename $pkg) bundle size exceeds 5MB!"
+                exit 1
+              fi
+            fi
+          done
+
+  # PR-specific checks
+  pr-checks:
+    name: PR Checks
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Check for changeset
+        run: bunx changeset status --since=origin/main
+        continue-on-error: true
+        id: changeset-status
+
+      - name: Comment on PR if changeset missing
+        if: steps.changeset-status.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ This PR is missing a changeset. Please run `bun changeset` to add a changeset describing the changes.'
+            })
+
+  # Summary for PRs
+  summary:
+    name: PR Summary
+    if: always() && github.event_name == 'pull_request'
+    needs: [lint, test, verify-mcp, size-check]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment PR with results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const jobs = ${{ toJSON(needs) }};
+            const allPassed = Object.values(jobs).every(job => job.result === 'success');
+            
+            const output = `## 🤖 Automated Validation Results
+            
+            ${allPassed ? '✅ **All checks passed!**' : '❌ **Some checks failed**'}
+            
+            ### 📊 Check Summary
+            - 🔍 Lint & Format: ${jobs.lint.result === 'success' ? '✅ Passed' : '❌ Failed'}
+            - 🧪 Tests: ${jobs.test.result === 'success' ? '✅ All test suites passed' : '❌ Some tests failed'}
+            - 🔌 MCP Servers: ${jobs['verify-mcp'].result === 'success' ? '✅ Verified' : '❌ Failed'}
+            - 📦 Bundle Size: ${jobs['size-check'].result === 'success' ? '✅ Within limits' : '❌ Too large'}
+            
+            ### 📝 Next Steps
+            ${allPassed ? 
+              '- Review code changes\n- Ensure changeset is added if needed\n- Merge when ready' : 
+              '- Fix failing checks\n- Push updates to this PR'
+            }`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });
