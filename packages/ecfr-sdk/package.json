@@ -13,14 +13,14 @@
     "mcp",
     "typescript"
   ],
-  "homepage": "https://github.com/beshkenadze/ecfr-sdk#readme",
+  "homepage": "https://github.com/beshkenadze/us-legal-tools#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/beshkenadze/ecfr-sdk.git",
+    "url": "git+https://github.com/beshkenadze/us-legal-tools.git",
     "directory": "packages/ecfr-sdk"
   },
   "bugs": {
-    "url": "https://github.com/beshkenadze/ecfr-sdk/issues"
+    "url": "https://github.com/beshkenadze/us-legal-tools/issues"
   },
   "type": "module",
   "main": "./dist/index.js",
