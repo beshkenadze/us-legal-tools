@@ -1,6 +1,6 @@
 {
   "name": "@us-legal-tools/govinfo-sdk",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "TypeScript SDK and MCP server for the GovInfo API",
   "author": "Aleksandr Beshkenadze <beshkenadze@gmail.com>",
   "license": "MIT",
