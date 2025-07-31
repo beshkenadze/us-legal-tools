@@ -1,8 +1,32 @@
-# @us-legal-tools/courtlistener-sdk
-
-TypeScript SDK and MCP server for the CourtListener API - the largest free legal database.
-
-[![npm version](https://img.shields.io/npm/v/@us-legal-tools/courtlistener-sdk.svg)](https://www.npmjs.com/package/@us-legal-tools/courtlistener-sdk)
+<div align="center">
+  <h1>@us-legal-tools/courtlistener-sdk</h1>
+  <p>
+    <strong>TypeScript SDK and MCP server for CourtListener - the largest free legal database</strong>
+  </p>
+  <p>
+    <a href="https://www.npmjs.com/package/@us-legal-tools/courtlistener-sdk">
+      <img alt="npm version" src="https://img.shields.io/npm/v/@us-legal-tools/courtlistener-sdk.svg?style=for-the-badge">
+    </a>
+    <a href="https://www.npmjs.com/package/@us-legal-tools/courtlistener-sdk">
+      <img alt="npm downloads" src="https://img.shields.io/npm/dm/@us-legal-tools/courtlistener-sdk.svg?style=for-the-badge">
+    </a>
+    <a href="https://github.com/beshkenadze/us-legal-tools/blob/main/LICENSE">
+      <img alt="License" src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge">
+    </a>
+    <a href="https://github.com/beshkenadze/us-legal-tools/actions/workflows/validate.yml">
+      <img alt="CI Status" src="https://img.shields.io/github/actions/workflow/status/beshkenadze/us-legal-tools/validate.yml?branch=main&style=for-the-badge">
+    </a>
+  </p>
+  <p>
+    <a href="#features">Features</a> •
+    <a href="#installation">Installation</a> •
+    <a href="#authentication">Authentication</a> •
+    <a href="#quick-start">Quick Start</a> •
+    <a href="#api-reference">API</a> •
+    <a href="#mcp-server">MCP Server</a> •
+    <a href="https://www.courtlistener.com/help/api/">CourtListener API Docs</a>
+  </p>
+</div>
 
 ## Features
 
@@ -14,6 +38,7 @@ TypeScript SDK and MCP server for the CourtListener API - the largest free legal
 - 🔔 **Real-time Alerts** - Track changes to cases and dockets
 - 🤖 **MCP Server** - AI-ready server for integration with Claude and other AI assistants
 - 🔍 **Advanced Search** - Powerful search with Elasticsearch backend
+- ✨ **Type-safe** - Full TypeScript support with auto-completion
 
 ## Installation
 
@@ -53,125 +78,104 @@ import { getSearch } from '@us-legal-tools/courtlistener-sdk';
 
 // Search for Supreme Court cases
 const results = await getSearch({
-  type: 'o', // opinions
-  q: 'first amendment',
+  type: 'o', // 'o' for opinions
+  q: 'miranda rights',
   court: 'scotus',
-  order_by: 'score desc',
-  highlight: 'text'
+  order_by: 'score desc'
 });
 
 console.log(`Found ${results.count} cases`);
 results.results.forEach(result => {
   console.log(`- ${result.caseName} (${result.dateFiled})`);
-  if (result.snippet) {
-    console.log(`  Snippet: ${result.snippet}`);
-  }
 });
 ```
 
-### Citation Lookup
+### Get Case Details
 
 ```typescript
-import { postCitationLookup } from '@us-legal-tools/courtlistener-sdk';
+import { getOpinionsId } from '@us-legal-tools/courtlistener-sdk';
 
-// Look up citations
-const citations = await postCitationLookup({
-  text: 'I need the case at 410 U.S. 113 and also 5 F.3d 1234.',
-  html: false
-});
+// Get a specific opinion
+const opinion = await getOpinionsId({ id: 123456 });
 
-console.log('Found citations:');
-citations.citations.forEach(cite => {
-  console.log(`- ${cite.normalized_cite}: ${cite.case_name}`);
-  console.log(`  Court: ${cite.court}`);
-  console.log(`  URL: ${cite.absolute_url}`);
-});
+console.log(`Case: ${opinion.case_name}`);
+console.log(`Court: ${opinion.court}`);
+console.log(`Date: ${opinion.date_filed}`);
+console.log(`Text: ${opinion.plain_text || opinion.html}`);
 ```
 
-### Judge Information
+### Search Judges
 
 ```typescript
-import { getPeople, getPositions } from '@us-legal-tools/courtlistener-sdk';
+import { getSearch } from '@us-legal-tools/courtlistener-sdk';
 
 // Search for judges
-const judges = await getPeople({
-  name_last: 'Roberts',
-  court: 'scotus'
+const judges = await getSearch({
+  type: 'p', // 'p' for people/judges
+  q: 'Ruth Bader Ginsburg',
+  order_by: 'name_reverse asc'
 });
 
-// Get judge positions
-for (const judge of judges.results) {
-  const positions = await getPositions({
-    person: judge.id
-  });
-  
-  positions.results.forEach(pos => {
-    console.log(`${judge.name_full}: ${pos.position_type} at ${pos.court_name}`);
-  });
-}
+judges.results.forEach(judge => {
+  console.log(`${judge.name_full} - ${judge.court}`);
+});
 ```
 
-### Docket Monitoring
+### Get Audio Recordings
 
 ```typescript
-import { getDockets, postDocketAlerts } from '@us-legal-tools/courtlistener-sdk';
+import { getAudio } from '@us-legal-tools/courtlistener-sdk';
 
-// Search for dockets
-const dockets = await getDockets({
-  q: 'Google',
-  court: 'cafc',
-  order_by: 'date_created desc'
+// Get oral arguments
+const audio = await getAudio({
+  docket__court: 'scotus',
+  argued_after: '2023-01-01'
 });
 
-// Create alert for a docket
-if (dockets.results.length > 0) {
-  const alert = await postDocketAlerts({
-    docket: dockets.results[0].id,
-    alert_type: 'subscription'
-  });
-  
-  console.log('Alert created:', alert.id);
-}
+audio.results.forEach(recording => {
+  console.log(`${recording.case_name} - ${recording.date_argued}`);
+  console.log(`Audio: ${recording.download_url}`);
+});
 ```
 
 ## API Reference
 
 ### Search Endpoints
 
-- `getSearch` - Universal search across all content types
-- `getOpinions` - Search legal opinions
-- `getDockets` - Search dockets
-- `getAudio` - Search oral arguments
+- `getSearch` - Universal search endpoint for all content types
+- `getSearchV4OpinionsClusters` - Search opinion clusters
+- `getSearchV4People` - Search judges and people
+- `getSearchV4OralArguments` - Search oral arguments
 
-### Case Law Endpoints
+### Opinion Endpoints
 
-- `getClusters` - Get opinion clusters
-- `getOpinions` - Get individual opinions
-- `getCitations` - Get citation objects
+- `getOpinions` - List opinions
+- `getOpinionsId` - Get specific opinion
+- `getClusters` - List opinion clusters
+- `getClustersId` - Get specific cluster
 
-### People & Courts
+### Judge/Person Endpoints
 
-- `getPeople` - Search judges and parties
-- `getPositions` - Get judge positions
-- `getCourts` - Get court information
-- `getPoliticalAffiliations` - Get political data
+- `getPeople` - List judges and people
+- `getPeopleId` - Get specific person details
+- `getPersonDisclosures` - Get financial disclosures
 
-### Financial Disclosures
+### Docket Endpoints
 
-- `getFinancialDisclosures` - Judge financial disclosures
-- `getInvestments` - Investment records
-- `getPositions` - Position holdings
-- `getGifts` - Gift disclosures
-
-### PACER & RECAP
-
-- `getRecap` - RECAP document archive
-- `postRecapFetch` - Request PACER documents
-
-### Alerts & Monitoring
-
-- `getAlerts` - Manage search alerts
+- `getDockets` - List dockets
+- `getDocketsId` - Get specific docket
+- `getDocketEntries` - List docket entries
 - `getDocketAlerts` - Manage docket alerts
+
+### Audio Endpoints
+
+- `getAudio` - List audio recordings
+- `getAudioId` - Get specific audio recording
+
+### Citation Endpoints
+
+- `getCitations` - Citation lookup
+- `getCitationNormalize` - Normalize citations
 
 ## MCP Server
 
@@ -180,7 +184,7 @@ The MCP server allows AI assistants to interact with the CourtListener API.
 ### Running the Server
 
 ```bash
-# With authentication token
+# Using the SDK directly (requires COURTLISTENER_API_TOKEN env var)
 COURTLISTENER_API_TOKEN=your-token npx @us-legal-tools/courtlistener-sdk/mcp
 
 # Or if installed locally
@@ -208,53 +212,45 @@ Add to your Claude configuration:
 
 ## Search Types
 
-When using the universal search endpoint, specify the type:
+Use the following types with the search endpoint:
 
 - `o` - Opinions
-- `r` - RECAP documents
+- `r` - RECAP Archive
 - `d` - Dockets
-- `p` - People (judges)
-- `oa` - Oral arguments
+- `p` - People/Judges
+- `oa` - Oral Arguments
+- `opinion-cluster` - Opinion Clusters
 
-## Advanced Search Syntax
-
-CourtListener supports advanced search operators:
-
-```typescript
-// Proximity search
-q: '"patent infringement"~10'  // Within 10 words
-
-// Field-specific search
-q: 'caseName:"Apple v. Samsung"'
-
-// Boolean operators
-q: 'copyright AND (fair use OR transformative)'
-
-// Date ranges
-q: 'dateFiled:[2020-01-01 TO 2024-12-31]'
-```
-
-## Rate Limiting
-
-CourtListener has rate limits based on your account type:
-- Free tier: 5,000 requests/day
-- Membership tiers: Higher limits available
-
-The SDK includes automatic retry logic for rate-limited requests.
-
-## Error Handling
+## Advanced Search
 
 ```typescript
 import { getSearch } from '@us-legal-tools/courtlistener-sdk';
 
+// Complex search with filters
+const results = await getSearch({
+  type: 'o',
+  q: 'first amendment',
+  court: 'ca9 ca10 cafc',  // Multiple courts
+  filed_after: '2020-01-01',
+  filed_before: '2023-12-31',
+  cited_gt: 50,  // Cited more than 50 times
+  order_by: 'dateFiled desc',
+  highlight: true
+});
+```
+
+## Error Handling
+
+```typescript
+import { getOpinionsId } from '@us-legal-tools/courtlistener-sdk';
+
 try {
-  const results = await getSearch({
-    type: 'o',
-    q: 'search term'
-  });
+  const opinion = await getOpinionsId({ id: 123456 });
 } catch (error) {
   if (error.response?.status === 401) {
     console.error('Invalid API token');
+  } else if (error.response?.status === 404) {
+    console.error('Opinion not found');
   } else if (error.response?.status === 429) {
     console.error('Rate limit exceeded');
   } else {
@@ -263,9 +259,35 @@ try {
 }
 ```
 
+## Rate Limiting
+
+CourtListener has rate limits based on your account type. Free accounts are limited to 5,000 requests per day.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
+
 ## Links
 
 - [npm Package](https://www.npmjs.com/package/@us-legal-tools/courtlistener-sdk)
+- [GitHub Repository](https://github.com/beshkenadze/us-legal-tools)
 - [CourtListener Website](https://www.courtlistener.com/)
-- [CourtListener API Documentation](https://www.courtlistener.com/help/api/rest/)
-- [Free Law Project](https://free.law/)
+- [CourtListener API Documentation](https://www.courtlistener.com/help/api/)
+- [Report Issues](https://github.com/beshkenadze/us-legal-tools/issues/new?labels=bug&template=bug-report.md)
+- [Request Features](https://github.com/beshkenadze/us-legal-tools/issues/new?labels=enhancement&template=feature-request.md)
+
+## Support
+
+Need help? Check out our [documentation](https://github.com/beshkenadze/us-legal-tools) or [create an issue](https://github.com/beshkenadze/us-legal-tools/issues/new/choose).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>

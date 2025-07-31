@@ -1,8 +1,31 @@
-# @us-legal-tools/federal-register-sdk
-
-TypeScript SDK and MCP server for the Federal Register API.
-
-[![npm version](https://img.shields.io/npm/v/@us-legal-tools/federal-register-sdk.svg)](https://www.npmjs.com/package/@us-legal-tools/federal-register-sdk)
+<div align="center">
+  <h1>@us-legal-tools/federal-register-sdk</h1>
+  <p>
+    <strong>TypeScript SDK and MCP server for the Federal Register API</strong>
+  </p>
+  <p>
+    <a href="https://www.npmjs.com/package/@us-legal-tools/federal-register-sdk">
+      <img alt="npm version" src="https://img.shields.io/npm/v/@us-legal-tools/federal-register-sdk.svg?style=for-the-badge">
+    </a>
+    <a href="https://www.npmjs.com/package/@us-legal-tools/federal-register-sdk">
+      <img alt="npm downloads" src="https://img.shields.io/npm/dm/@us-legal-tools/federal-register-sdk.svg?style=for-the-badge">
+    </a>
+    <a href="https://github.com/beshkenadze/us-legal-tools/blob/main/LICENSE">
+      <img alt="License" src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge">
+    </a>
+    <a href="https://github.com/beshkenadze/us-legal-tools/actions/workflows/validate.yml">
+      <img alt="CI Status" src="https://img.shields.io/github/actions/workflow/status/beshkenadze/us-legal-tools/validate.yml?branch=main&style=for-the-badge">
+    </a>
+  </p>
+  <p>
+    <a href="#features">Features</a> •
+    <a href="#installation">Installation</a> •
+    <a href="#quick-start">Quick Start</a> •
+    <a href="#api-reference">API</a> •
+    <a href="#mcp-server">MCP Server</a> •
+    <a href="https://www.federalregister.gov/developers/api/v1">Federal Register API Docs</a>
+  </p>
+</div>
 
 ## Features
 
@@ -13,6 +36,7 @@ TypeScript SDK and MCP server for the Federal Register API.
 - 🤖 **MCP Server** - AI-ready server for integration with Claude and other AI assistants
 - 🔍 **Advanced Search** - Powerful search with faceting and filtering
 - ✨ **Type-safe** - Full TypeScript support with auto-completion
+- 🚀 **Fast & Lightweight** - Minimal dependencies, optimized for performance
 
 ## Installation
 
@@ -220,8 +244,31 @@ try {
 
 The Federal Register API has rate limits. The SDK automatically includes appropriate headers, but be mindful of making too many requests in a short period.
 
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
+
 ## Links
 
 - [npm Package](https://www.npmjs.com/package/@us-legal-tools/federal-register-sdk)
+- [GitHub Repository](https://github.com/beshkenadze/us-legal-tools)
 - [Federal Register Website](https://www.federalregister.gov/)
 - [Federal Register API Documentation](https://www.federalregister.gov/developers/api/v1)
+- [Report Issues](https://github.com/beshkenadze/us-legal-tools/issues/new?labels=bug&template=bug-report.md)
+- [Request Features](https://github.com/beshkenadze/us-legal-tools/issues/new?labels=enhancement&template=feature-request.md)
+
+## Support
+
+Need help? Check out our [documentation](https://github.com/beshkenadze/us-legal-tools) or [create an issue](https://github.com/beshkenadze/us-legal-tools/issues/new/choose).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>

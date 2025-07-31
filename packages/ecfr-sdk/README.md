@@ -1,8 +1,31 @@
-# @us-legal-tools/ecfr-sdk
-
-TypeScript SDK and MCP server for the eCFR (Electronic Code of Federal Regulations) API.
-
-[![npm version](https://img.shields.io/npm/v/@us-legal-tools/ecfr-sdk.svg)](https://www.npmjs.com/package/@us-legal-tools/ecfr-sdk)
+<div align="center">
+  <h1>@us-legal-tools/ecfr-sdk</h1>
+  <p>
+    <strong>TypeScript SDK and MCP server for the Electronic Code of Federal Regulations (eCFR) API</strong>
+  </p>
+  <p>
+    <a href="https://www.npmjs.com/package/@us-legal-tools/ecfr-sdk">
+      <img alt="npm version" src="https://img.shields.io/npm/v/@us-legal-tools/ecfr-sdk.svg?style=for-the-badge">
+    </a>
+    <a href="https://www.npmjs.com/package/@us-legal-tools/ecfr-sdk">
+      <img alt="npm downloads" src="https://img.shields.io/npm/dm/@us-legal-tools/ecfr-sdk.svg?style=for-the-badge">
+    </a>
+    <a href="https://github.com/beshkenadze/us-legal-tools/blob/main/LICENSE">
+      <img alt="License" src="https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge">
+    </a>
+    <a href="https://github.com/beshkenadze/us-legal-tools/actions/workflows/validate.yml">
+      <img alt="CI Status" src="https://img.shields.io/github/actions/workflow/status/beshkenadze/us-legal-tools/validate.yml?branch=main&style=for-the-badge">
+    </a>
+  </p>
+  <p>
+    <a href="#features">Features</a> •
+    <a href="#installation">Installation</a> •
+    <a href="#quick-start">Quick Start</a> •
+    <a href="#api-reference">API</a> •
+    <a href="#mcp-server">MCP Server</a> •
+    <a href="https://www.ecfr.gov/api/docs">eCFR API Docs</a>
+  </p>
+</div>
 
 ## Features
 
@@ -13,6 +36,7 @@ TypeScript SDK and MCP server for the eCFR (Electronic Code of Federal Regulatio
 - 🐳 **Docker support** - Ready-to-use Docker image for the MCP server
 - ✨ **Tree-shakeable** - Only import what you need
 - 🔍 **Type-safe** - Full TypeScript support with auto-completion
+- ⚡ **Fast** - Optimized for performance with minimal dependencies
 
 ## Installation
 
@@ -188,8 +212,31 @@ axiosInstance.interceptors.request.use(config => {
 axiosInstance.defaults.timeout = 60000; // 60 seconds
 ```
 
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
+
 ## Links
 
 - [npm Package](https://www.npmjs.com/package/@us-legal-tools/ecfr-sdk)
+- [GitHub Repository](https://github.com/beshkenadze/us-legal-tools)
 - [eCFR Website](https://www.ecfr.gov/)
 - [eCFR API Documentation](https://www.ecfr.gov/api/docs)
+- [Report Issues](https://github.com/beshkenadze/us-legal-tools/issues/new?labels=bug&template=bug-report.md)
+- [Request Features](https://github.com/beshkenadze/us-legal-tools/issues/new?labels=enhancement&template=feature-request.md)
+
+## Support
+
+Need help? Check out our [documentation](https://github.com/beshkenadze/us-legal-tools) or [create an issue](https://github.com/beshkenadze/us-legal-tools/issues/new/choose).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
