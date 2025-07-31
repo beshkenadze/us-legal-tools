@@ -61,8 +61,7 @@
     "test:e2e:api": "bun test tests/e2e/api.e2e.test.ts",
     "test:e2e:mcp": "bun test tests/e2e/mcp-server.e2e.test.ts",
     "test:all": "bun test",
-    "mcp:server": "bun run src/mcp/server.ts",
-    "docs:generate": "bunx typedoc"
+    "mcp:server": "bun run src/mcp/server.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.3",

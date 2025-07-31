@@ -1,3 +1,3 @@
 {
-  "extends": "@us-legal-tools/orval-config/typedoc.json"
+  "extends": ["../orval-config/typedoc.json"]
 }

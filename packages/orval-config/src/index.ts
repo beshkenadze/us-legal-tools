@@ -1,29 +1,29 @@
+import { defineConfig } from 'orval';
+
 export function createOrvalConfig(
   inputFile: string,
   baseUrl: string,
-  mutatorPath: string = "./src/api/client.ts",
-  mutatorName: string = "customInstance"
+  mutatorPath: string = './src/api/client.ts',
+  mutatorName: string = 'customInstance',
 ) {
-  return {
+  return defineConfig({
     sdk: {
       input: {
         target: inputFile,
       },
       output: {
-        mode: "split",
+        workspace: './src/api',
+        mode: 'split',
         allParamsOptional: true,
-        target: "./src/api/generated/endpoints.ts",
-        schemas: "./src/api/generated/model",
+        target: './endpoints.ts',
+        schemas: './model',
         mock: true,
         clean: true,
-        docs: {
-          out: "./docs",
-          disableSources: true,
-        },
         baseUrl: baseUrl,
-        client: "axios-functions",
-        httpClient: "axios",
+        client: 'axios-functions',
+        httpClient: 'axios',
         prettier: false,
+        indexFiles: true,
         override: {
           mutator: {
             path: mutatorPath,
@@ -37,13 +37,15 @@ export function createOrvalConfig(
         target: inputFile,
       },
       output: {
-        mode: "single",
-        client: "mcp",
+        workspace: './src/mcp',
+        mode: 'single',
+        client: 'mcp',
         baseUrl: baseUrl,
-        target: "./src/mcp/handlers.ts",
-        schemas: "./src/mcp/http-schemas",
+        target: './handlers.ts',
+        schemas: './http-schemas',
         clean: true,
+        indexFiles: true,
       },
     },
-  };
+  });
 }

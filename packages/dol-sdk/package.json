@@ -49,7 +49,6 @@
     "generate": "bun run --bun $(which orval)",
     "lint": "bunx @biomejs/biome lint --apply .",
     "mcp:server": "bun run src/mcp/server.ts",
-    "docs:generate": "bunx orval --config orval.config.ts --project docs",
     "test": "bun test",
     "test:e2e": "SKIP_E2E_TESTS=false bun test tests/e2e",
     "test:integration": "SKIP_INTEGRATION_TESTS=false bun test src",

@@ -20,8 +20,7 @@
     "test:integration": "SKIP_INTEGRATION_TESTS=false bun test src",
     "test:all": "bun test",
     "mcp:server": "bun run src/mcp/server.ts",
-    "download": "echo 'No download script defined, use `bun run generate` to generate the SDK from the API specification.'",
-    "docs:generate": "bunx orval --config orval.config.ts --project docs"
+    "download": "echo 'No download script defined, use `bun run generate` to generate the SDK from the API specification.'"
   },
   "files": [
     "dist",

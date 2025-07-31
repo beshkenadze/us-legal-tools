@@ -63,8 +63,7 @@
     "test:all": "bun test",
     "mcp:server": "bun run src/mcp/server.ts",
     "docker:build": "docker build -t ecfr-mcp-server .",
-    "docker:run": "docker run -i --rm ecfr-mcp-server",
-    "docs:generate": "bunx orval --config orval.config.ts --project docs"
+    "docker:run": "docker run -i --rm ecfr-mcp-server"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.3",
