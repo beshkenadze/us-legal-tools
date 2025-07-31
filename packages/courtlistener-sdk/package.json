@@ -20,7 +20,8 @@
     "test:integration": "SKIP_INTEGRATION_TESTS=false bun test src",
     "test:all": "bun test",
     "mcp:server": "bun run src/mcp/server.ts",
-    "download": "echo 'No download script defined, use `bun run generate` to generate the SDK from the API specification.'"
+    "download": "echo 'No download script defined, use `bun run generate` to generate the SDK from the API specification.'",
+    "docs:generate": "bunx orval --config orval.config.ts --project docs"
   },
   "files": [
     "dist",
@@ -38,6 +39,7 @@
     "@types/node": "^24.1.0",
     "@us-legal-tools/tsconfig": "workspace:*",
     "orval": "^7.10.0",
+    "typedoc-plugin-markdown": "^4.8.0",
     "typescript": "^5.8.3"
   },
   "peerDependencies": {

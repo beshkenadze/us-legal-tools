@@ -22,6 +22,11 @@
     "generate": {
       "cache": false
     },
+    "docs:generate": {
+      "dependsOn": ["generate"],
+      "outputs": ["docs/**"],
+      "cache": true
+    },
     "test": {
       "dependsOn": ["build"],
       "cache": false

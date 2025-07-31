@@ -61,7 +61,8 @@
     "test:e2e:api": "bun test tests/e2e/api.e2e.test.ts",
     "test:e2e:mcp": "bun test tests/e2e/mcp-server.e2e.test.ts",
     "test:all": "bun test",
-    "mcp:server": "bun run src/mcp/server.ts"
+    "mcp:server": "bun run src/mcp/server.ts",
+    "docs:generate": "bunx orval --config orval.config.ts --project docs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.2",
@@ -69,6 +70,8 @@
     "@types/node": "^24.1.0",
     "@us-legal-tools/tsconfig": "workspace:*",
     "orval": "^7.10.0",
+    "typedoc": "^0.28.8",
+    "typedoc-plugin-markdown": "^4.8.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {

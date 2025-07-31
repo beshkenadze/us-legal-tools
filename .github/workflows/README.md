@@ -1,100 +1,124 @@
 # GitHub Actions Workflows
 
-This directory contains automated workflows for the eCFR SDK project.
+This directory contains automated workflows for the US Legal Tools monorepo project.
 
 ## Workflows
 
-### 1. Update SDK and Publish (`update-and-publish.yml`)
+### 1. Validate (`validate.yml`)
 
-**Trigger**: Daily at 3 AM UTC, on push to main, or manual dispatch
+**Trigger**: On pull request to main branch or push to main
 
-**Purpose**: Main CI/CD workflow that handles the complete automation flow:
+**Purpose**: Comprehensive validation and testing workflow with parallel jobs:
 
-1. **Download Documentation** 
-   - Downloads latest Swagger specs from eCFR API
-   - Uses browserless/chrome service for reliable downloads
-   - Caches specs to avoid unnecessary regeneration
+1. **Lint & Format**
+   - Runs Biome format and lint checks
+   - Validates code style and quality
+   - Ensures consistent formatting
 
-2. **Check for Changes**
-   - Compares downloaded specs with cached version
-   - Determines if SDK needs regeneration
-   - Calculates version bump (minor for API changes, patch for others)
+2. **Test** (Matrix strategy: unit, integration, e2e)
+   - Unit tests run on every PR
+   - Integration tests with API keys
+   - E2E tests with Playwright
 
-3. **Build SDK**
-   - Converts Swagger to OpenAPI 3.0
-   - Generates TypeScript SDK using Orval
-   - Generates MCP server handlers
-   - Runs linter and formatter
+3. **Verify MCP Servers**
+   - Tests each MCP server can start
+   - Validates tool listings
+   - Ensures server functionality
 
-4. **Run Tests**
-   - Executes unit tests
-   - Runs integration tests if API changed
-   - Ensures SDK quality before deployment
+4. **Bundle Size Check**
+   - Monitors package bundle sizes
+   - Fails if any package exceeds 5MB
+   - Reports size metrics
 
-5. **Deploy New Version**
-   - Updates version in package.json
-   - Creates git tag and GitHub release
-   - Publishes to NPM registry
-   - Generates comprehensive changelog
+5. **PR Checks** (PR only)
+   - Checks for changesets
+   - Comments if changeset missing
+   - Provides automated feedback
 
-### 2. PR Checks (`pr-checks.yml`)
+### 2. Release (`release.yml`)
 
-**Trigger**: On pull request to main branch
+**Trigger**: Push to main with changes in packages/*, changesets/*, or config files
 
-**Purpose**: Validates pull requests before merge:
+**Purpose**: Automated release workflow using changesets:
 
-- Runs linter and formatter checks
-- Executes unit tests
-- Builds SDK to ensure no build errors
-- Checks bundle size limits
-- Tests MCP server startup
-- Validates swagger download process
-- Comments results on PR
+1. **Check for Changesets**
+   - Verifies if there are pending changesets
+   - Skips release if no changesets found
+
+2. **Release Process**
+   - Runs full test suite
+   - Creates release PR or publishes packages
+   - Updates changelogs
+   - Publishes to NPM and GitHub Packages
+   - Creates GitHub releases with notes
 
 ### 3. Manual Release (`manual-release.yml`)
 
 **Trigger**: Manual workflow dispatch
 
-**Purpose**: Allows manual releases with version control:
+**Purpose**: Allows manual releases with custom control:
 
 - Choose version bump type (patch/minor/major)
-- Add custom release message
-- Runs full test suite
-- Generates changelog from commits
-- Creates GitHub release
-- Publishes to NPM
+- Add custom release notes
+- Target specific packages
+- Force version updates
+- Bypass changeset requirements
+
+### 4. Deploy Documentation (`docs.yml`)
+
+**Trigger**: Push to main, PR to main, or manual dispatch
+
+**Purpose**: Generates and deploys documentation to GitHub Pages:
+
+1. **Generate SDKs**
+   - Uses Turborepo to generate all SDKs
+   - Leverages caching for performance
+
+2. **Generate Documentation**
+   - Runs TypeDoc with GitHub theme
+   - Creates API documentation for each SDK
+   - Generates unified documentation site
+
+3. **Deploy to GitHub Pages**
+   - Uses peaceiris/actions-gh-pages
+   - Deploys only on main branch pushes
+   - Enables Jekyll for better GitHub Pages support
 
 ## Workflow Features
 
-### Version Management
-- Automatic version bumping based on changes
-- Semantic versioning (major.minor.patch)
-- Git tags for all releases
+### Turborepo Integration
+- Local caching with `.turbo` directory
+- Optimized task orchestration
+- Parallel job execution
+- Dependency-aware builds
 
 ### Testing Strategy
-- Unit tests run on every workflow
-- Integration tests run when API changes
-- E2E tests available but skipped by default
+- Unit tests: Always run
+- Integration tests: Require API keys
+- E2E tests: Full browser testing
+- MCP server validation
 
-### Caching
-- Swagger specs cached to avoid unnecessary downloads
-- Cache invalidated when specs change
-- Manual cache override available
+### Caching Strategy
+- Bun dependencies cached
+- Turbo build cache
+- GitHub Actions cache for performance
 
-### Notifications
-- PR comments with check results
-- Success/failure notifications in workflow logs
-- Release URLs provided after publish
+### PR Automation
+- Automated check results
+- Bundle size reporting
+- Changeset validation
+- Summary comments on PRs
 
 ## Configuration
 
 ### Required Secrets
 - `NPM_TOKEN`: NPM authentication token for publishing
 - `GITHUB_TOKEN`: Automatically provided by GitHub Actions
-- `GOV_INFO_API_KEY`: GovInfo API key for govinfo-sdk tests (get from https://api.data.gov/signup/)
+- `GOV_INFO_API_KEY`: GovInfo API key for integration tests
+- `DOL_API_KEY`: Department of Labor API key for tests
+- `COURTLISTENER_API_TOKEN`: CourtListener API token (optional)
 
 ### Environment Variables
-- `CDP_URL`: Chrome DevTools Protocol URL (default: http://chrome:9222)
 - `SKIP_INTEGRATION_TESTS`: Skip integration tests (default: true)
 - `SKIP_E2E_TESTS`: Skip E2E tests (default: true)
 
@@ -103,16 +127,16 @@ This directory contains automated workflows for the eCFR SDK project.
 Add these badges to your README:
 
 ```markdown
-![Update SDK](https://github.com/yourusername/ecfr-sdk/workflows/Update%20SDK%20and%20Publish/badge.svg)
-![PR Checks](https://github.com/yourusername/ecfr-sdk/workflows/PR%20Checks/badge.svg)
-[![npm version](https://badge.fury.io/js/ecfr-sdk.svg)](https://www.npmjs.com/package/ecfr-sdk)
+![Validate](https://github.com/beshkenadze/us-legal-tools/workflows/Validate/badge.svg)
+![Release](https://github.com/beshkenadze/us-legal-tools/workflows/Release/badge.svg)
+![Deploy Documentation](https://github.com/beshkenadze/us-legal-tools/workflows/Deploy%20Documentation/badge.svg)
 ```
 
 ## Manual Triggers
 
-### Force SDK Update
+### Run Validation
 ```bash
-gh workflow run update-and-publish.yml --field skip_cache=true
+gh workflow run validate.yml
 ```
 
 ### Manual Release
@@ -120,17 +144,50 @@ gh workflow run update-and-publish.yml --field skip_cache=true
 gh workflow run manual-release.yml --field version=minor --field message="New features added"
 ```
 
+### Deploy Documentation
+```bash
+gh workflow run docs.yml
+```
+
 ## Troubleshooting
 
 ### Workflow Failures
 
-1. **Download failures**: Check Chrome service is running
-2. **Test failures**: Review test logs, may need to update snapshots
+1. **Test failures**: Check logs for specific test errors
+2. **Build failures**: Ensure dependencies are installed
 3. **NPM publish failures**: Verify NPM_TOKEN is valid
-4. **Version conflicts**: Ensure no duplicate versions exist
+4. **Documentation failures**: Check TypeDoc configuration
 
 ### Common Issues
 
-- **Cache issues**: Use `skip_cache=true` to force regeneration
-- **Chrome timeouts**: Check CDP_URL configuration
-- **NPM permissions**: Ensure package has public access
+- **Cache misses**: Turbo cache key may have changed
+- **Type errors**: Run `turbo check` locally
+- **Bundle size**: Check for accidental dependency additions
+- **MCP server issues**: Validate server implementations
+
+### Local Testing
+
+Test workflows locally using [act](https://github.com/nektos/act):
+
+```bash
+# Test validate workflow
+act push -j lint --platform linux/arm64
+
+# Test docs workflow
+act push -j docs --platform linux/arm64
+
+# Test with specific event
+act pull_request -j pr-checks --platform linux/arm64
+```
+
+## Maintenance
+
+### Updating Dependencies
+- Run `bun update` in root directory
+- Test all workflows after updates
+- Update lockfile in PR
+
+### Adding New Packages
+- Ensure package has proper scripts
+- Add to Turborepo pipeline if needed
+- Update workflow matrices if required

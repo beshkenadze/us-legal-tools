@@ -12,10 +12,14 @@
     "@changesets/cli": "^2.29.5",
     "@types/bun": "latest",
     "@types/node": "^24.1.0",
+    "gh-pages": "^6.3.0",
     "orval": "^7.10.0",
     "playwright": "^1.54.1",
     "swagger2openapi": "^7.0.8",
     "turbo": "^2.5.5",
+    "typedoc": "^0.28.8",
+    "typedoc-github-theme": "^0.3.0",
+    "typedoc-plugin-markdown": "^4.8.0",
     "typescript": "^5.8.3"
   },
   "peerDependencies": {
@@ -59,7 +63,11 @@
     "version-packages": "changeset version",
     "release": "turbo build && changeset publish",
     "format-and-lint": "biome check .",
-    "format-and-lint:fix": "biome check . --write"
+    "format-and-lint:fix": "biome check . --write",
+    "docs:generate": "turbo run docs:generate",
+    "docs:build": "typedoc --options typedoc.monorepo.json",
+    "docs:serve": "bunx serve docs",
+    "docs:deploy": "gh-pages -d docs --dotfiles"
   },
   "workspaces": [
     "packages/*"

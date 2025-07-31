@@ -1,13 +1,14 @@
 import { defineConfig } from 'orval';
 
 export default defineConfig({
+  // SDK configuration
   'govinfo-api': {
     input: './openapi.json',
     output: {
       mode: 'split',
       target: './src/api/generated/endpoints.ts',
       schemas: './src/api/generated/model',
-      client: 'axios',
+      client: 'axios-functions',
       httpClient: 'axios',
       mock: false,
       clean: true,
@@ -40,6 +41,7 @@ export default defineConfig({
       },
     },
   },
+  // MCP server configuration
   'govinfo-mcp': {
     input: './openapi.json',
     output: {

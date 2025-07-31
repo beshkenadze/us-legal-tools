@@ -1,0 +1,28 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "plugin": [
+    "typedoc-plugin-markdown",
+    "typedoc-github-theme"
+  ],
+  "theme": "typedoc-github-theme",
+  "githubPages": false,
+  "includeVersion": true,
+  "readme": "none",
+  "exclude": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/tests/**",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "disableSources": true,
+  "hideGenerator": true,
+  "skipErrorChecking": true,
+  "navigationLinks": {
+    "GitHub": "https://github.com/beshkenadze/us-legal-tools",
+    "NPM": "https://www.npmjs.com/org/us-legal-tools"
+  }
+}

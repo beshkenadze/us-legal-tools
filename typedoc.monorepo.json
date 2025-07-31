@@ -1,0 +1,22 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "extends": [
+    "./typedoc.base.json"
+  ],
+  "name": "US Legal Tools SDK Documentation",
+  "entryPoints": [
+    "packages/ecfr-sdk",
+    "packages/federal-register-sdk",
+    "packages/courtlistener-sdk",
+    "packages/govinfo-sdk",
+    "packages/dol-sdk"
+  ],
+  "entryPointStrategy": "packages",
+  "packageOptions": {
+    "entryPoints": [
+      "src/index.ts"
+    ],
+    "readme": "README.md"
+  },
+  "out": "docs"
+}

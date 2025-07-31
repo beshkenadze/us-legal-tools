@@ -1,7 +1,6 @@
 // Re-export the generated API client and types
 
-// Export custom client instance
-export { customInstance, default as ecfrClient } from './api/client';
+// Export everything from generated files
 export * from './api/generated/endpoints';
 export * from './api/generated/models';
 

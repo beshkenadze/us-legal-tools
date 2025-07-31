@@ -1,20 +1,18 @@
 import { describe, it, expect, beforeAll } from 'bun:test';
-import { createApiClient } from '../../src/api';
+import { getDocumentsFormat, getAgencies } from '../../src/api/generated/endpoints';
+import { customInstance } from '../../src/api/client';
 
 const SKIP_E2E_TESTS = process.env.SKIP_E2E_TESTS !== 'false';
 
 describe.skipIf(SKIP_E2E_TESTS)('Federal Register API E2E Tests', () => {
-  let client: ReturnType<typeof createApiClient>;
-
   beforeAll(() => {
-    client = createApiClient({
-      baseURL: 'https://www.federalregister.gov',
-    });
+    // Configure the base URL for the custom instance
+    customInstance.defaults.baseURL = 'https://www.federalregister.gov/api/v1';
   });
 
   describe('Documents Endpoint', () => {
     it('should fetch recent documents', async () => {
-      const response = await client.getApiV1Documents({
+      const response = await getDocumentsFormat('json', {
         per_page: 5,
       });
       
@@ -27,7 +25,7 @@ describe.skipIf(SKIP_E2E_TESTS)('Federal Register API E2E Tests', () => {
 
   describe('Agencies Endpoint', () => {
     it('should fetch list of agencies', async () => {
-      const response = await client.getApiV1Agencies();
+      const response = await getAgencies();
       
       expect(response.status).toBe(200);
       expect(response.data).toBeDefined();

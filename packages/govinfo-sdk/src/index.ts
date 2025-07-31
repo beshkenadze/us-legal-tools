@@ -1,36 +1,21 @@
 // GovInfo SDK
 export * from './api/client';
-// Re-export generated types and functions
+// Re-export generated functions and types
 export * from './api/generated/endpoints';
+// Re-export additional types from model (SearchResult will come from endpoints)
 export type {
   CollectionContainer,
   CollectionSummary,
-  GetGranulesForPackageParams,
-  GetModifiedCollections1BillVersion,
-  GetModifiedCollections1Params,
-  GetModifiedCollectionsBillVersion,
-  GetModifiedCollectionsParams,
-  GetPackagesByDateIssued1BillVersion,
-  GetPackagesByDateIssued1Params,
-  GetPackagesByDateIssuedBillVersion,
-  GetPackagesByDateIssuedParams,
   GranuleContainer,
   GranuleMetadata,
-  PackageDetails200,
   PackageInfo,
-  RelatedPackageDetails200,
-  RelatedVersionsDetails200,
-  RelatedVersionsDetailsParams,
   SearchRequest,
   SearchResponse,
-  SearchResult,
   SearchResultDownload,
   Sort,
   SortSortOrder,
-  SummaryItem,
+  SummaryItem
 } from './api/generated/model';
-// MCP Server exports
-export * from './mcp';
 
 export default {
   name: 'GovInfo SDK',

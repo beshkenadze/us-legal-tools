@@ -1,12 +1,10 @@
 #!/usr/bin/env bun
 
-import { getCourtListenerRESTAPI } from './api/generated/endpoints';
+import { get, getSearch, getCourts } from './api/generated/endpoints';
 
 console.log('🧪 Testing CourtListener SDK...\n');
 
 async function testCourtListenerSDK() {
-  const sdk = getCourtListenerRESTAPI();
-  
   // Note: Most endpoints require authentication
   // Set COURTLISTENER_API_TOKEN environment variable to test authenticated endpoints
   
@@ -14,7 +12,7 @@ async function testCourtListenerSDK() {
     // Test 1: Get API root (no auth required)
     console.log('1️⃣ Testing API root endpoint...');
     try {
-      const root = await sdk.get();
+      const root = await get();
       console.log('✅ API root accessed successfully');
       console.log(`   Available endpoints: ${Object.keys(root.data || root).length}\n`);
     } catch (e) {
@@ -24,10 +22,10 @@ async function testCourtListenerSDK() {
     // Test 2: Search (may work without auth with limitations)
     console.log('2️⃣ Testing search endpoint...');
     try {
-      const searchResults = await sdk.getSearch({
+      const searchResults = await getSearch({
         type: 'o', // opinions
         q: 'first amendment',
-        order_by: 'score desc'
+        order_by: 'score'
       });
       const data = searchResults.data || searchResults;
       console.log(`✅ Search returned ${data.count} results`);
@@ -43,7 +41,7 @@ async function testCourtListenerSDK() {
     // Test 3: Courts list (usually public)
     console.log('3️⃣ Testing courts endpoint...');
     try {
-      const courts = await sdk.getCourts({
+      const courts = await getCourts({
         page: 1
       });
       const data = courts.data || courts;

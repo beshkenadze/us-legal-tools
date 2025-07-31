@@ -7,7 +7,7 @@ export default defineConfig({
       mode: 'split',
       target: './src/api/generated/endpoints.ts',
       schemas: './src/api/generated/model',
-      client: 'axios',
+      client: 'axios-functions',
       httpClient: 'axios',
       mock: false,
       clean: true,
@@ -29,6 +29,17 @@ export default defineConfig({
           ' */',
           '',
         ],
+      },
+    },
+  },
+  'docs': {
+    input: './courtlistener-openapi.json',
+    output: {
+      target: 'src/api/endpoints/docs.ts',
+      docs: {
+        out: './docs/typedoc',
+        disableSources: true,
+        plugin: ['typedoc-plugin-markdown'],
       },
     },
   },

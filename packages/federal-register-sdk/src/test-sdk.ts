@@ -1,16 +1,22 @@
 #!/usr/bin/env bun
 
-import { getFRAPIDocumentation } from './api/generated/endpoints';
+import { 
+  getAgencies, 
+  getDocumentsFormat, 
+  getPublicInspectionDocumentsCurrentFormat 
+} from './api/generated/endpoints';
+import { customInstance } from './api/client';
 
 console.log('🧪 Testing Federal Register SDK...\n');
 
 async function testFederalRegisterSDK() {
-  const sdk = getFRAPIDocumentation();
+  // Configure the base URL for the custom instance
+  customInstance.defaults.baseURL = 'https://www.federalregister.gov/api/v1';
   
   try {
     // Test 1: Get agencies
     console.log('1️⃣ Testing getAgencies...');
-    const agencies = await sdk.getAgencies();
+    const agencies = await getAgencies();
     console.log(`✅ Found ${agencies.data.length} agencies`);
     if (agencies.data.length > 0) {
       console.log(`   Sample: ${agencies.data[0].name} (ID: ${agencies.data[0].id})\n`);
@@ -18,7 +24,7 @@ async function testFederalRegisterSDK() {
 
     // Test 2: Search documents
     console.log('2️⃣ Testing getDocumentsFormat...');
-    const documents = await sdk.getDocumentsFormat(
+    const documents = await getDocumentsFormat(
       'json',
       {
         per_page: 5
@@ -34,7 +40,7 @@ async function testFederalRegisterSDK() {
 
     // Test 3: Get current public inspection documents
     console.log('3️⃣ Testing getPublicInspectionDocumentsCurrentFormat...');
-    const piDocs = await sdk.getPublicInspectionDocumentsCurrentFormat('json');
+    const piDocs = await getPublicInspectionDocumentsCurrentFormat('json');
     console.log(`✅ Found ${piDocs.data.count} documents on public inspection`);
     if (piDocs.data.results.length > 0) {
       console.log(`   Latest: ${piDocs.data.results[0].title || 'Untitled'}`);

@@ -1,16 +1,19 @@
 #!/usr/bin/env bun
 
-import { getEcfrsdk } from './api/generated/endpoints';
+import { 
+  getApiVersionerV1TitlesJson,
+  getApiSearchV1Results,
+  getApiAdminV1AgenciesJson,
+  getApiSearchV1Suggestions
+} from './api/generated/endpoints';
 
 console.log('🧪 Testing eCFR SDK...\n');
 
 async function testEcfrSDK() {
-  const sdk = getEcfrsdk();
-  
   try {
     // Test 1: Get all titles
     console.log('1️⃣ Testing getApiVersionerV1TitlesJson...');
-    const titles = await sdk.getApiVersionerV1TitlesJson();
+    const titles = await getApiVersionerV1TitlesJson();
     console.log('Response:', JSON.stringify(titles, null, 2).slice(0, 200));
     const titleData = titles.data || titles;
     console.log(`✅ Found ${titleData.titles.length} titles`);
@@ -18,7 +21,7 @@ async function testEcfrSDK() {
 
     // Test 2: Search regulations
     console.log('2️⃣ Testing getApiSearchV1Results...');
-    const searchResults = await sdk.getApiSearchV1Results({
+    const searchResults = await getApiSearchV1Results({
       query: 'environmental protection',
       per_page: 5,
       page: 1
@@ -33,7 +36,7 @@ async function testEcfrSDK() {
 
     // Test 3: Get agencies
     console.log('3️⃣ Testing getApiAdminV1AgenciesJson...');
-    const agencies = await sdk.getApiAdminV1AgenciesJson();
+    const agencies = await getApiAdminV1AgenciesJson();
     const agencyData = agencies.data || agencies;
     console.log(`✅ Found ${Object.keys(agencyData).length} agencies`);
     const firstAgency = Object.values(agencyData)[0];
@@ -41,7 +44,7 @@ async function testEcfrSDK() {
 
     // Test 4: Get search suggestions
     console.log('4️⃣ Testing getApiSearchV1Suggestions...');
-    const suggestions = await sdk.getApiSearchV1Suggestions({
+    const suggestions = await getApiSearchV1Suggestions({
       query: 'clean air'
     });
     const suggestionData = suggestions.data || suggestions;

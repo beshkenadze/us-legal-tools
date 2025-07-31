@@ -1,6 +1,7 @@
 import { defineConfig } from 'orval';
 
 export default defineConfig({
+  // SDK configuration
   'dol-api': {
     input: {
       target: './openapi-v4.yaml',
@@ -9,7 +10,7 @@ export default defineConfig({
     output: {
       mode: 'split',
       target: './src/api/generated/endpoints.ts',
-      client: 'axios',
+      client: 'axios-functions',
       override: {
         mutator: {
           path: './src/api/client.ts',
@@ -30,6 +31,19 @@ export default defineConfig({
       },
     },
   },
+  // Documentation configuration
+  'docs': {
+    input: './openapi-v4.yaml',
+    output: {
+      target: 'src/api/endpoints/docs.ts',
+      docs: {
+        out: './docs/typedoc',
+        disableSources: true,
+        plugin: ['typedoc-plugin-markdown'],
+      },
+    },
+  },
+  // MCP server configuration
   'dol-mcp': {
     input: {
       target: './openapi-v4.yaml',

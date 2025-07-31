@@ -1,33 +1,48 @@
-import { describe, test, expect, beforeAll } from 'bun:test';
-import { createApiClient } from '../../src/api';
+import { describe, test, expect } from 'bun:test';
+import {
+  getDatasets,
+  getAgencyEndpointDataJson,
+  getAgencyEndpointDataXml,
+  getAgencyEndpointDataCsv,
+  getAgencyEndpointMetadataJson,
+  getAgencyEndpointMetadataCsv
+} from '../../src';
 
 const SKIP_E2E_TESTS = process.env.SKIP_E2E_TESTS !== 'false';
 
 describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
-  let api: ReturnType<typeof createApiClient>;
-
-  beforeAll(() => {
-    // Initialize API client
-    api = createApiClient();
-  });
 
   describe('Datasets API', () => {
     test('should list all available datasets without API key', async () => {
 
-      const response = await api.getDatasets();
+      const response = await getDatasets();
 
+      console.log('getDatasets response:', typeof response, response);
       expect(response).toBeDefined();
-      expect(response.data).toBeDefined();
       
-      // The DOL API returns an object with datasets array and meta object
-      expect(response.data).toHaveProperty('datasets');
-      expect(response.data).toHaveProperty('meta');
-      expect(Array.isArray(response.data.datasets)).toBe(true);
-      expect(response.data.datasets.length).toBeGreaterThan(0);
-
-      // Extract datasets and pagination metadata
-      const datasets = response.data.datasets;
-      const pagination = response.data.meta;
+      let datasets: any[];
+      let pagination: any;
+      
+      // Check if response has the expected structure
+      if (typeof response === 'object' && response && 'datasets' in response) {
+        // Response is an object with datasets property
+        expect(response).toHaveProperty('datasets');
+        expect(response).toHaveProperty('meta');
+        expect(Array.isArray(response.datasets)).toBe(true);
+        expect(response.datasets.length).toBeGreaterThan(0);
+        
+        // Extract datasets and pagination metadata
+        datasets = response.datasets;
+        pagination = response.meta;
+      } else if (Array.isArray(response)) {
+        // Response is an array where all elements except the last are datasets
+        // and the last element is pagination metadata
+        expect(response.length).toBeGreaterThan(1);
+        datasets = response.slice(0, -1);
+        pagination = response[response.length - 1];
+      } else {
+        throw new Error('Unexpected response structure from getDatasets()');
+      }
 
       // Verify dataset structure
       const firstDataset = datasets[0];
@@ -49,26 +64,25 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
         return;
       }
 
-      const response = await api.getDatasets();
-      expect(response.data).toBeDefined();
-      expect(response.data.datasets).toBeDefined();
-      expect(Array.isArray(response.data.datasets)).toBe(true);
-      expect(response.data.datasets.length).toBeGreaterThan(0);
+      const response = await getDatasets();
+      expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+      expect(response.length).toBeGreaterThan(1);
       
-      const datasets = response.data.datasets;
+      const datasets = response.slice(0, -1);
       const firstDataset = datasets[0];
       
       if (firstDataset.agency && firstDataset.api_url) {
         try {
-          const dataResponse = await api.getAgencyEndpointDataJson(
+          const dataResponse = await getAgencyEndpointDataJson(
             firstDataset.agency.abbr,
             firstDataset.api_url,
             { limit: 2 }
           );
           
-          expect(dataResponse.data).toBeDefined();
-          expect(dataResponse.data).toHaveProperty('data');
-          expect(Array.isArray(dataResponse.data.data)).toBe(true);
+          expect(dataResponse).toBeDefined();
+          expect(dataResponse).toHaveProperty('data');
+          expect(Array.isArray(dataResponse.data)).toBe(true);
         } catch (error: any) {
           console.log(`Test dataset "${firstDataset.name}" might require specific permissions or be unavailable`);
         }
@@ -85,15 +99,15 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
         const endpoint = 'blslasttenyears';
         
         try {
-          const response = await api.getAgencyEndpointDataJson(
+          const response = await getAgencyEndpointDataJson(
             agency,
             endpoint,
             { limit: 2 }
           );
           
-          expect(response.data).toBeDefined();
-          expect(response.data).toHaveProperty('data');
-          expect(Array.isArray(response.data.data)).toBe(true);
+          expect(response).toBeDefined();
+          expect(response).toHaveProperty('data');
+          expect(Array.isArray(response.data)).toBe(true);
         } catch (error) {
           console.log('Public dataset might be unavailable');
         }
@@ -102,16 +116,16 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
 
     test('should handle dataset queries with parameters', async () => {
       // First get a list of datasets to find one to test
-      const datasetsResponse = await api.getDatasets();
-      expect(datasetsResponse.data).toBeDefined();
+      const datasetsResponse = await getDatasets();
+      expect(datasetsResponse).toBeDefined();
       
       // Check if datasets property exists
-      if (!datasetsResponse.data.datasets || !Array.isArray(datasetsResponse.data.datasets)) {
+      if (!Array.isArray(datasetsResponse) || datasetsResponse.length <= 1) {
         console.log('Datasets response structure invalid, skipping test');
         return;
       }
       
-      const datasets = datasetsResponse.data.datasets;
+      const datasets = datasetsResponse.slice(0, -1);
       console.log('Available datasets:', datasets.slice(0, 5).map((d: any) => ({ 
         name: d.name, 
         agency: d.agency,
@@ -127,7 +141,7 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
       
       if (testDataset && testDataset.agency && testDataset.api_url) {
         try {
-          const response = await api.getAgencyEndpointDataJson(
+          const response = await getAgencyEndpointDataJson(
             testDataset.agency.abbr, // agency abbreviation
             testDataset.api_url, // endpoint
             {
@@ -136,11 +150,11 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
             }
           );
           
-          expect(response.data).toBeDefined();
+          expect(response).toBeDefined();
           
           // Check if we got data back
-          if (response.data && response.data.data) {
-            expect(Array.isArray(response.data.data)).toBe(true);
+          if (response && response.data) {
+            expect(Array.isArray(response.data)).toBe(true);
             console.log(`Successfully retrieved data from ${testDataset.name}`);
           }
         } catch (error: any) {
@@ -158,15 +172,15 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
       }
 
       try {
-        const response = await api.getAgencyEndpointDataXml(
+        const response = await getAgencyEndpointDataXml(
           'bls',
           'cpi',
           { limit: 1 }
         );
         
-        expect(response.data).toBeDefined();
+        expect(response).toBeDefined();
         // XML responses might be strings
-        expect(typeof response.data === 'string' || typeof response.data === 'object').toBe(true);
+        expect(typeof response === 'string' || typeof response === 'object').toBe(true);
       } catch (error) {
         console.log('XML format might not be available for this dataset');
       }
@@ -179,7 +193,7 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
       }
 
       try {
-        const response = await api.getAgencyEndpointDataCsv(
+        const response = await getAgencyEndpointDataCsv(
           'enforcement',
           'whd_whisard',
           {
@@ -188,14 +202,14 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
           }
         );
         
-        expect(response.data).toBeDefined();
+        expect(response).toBeDefined();
         // CSV responses should be strings
-        expect(typeof response.data).toBe('string');
+        expect(typeof response).toBe('string');
         
-        if (typeof response.data === 'string') {
+        if (typeof response === 'string') {
           // Basic CSV validation
-          expect(response.data).toContain(','); // Should have commas
-          const lines = response.data.split('\n');
+          expect(response).toContain(','); // Should have commas
+          const lines = response.split('\n');
           expect(lines.length).toBeGreaterThan(1); // Should have header + data
         }
       } catch (error) {
@@ -205,7 +219,7 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
 
     test('should handle non-existent dataset gracefully', async () => {
       try {
-        await api.getAgencyEndpointDataJson(
+        await getAgencyEndpointDataJson(
           'invalid-agency',
           'invalid-endpoint',
           {}
@@ -228,17 +242,17 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
       }
 
       try {
-        const response = await api.getAgencyEndpointMetadataJson(
+        const response = await getAgencyEndpointMetadataJson(
           'bls',
           'cpi'
         );
         
-        expect(response.data).toBeDefined();
+        expect(response).toBeDefined();
         
         // Metadata should contain field information
-        if (response.data && typeof response.data === 'object') {
+        if (response && typeof response === 'object') {
           // The structure might vary, but should have some metadata
-          expect(Object.keys(response.data).length).toBeGreaterThan(0);
+          expect(Object.keys(response).length).toBeGreaterThan(0);
         }
       } catch (error) {
         console.log('Metadata endpoint might not be available');
@@ -252,17 +266,17 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
       }
 
       try {
-        const response = await api.getAgencyEndpointMetadataCsv(
+        const response = await getAgencyEndpointMetadataCsv(
           'osha',
           'inspection'
         );
         
-        expect(response.data).toBeDefined();
-        expect(typeof response.data).toBe('string');
+        expect(response).toBeDefined();
+        expect(typeof response).toBe('string');
         
-        if (typeof response.data === 'string') {
+        if (typeof response === 'string') {
           // Should be CSV formatted
-          expect(response.data).toContain(',');
+          expect(response).toContain(',');
         }
       } catch (error) {
         console.log('CSV metadata might not be available');
@@ -279,12 +293,12 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
 
       // The API key should be automatically included by the client
       try {
-        const response = await api.getAgencyEndpointMetadataJson(
+        const response = await getAgencyEndpointMetadataJson(
           'statistics',
           'blslasttenyears'
         );
         
-        expect(response.data).toBeDefined();
+        expect(response).toBeDefined();
       } catch (error: any) {
         // Even with API key, some endpoints might not be available
         console.log('Dataset might not support metadata endpoint');
@@ -300,7 +314,7 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
       }
 
       try {
-        const response = await api.getAgencyEndpointDataJson(
+        const response = await getAgencyEndpointDataJson(
           'osha',
           'inspection',
           {
@@ -316,10 +330,10 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
           }
         );
         
-        expect(response.data).toBeDefined();
+        expect(response).toBeDefined();
         
-        if (response.data && response.data.data && Array.isArray(response.data.data)) {
-          const records = response.data.data;
+        if (response && response.data && Array.isArray(response.data)) {
+          const records = response.data;
           if (records.length > 0) {
             // Verify field selection worked
             const firstRecord = records[0];
@@ -339,13 +353,13 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
       }
 
       try {
-        const firstPageResponse = await api.getAgencyEndpointDataJson(
+        const firstPageResponse = await getAgencyEndpointDataJson(
           'bls',
           'cpi',
           { limit: 5, offset: 0 }
         );
         
-        const secondPageResponse = await api.getAgencyEndpointDataJson(
+        const secondPageResponse = await getAgencyEndpointDataJson(
           'bls',
           'cpi',
           { limit: 5, offset: 5 }

@@ -26,6 +26,8 @@ node_modules/
 *.swp
 *.swo
 
+docs/typedoc/*
+
 # OS
 .DS_Store
 Thumbs.db

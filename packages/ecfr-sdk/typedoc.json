@@ -1,0 +1,6 @@
+{
+  "extends": ["../../typedoc.base.json"],
+  "name": "@us-legal-tools/ecfr-sdk",
+  "entryPoints": ["./src/api/generated/endpoints.ts"],
+  "out": "./docs/api"
+}

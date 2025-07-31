@@ -1,23 +1,22 @@
-import { describe, test, expect, beforeAll } from 'bun:test';
-import { getGovInfoAPI } from '../../src/api/generated/endpoints';
+import { describe, test, expect } from 'bun:test';
+import {
+  search,
+  getCollectionSummary,
+  packageDetails,
+  getPackagesByDateIssued
+} from '../../src/api/generated/endpoints';
 
 const SKIP_E2E_TESTS = process.env.SKIP_E2E_TESTS !== 'false';
 const hasApiKey = !!(process.env.GOV_INFO_API_KEY || process.env.GOVINFO_API_KEY);
 
 describe.skipIf(SKIP_E2E_TESTS || !hasApiKey)('GovInfo API E2E Tests', () => {
-  let api: ReturnType<typeof getGovInfoAPI>;
-
-  beforeAll(() => {
-    if (!hasApiKey) {
-      console.log('⚠️  Skipping GovInfo E2E tests: GOV_INFO_API_KEY not set');
-    }
-    // Initialize the API client
-    api = getGovInfoAPI();
-  });
+  if (!hasApiKey) {
+    console.log('⚠️  Skipping GovInfo E2E tests: GOV_INFO_API_KEY not set');
+  }
 
   describe('Search API', () => {
     test('should search for documents', async () => {
-      const response = await api.search({
+      const response = await search({
         query: 'climate',
         pageSize: 5,
         offsetMark: '*', // Required for first page
@@ -32,7 +31,7 @@ describe.skipIf(SKIP_E2E_TESTS || !hasApiKey)('GovInfo API E2E Tests', () => {
     }, 30000); // 30 second timeout
 
     test('should handle empty search results', async () => {
-      const response = await api.search({
+      const response = await search({
         query: 'xyzabc123456789notfound', // Very unlikely to return results
         pageSize: 5,
         offsetMark: '*'
@@ -46,7 +45,7 @@ describe.skipIf(SKIP_E2E_TESTS || !hasApiKey)('GovInfo API E2E Tests', () => {
 
   describe('Collections API', () => {
     test('should retrieve collection summary', async () => {
-      const response = await api.getCollectionSummary();
+      const response = await getCollectionSummary();
 
       expect(response).toBeDefined();
       expect(response.collections).toBeDefined();
@@ -62,7 +61,7 @@ describe.skipIf(SKIP_E2E_TESTS || !hasApiKey)('GovInfo API E2E Tests', () => {
   describe('Package Details API', () => {
     test('should retrieve package details when package exists', async () => {
       // First, get a valid package ID from search results
-      const searchResponse = await api.search({
+      const searchResponse = await search({
         query: 'federal register',
         pageSize: 1,
         offsetMark: '*'
@@ -74,7 +73,7 @@ describe.skipIf(SKIP_E2E_TESTS || !hasApiKey)('GovInfo API E2E Tests', () => {
       const packageId = searchResponse.results[0].packageId;
       expect(packageId).toBeDefined();
       
-      const details = await api.packageDetails(packageId!);
+      const details = await packageDetails(packageId!);
       
       expect(details).toBeDefined();
       expect(details.packageId).toBe(packageId);
@@ -83,7 +82,7 @@ describe.skipIf(SKIP_E2E_TESTS || !hasApiKey)('GovInfo API E2E Tests', () => {
 
     test('should handle non-existent package gracefully', async () => {
       try {
-        await api.packageDetails('INVALID-PACKAGE-ID-12345');
+        await packageDetails('INVALID-PACKAGE-ID-12345');
         // If we get here, the test should fail
         expect(true).toBe(false);
       } catch (error: any) {
@@ -100,8 +99,9 @@ describe.skipIf(SKIP_E2E_TESTS || !hasApiKey)('GovInfo API E2E Tests', () => {
       const oneMonthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
       const dateString = oneMonthAgo.toISOString().split('T')[0];
 
-      const response = await api.getPackagesByDateIssued(dateString, {
-        pageSize: 5
+      const response = await getPackagesByDateIssued(dateString, {
+        pageSize: 5,
+        collection: 'FR'
       });
 
       expect(response).toBeDefined();

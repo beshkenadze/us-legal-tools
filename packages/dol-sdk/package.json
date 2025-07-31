@@ -54,6 +54,7 @@
     "generate": "orval --config orval.config.ts",
     "lint": "bunx @biomejs/biome lint --apply .",
     "mcp:server": "bun run src/mcp/server.ts",
+    "docs:generate": "bunx orval --config orval.config.ts --project docs",
     "test": "bun test",
     "test:e2e": "SKIP_E2E_TESTS=false bun test tests/e2e",
     "test:integration": "SKIP_INTEGRATION_TESTS=false bun test src",
@@ -70,8 +71,11 @@
     "@types/js-yaml": "^4.0.9",
     "@us-legal-tools/tsconfig": "workspace:*",
     "bun-types": "^1.2.19",
+    "gh-pages": "^6.3.0",
     "js-yaml": "^4.1.0",
     "orval": "^7.10.0",
+    "typedoc": "^0.28.8",
+    "typedoc-plugin-markdown": "^4.8.0",
     "typescript": "^5.8.3"
   },
   "engines": {
