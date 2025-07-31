@@ -10,7 +10,7 @@ await $`rm -rf dist`;
 // Build ESM format
 console.log('Building ESM...');
 await Bun.build({
-  entrypoints: ['./src/index.ts', './src/mcp/index.ts'],
+  entrypoints: ['./src/index.ts'],
   outdir: './dist',
   format: 'esm',
   target: 'node',
@@ -26,7 +26,7 @@ await Bun.build({
 // Build CJS format
 console.log('Building CommonJS...');
 await Bun.build({
-  entrypoints: ['./src/index.ts', './src/mcp/index.ts'],
+  entrypoints: ['./src/index.ts'],
   outdir: './dist',
   format: 'cjs',
   target: 'node',

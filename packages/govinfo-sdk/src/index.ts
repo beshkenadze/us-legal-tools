@@ -1,24 +1,12 @@
 // GovInfo SDK
-export * from './api/client';
-// Re-export generated functions and types
-export * from './api/generated/endpoints';
-// Re-export additional types from model (SearchResult will come from endpoints)
-export type {
-  CollectionContainer,
-  CollectionSummary,
-  GranuleContainer,
-  GranuleMetadata,
-  PackageInfo,
-  SearchRequest,
-  SearchResponse,
-  SearchResultDownload,
-  Sort,
-  SortSortOrder,
-  SummaryItem
-} from './api/generated/model';
+import * as packageJson from '../package.json';
 
-export default {
-  name: 'GovInfo SDK',
-  version: '0.1.0',
-  description: 'TypeScript SDK and MCP server for the GovInfo API',
-};
+// Export the configured API client
+export * from './api/client';
+
+// Export package version
+export const VERSION = packageJson.version;
+
+// Users can import generated types and functions directly:
+// import { search } from '@us-legal-tools/govinfo-sdk/api/generated/endpoints';
+// import type { SearchBody } from '@us-legal-tools/govinfo-sdk/api/generated/model';

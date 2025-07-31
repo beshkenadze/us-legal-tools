@@ -12,7 +12,7 @@ async function downloadOpenAPISpec() {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
     
-    const spec = await response.json();
+    const spec = await response.json() as any;
     
     // Fix apostrophes in descriptions to prevent syntax errors in generated code
     const fixApostrophes = (obj: any): any => {
@@ -34,8 +34,14 @@ async function downloadOpenAPISpec() {
     
     const fixedSpec = fixApostrophes(spec);
     
+    // Rename SearchRequest to SearchBody to match MCP generator expectations
+    const specString = JSON.stringify(fixedSpec, null, 2);
+    const renamedSpec = specString
+      .replace(/"SearchRequest"/g, '"SearchBody"')
+      .replace(/#\/components\/schemas\/SearchRequest/g, '#/components/schemas/SearchBody');
+    
     // Write the spec to a file
-    await writeFile('./openapi.json', JSON.stringify(fixedSpec, null, 2));
+    await writeFile('./openapi.json', renamedSpec);
     
     console.log('✅ OpenAPI specification downloaded successfully');
     console.log(`📄 Spec title: ${spec.info?.title}`);

@@ -57,7 +57,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SearchRequest"
+                "$ref": "#/components/schemas/SearchBody"
               },
               "example": {
                 "query": "Federal documents",
@@ -1416,7 +1416,7 @@
   },
   "components": {
     "schemas": {
-      "SearchRequest": {
+      "SearchBody": {
         "type": "object",
         "properties": {
           "query": {
