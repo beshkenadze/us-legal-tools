@@ -1,6 +1,19 @@
 {
-  "extends": ["../../typedoc.base.json"],
-  "name": "@us-legal-tools/ecfr-sdk",
-  "entryPoints": ["./src/api/generated/endpoints.ts"],
-  "out": "./docs/api"
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["./src/index.ts"],
+  "out": "./docs",
+  "exclude": [
+    "**/node_modules/**",
+    "**/tests/**",
+    "**/scripts/**",
+    "**/src/mcp/**",
+    "**/src/api/generated/**"
+  ],
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "githubPages": false,
+  "hideGenerator": true,
+  "skipErrorChecking": true,
+  "tsconfig": "./tsconfig.json"
 }

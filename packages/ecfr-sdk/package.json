@@ -73,7 +73,7 @@
     "@us-legal-tools/tsconfig": "workspace:*",
     "orval": "^7.10.0",
     "swagger2openapi": "^7.0.8",
-    "typedoc-plugin-markdown": "4.8.0",
+    "typedoc-plugin-markdown": "^4.8.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {

@@ -1,8 +1,7 @@
-// Re-export the generated API client and types
+import * as packageJson from "../package.json";
 
-// Export everything from generated files
-export * from './api/generated/endpoints';
-export * from './api/generated/models';
+// Export the configured API client
+export * from "./api/client";
 
-// Export version
-export const VERSION = '0.1.0';
+// Export package version
+export const VERSION = packageJson.version;
