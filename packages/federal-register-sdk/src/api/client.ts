@@ -1,6 +1,6 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 
-const BASE_URL = 'https://www.federalregister.gov';
+const BASE_URL = 'https://www.federalregister.gov/api/v1';
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -21,7 +21,7 @@ export const customInstance = <T>(
     ...config,
     ...options,
     cancelToken: source.token,
-  }).then(({ data }) => data);
+  });
 
   // @ts-ignore
   promise.cancel = () => {

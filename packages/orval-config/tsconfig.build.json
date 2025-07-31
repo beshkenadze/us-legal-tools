@@ -1,16 +1,20 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@us-legal-tools/tsconfig/tsconfig.build.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/index.ts", "src/api/client.ts"],
   "exclude": [
     "src/**/*.test.ts",
     "src/**/*.spec.ts",
     "src/test-*.ts",
     "tests/**/*",
     "scripts/**/*",
-    "src/api/generated/endpoints.msw.ts"
+    "src/api/generated/**/*",
+    "src/api/endpoints/**/*",
+    "src/mcp/**/*"
   ]
 }

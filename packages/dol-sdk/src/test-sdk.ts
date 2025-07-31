@@ -8,7 +8,7 @@ import {
   getAgencyEndpointDataJson,
   getAgencyEndpointMetadataJson
 } from './api/generated/endpoints';
-import type { Dataset, PaginationMetadata } from './api/generated/endpoints.schemas';
+import type { Dataset, PaginationMetadata } from './api/generated/model';
 
 async function testSDK() {
   console.log('DOL SDK Test Script');

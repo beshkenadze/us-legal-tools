@@ -9,8 +9,7 @@
   "exclude": [
     "node_modules",
     "dist",
-    "src/api/generated/model/**/*",
-    "src/api/generated/endpoints.ts",
+    "src/api/generated/endpoints.msw.ts",
     "src/api/endpoints/docs.ts",
     "src/mcp/**/*",
     "scripts/**/*"

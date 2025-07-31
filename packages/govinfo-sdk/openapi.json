@@ -48,9 +48,7 @@
   "paths": {
     "/search": {
       "post": {
-        "tags": [
-          "Search"
-        ],
+        "tags": ["Search"],
         "description": "This service can be used to query the GovInfo search engine and return results that are the equivalent to what is returned by the main user interface. You can use field operators, such as congress, publishdate, branch, and others to construct complex queries that will return only matching documents. For additional information, please see our <a href=\\'https://www.govinfo.gov/features/search-service-overview\\' target=\\'blank\\' style=\\'text-decoration:underline\\'>search service overview</a>.",
         "operationId": "search",
         "requestBody": {
@@ -106,9 +104,7 @@
     },
     "/related/{accessId}": {
       "get": {
-        "tags": [
-          "Related"
-        ],
+        "tags": ["Related"],
         "summary": "Get a list of relationships for a given accessId",
         "operationId": "relatedPackageDetails",
         "parameters": [
@@ -143,9 +139,7 @@
     },
     "/related/{accessId}/{collection}": {
       "get": {
-        "tags": [
-          "Related"
-        ],
+        "tags": ["Related"],
         "summary": "Get a list of relationships for a given accessId",
         "operationId": "relatedVersionsDetails",
         "parameters": [
@@ -217,9 +211,7 @@
     },
     "/published/{dateIssuedStartDate}": {
       "get": {
-        "tags": [
-          "Published"
-        ],
+        "tags": ["Published"],
         "summary": "Retrieve list of packages based on dateIssued value",
         "operationId": "getPackagesByDateIssued",
         "parameters": [
@@ -447,9 +439,7 @@
     },
     "/published/{dateIssuedStartDate}/{dateIssuedEndDate}": {
       "get": {
-        "tags": [
-          "Published"
-        ],
+        "tags": ["Published"],
         "summary": "Retrieve list of packages based on dateIssued value range",
         "operationId": "getPackagesByDateIssued_1",
         "parameters": [
@@ -687,9 +677,7 @@
     },
     "/packages/{packageId}/summary": {
       "get": {
-        "tags": [
-          "Packages"
-        ],
+        "tags": ["Packages"],
         "summary": "Return json summary for specified package",
         "operationId": "packageDetails",
         "parameters": [
@@ -724,9 +712,7 @@
     },
     "/packages/{packageId}/granules": {
       "get": {
-        "tags": [
-          "Packages"
-        ],
+        "tags": ["Packages"],
         "summary": "Get a list of granules associated with a package",
         "operationId": "getGranulesForPackage",
         "parameters": [
@@ -807,9 +793,7 @@
     },
     "/packages/{packageId}/granules/{granuleId}/summary": {
       "get": {
-        "tags": [
-          "Packages"
-        ],
+        "tags": ["Packages"],
         "summary": "Return json summary for specified granule",
         "operationId": "getGranuleContentDetail",
         "parameters": [
@@ -853,9 +837,7 @@
     },
     "/collections": {
       "get": {
-        "tags": [
-          "Collections"
-        ],
+        "tags": ["Collections"],
         "summary": "Request list of collections. Response includes collectionCode,collectionName, package and granule counts",
         "operationId": "getCollectionSummary",
         "responses": {
@@ -879,9 +861,7 @@
     },
     "/collections/{collection}/{lastModifiedStartDate}": {
       "get": {
-        "tags": [
-          "Collections"
-        ],
+        "tags": ["Collections"],
         "summary": "Retrieve new or updated packages for a collection given a start date and time",
         "operationId": "getModifiedCollections",
         "parameters": [
@@ -1142,9 +1122,7 @@
     },
     "/collections/{collection}/{lastModifiedStartDate}/{lastModifiedEndDate}": {
       "get": {
-        "tags": [
-          "Collections"
-        ],
+        "tags": ["Collections"],
         "summary": "Retrieve new or updated packages for a collection within a date range",
         "operationId": "getModifiedCollections_1",
         "parameters": [
@@ -1451,10 +1429,7 @@
           },
           "sortOrder": {
             "type": "string",
-            "enum": [
-              "ASC",
-              "DESC"
-            ]
+            "enum": ["ASC", "DESC"]
           }
         }
       },

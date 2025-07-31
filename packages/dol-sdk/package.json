@@ -24,11 +24,6 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    },
-    "./mcp": {
-      "types": "./dist/mcp/index.d.ts",
-      "import": "./dist/mcp/index.js",
-      "require": "./dist/mcp/index.cjs"
     }
   },
   "main": "./dist/index.cjs",
@@ -51,7 +46,7 @@
     "check": "bunx @biomejs/biome check --apply .",
     "dev": "bun run src/test-sdk.ts",
     "format": "bunx @biomejs/biome format --write .",
-    "generate": "orval --config orval.config.ts",
+    "generate": "bun run --bun $(which orval)",
     "lint": "bunx @biomejs/biome lint --apply .",
     "mcp:server": "bun run src/mcp/server.ts",
     "docs:generate": "bunx orval --config orval.config.ts --project docs",
@@ -66,9 +61,10 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.1.2",
+    "@biomejs/biome": "2.1.3",
     "@types/bun": "^1.2.19",
     "@types/js-yaml": "^4.0.9",
+    "@us-legal-tools/orval-config": "workspace:*",
     "@us-legal-tools/tsconfig": "workspace:*",
     "bun-types": "^1.2.19",
     "gh-pages": "^6.3.0",

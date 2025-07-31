@@ -2,8 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "verbatimModuleSyntax": false,
-    "module": "commonjs",
-    "moduleResolution": "node"
+    "module": "commonjs"
   },
   "include": ["src/mcp/**/*"],
   "exclude": ["node_modules", "dist"]

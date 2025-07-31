@@ -1,0 +1,34 @@
+{
+  "name": "@us-legal-tools/orval-config",
+  "version": "1.0.0",
+  "description": "Shared Orval and TypeScript configurations for US Legal Tools SDK packages",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "bun": "./src/index.ts",
+      "import": "./src/index.ts",
+      "require": "./src/index.ts",
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src",
+    "tsconfig.sdk.json",
+    "tsconfig.mcp.json",
+    "tsconfig.build.json",
+    "typedoc.json"
+  ],
+  "scripts": {},
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "orval": "^7.10.0",
+    "typescript": "^5.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

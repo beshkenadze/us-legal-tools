@@ -1,0 +1,19 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["./src/index.ts"],
+  "out": "./docs",
+  "exclude": [
+    "**/node_modules/**",
+    "**/tests/**",
+    "**/scripts/**",
+    "**/src/mcp/**",
+    "**/src/api/generated/**"
+  ],
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "githubPages": false,
+  "hideGenerator": true,
+  "skipErrorChecking": true,
+  "tsconfig": "./tsconfig.json"
+}

@@ -1,8 +1,19 @@
 {
   "extends": "@us-legal-tools/tsconfig/tsconfig.json",
   "compilerOptions": {
+    "types": ["bun-types"],
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
     "outDir": "dist"
   },
-  "include": ["src/**/*", "test/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/api/generated/endpoints.msw.ts",
+    "src/client/**/*",
+    "src/mcp/**/*",
+    "scripts/**/*",
+    "test/**/*"
+  ]
 }

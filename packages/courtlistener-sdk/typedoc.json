@@ -1,0 +1,3 @@
+{
+  "extends": "@us-legal-tools/orval-config/typedoc.json"
+}

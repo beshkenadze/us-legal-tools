@@ -28,7 +28,7 @@ export const customInstance = <T>(config: AxiosRequestConfig): Promise<T> => {
 };
 
 // Export a version that returns the full Axios response for testing
-export const customInstanceWithResponse = <T>(config: AxiosRequestConfig) => {
+export const customInstanceWithResponse = (config: AxiosRequestConfig) => {
   return AXIOS_INSTANCE(config);
 };
 
