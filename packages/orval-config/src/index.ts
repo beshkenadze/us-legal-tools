@@ -12,18 +12,16 @@ export function createOrvalConfig(
         target: inputFile,
       },
       output: {
-        workspace: './src/api',
         mode: 'split',
         allParamsOptional: true,
-        target: './endpoints.ts',
-        schemas: './model',
-        mock: true,
+        target: './src/api/generated/endpoints.ts',
+        schemas: './src/api/generated/model',
+        mock: false,
         clean: true,
         baseUrl: baseUrl,
         client: 'axios-functions',
         httpClient: 'axios',
         prettier: false,
-        indexFiles: true,
         override: {
           mutator: {
             path: mutatorPath,
@@ -44,7 +42,6 @@ export function createOrvalConfig(
         target: './handlers.ts',
         schemas: './http-schemas',
         clean: true,
-        indexFiles: true,
       },
     },
   });

@@ -1,35 +1,22 @@
 import axios, { type AxiosRequestConfig } from 'axios';
 
-export const AXIOS_INSTANCE = axios.create({
-  baseURL: 'https://apiprod.dol.gov/v4',
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-  },
-});
+export const customInstance = <T>(
+  config: AxiosRequestConfig,
+  options?: AxiosRequestConfig,
+): Promise<T> => {
+  const source = axios.CancelToken.source();
+  const promise = axios({
+    ...config,
+    ...options,
+    cancelToken: source.token,
+  }).then(({ data }) => data);
 
-// Add request interceptor to include API key if provided
-AXIOS_INSTANCE.interceptors.request.use((config) => {
-  const apiKey = process.env.DOL_API_KEY;
-  // Only add API key for endpoints that require it (not for /datasets)
-  if (apiKey && !config.url?.includes('/datasets')) {
-    // Add API key as query parameter
-    config.params = {
-      ...config.params,
-      'X-API-KEY': apiKey,
-    };
-  }
-  return config;
-});
+  // @ts-ignore
+  promise.cancel = () => {
+    source.cancel('Query was cancelled by React Query');
+  };
 
-export const customInstance = <T>(config: AxiosRequestConfig): Promise<T> => {
-  const promise = AXIOS_INSTANCE(config).then(({ data }) => data);
   return promise;
-};
-
-// Export a version that returns the full Axios response for testing
-export const customInstanceWithResponse = (config: AxiosRequestConfig) => {
-  return AXIOS_INSTANCE(config);
 };
 
 export default customInstance;

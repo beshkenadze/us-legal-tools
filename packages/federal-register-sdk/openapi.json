@@ -20,7 +20,11 @@
             "in": "path",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/Format"
+              "type": "string",
+              "enum": [
+                "json",
+                "csv"
+              ]
             }
           },
           {
@@ -62,7 +66,11 @@
             "in": "path",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/Format"
+              "type": "string",
+              "enum": [
+                "json",
+                "csv"
+              ]
             }
           },
           {
@@ -108,7 +116,11 @@
             "in": "path",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/Format"
+              "type": "string",
+              "enum": [
+                "json",
+                "csv"
+              ]
             }
           },
           {
@@ -364,7 +376,19 @@
             "in": "path",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/Facet"
+              "type": "string",
+              "enum": [
+                "daily",
+                "weekly",
+                "monthly",
+                "quarterly",
+                "yearly",
+                "agency",
+                "topic",
+                "section",
+                "type",
+                "subtype"
+              ]
             }
           },
           {
@@ -602,7 +626,11 @@
             "in": "path",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/Format"
+              "type": "string",
+              "enum": [
+                "json",
+                "csv"
+              ]
             }
           },
           {
@@ -635,7 +663,11 @@
             "in": "path",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/Format"
+              "type": "string",
+              "enum": [
+                "json",
+                "csv"
+              ]
             }
           },
           {
@@ -672,7 +704,11 @@
             "in": "path",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/Format"
+              "type": "string",
+              "enum": [
+                "json",
+                "csv"
+              ]
             }
           }
         ],
@@ -696,7 +732,11 @@
             "in": "path",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/Format"
+              "type": "string",
+              "enum": [
+                "json",
+                "csv"
+              ]
             }
           },
           {
@@ -816,7 +856,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/Agency"
+              "type": "string"
             }
           },
           {
@@ -899,7 +939,7 @@
             "in": "path",
             "required": true,
             "schema": {
-              "$ref": "#/components/schemas/SuggestedSearch"
+              "type": "string"
             }
           }
         ],

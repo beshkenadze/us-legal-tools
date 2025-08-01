@@ -22,7 +22,14 @@
     "tsconfig.build.json",
     "typedoc.json"
   ],
-  "scripts": {},
+  "scripts": {
+    "format": "biome format --write .",
+    "lint": "biome lint --write .",
+    "check": "biome check --write .",
+    "check:ci": "biome ci .",
+    "test": "bun test src",
+    "test:watch": "bun test --watch src"
+  },
   "devDependencies": {
     "@types/node": "^24.1.0",
     "orval": "^7.10.0",

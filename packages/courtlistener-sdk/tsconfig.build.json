@@ -1,3 +1,16 @@
 {
-  "extends": "@us-legal-tools/orval-config/tsconfig.build.json"
+  "extends": "@us-legal-tools/tsconfig/tsconfig.build.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "src/api/generated/endpoints.msw.ts",
+    "src/mcp/**/*"
+  ]
 }
