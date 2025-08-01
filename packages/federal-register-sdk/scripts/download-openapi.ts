@@ -35,6 +35,14 @@ async function downloadOpenAPISpec() {
     };
 
     const fixedSpec = fixApostrophes(spec);
+    
+    // Fix Agency schema - it's incorrectly defined as an array when used as path param
+    if (fixedSpec.components?.schemas?.Agency?.type === 'array') {
+      fixedSpec.components.schemas.Agency = {
+        type: 'string',
+        enum: fixedSpec.components.schemas.Agency.items.enum
+      };
+    }
 
     // Fix path parameter schema references for MCP generation
     const fixPathParameterRefs = (spec: any): any => {
