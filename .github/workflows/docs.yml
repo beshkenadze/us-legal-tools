@@ -47,7 +47,7 @@ jobs:
         run: bun install
 
       - name: Generate SDKs
-        run: bunx turbo generate
+        run: bunx turbo run generate
 
       - name: Generate documentation
         run: bunx turbo docs:generate
