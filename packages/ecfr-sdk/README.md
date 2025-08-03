@@ -63,14 +63,14 @@ import { getApiSearchV1Results, getApiVersionerV1TitlesJson } from '@us-legal-to
 
 // Search for regulations
 const searchResults = await getApiSearchV1Results({
-  q: 'environmental protection',
+  query: 'environmental protection',
   per_page: 10,
   page: 1
 });
 
-console.log(`Found ${searchResults.count} regulations`);
+console.log(`Found ${searchResults.meta.total_count} regulations`);
 searchResults.results.forEach(result => {
-  console.log(`- ${result.title}: ${result.label_string}`);
+  console.log(`- Title ${result.hierarchy.title}: ${result.hierarchy_headings.join(' > ')}`);
 });
 
 // Get all available titles
@@ -85,7 +85,7 @@ import { getApiSearchV1Results } from '@us-legal-tools/ecfr-sdk';
 
 // Search with filters
 const results = await getApiSearchV1Results({
-  q: 'clean air',
+  query: 'clean air',
   title: 40, // Title 40: Protection of Environment
   part: 50,  // Part 50
   date: '2024-01-01',
@@ -103,12 +103,17 @@ console.log('Search facets:', results.meta?.facets);
 import { getApiVersionerV1FullDateTitleTitleXml } from '@us-legal-tools/ecfr-sdk';
 
 // Get a specific version of a regulation
-const historicalVersion = await getApiVersionerV1FullDateTitleTitleXml({
-  date: '2023-01-01',
-  title: '40',
-  part: '50',
-  section: '7'
-});
+const historicalVersion = await getApiVersionerV1FullDateTitleTitleXml(
+  '2023-01-01',  // date
+  '40',           // title
+  {
+    part: '50',
+    section: '7'
+  }
+);
+
+// Note: Large titles (like Title 29) may timeout when fetching the entire XML.
+// Consider fetching specific parts or sections instead.
 ```
 
 ## API Reference
@@ -181,7 +186,7 @@ import { getApiSearchV1Results } from '@us-legal-tools/ecfr-sdk';
 
 try {
   const results = await getApiSearchV1Results({
-    q: 'search term',
+    query: 'search term',
     per_page: 10
   });
 } catch (error) {
