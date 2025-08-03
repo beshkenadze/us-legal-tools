@@ -1,14 +1,9 @@
-import { describe, it, expect, beforeAll } from 'bun:test';
+import { describe, it, expect } from 'bun:test';
 import { getDocumentsFormat, getAgencies } from '../../src/api/generated/endpoints';
-import { customInstance } from '../../src/api/client';
 
 const SKIP_E2E_TESTS = process.env.SKIP_E2E_TESTS !== 'false';
 
 describe.skipIf(SKIP_E2E_TESTS)('Federal Register API E2E Tests', () => {
-  beforeAll(() => {
-    // Configure the base URL for the custom instance
-    customInstance.defaults.baseURL = 'https://www.federalregister.gov/api/v1';
-  });
 
   describe('Documents Endpoint', () => {
     it('should fetch recent documents', async () => {

@@ -1,0 +1,3 @@
+{
+  "extends": "@us-legal-tools/orval-config/tsconfig.mcp.json"
+}

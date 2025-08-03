@@ -1,9 +1,16 @@
 {
-  "extends": "../tsconfig/tsconfig.build.json",
+  "extends": "@us-legal-tools/tsconfig/tsconfig.build.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "outDir": "./dist"
   },
   "include": ["src/**/*"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.spec.ts", "src/test-*.ts", "test/**/*"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "src/api/generated/endpoints.msw.ts",
+    "src/mcp/**/*"
+  ]
 }

@@ -1,23 +1,11 @@
-import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
+import axios, { type AxiosRequestConfig } from 'axios';
 
-const BASE_URL = 'https://www.federalregister.gov';
-
-export const axiosInstance = axios.create({
-  baseURL: BASE_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-    'User-Agent': 'Federal Register SDK',
-  },
-});
-
-// Custom instance for Orval
 export const customInstance = <T>(
   config: AxiosRequestConfig,
   options?: AxiosRequestConfig,
-): Promise<AxiosResponse<T>> => {
+): Promise<T> => {
   const source = axios.CancelToken.source();
-  const promise = axiosInstance({
+  const promise = axios({
     ...config,
     ...options,
     cancelToken: source.token,
@@ -25,8 +13,10 @@ export const customInstance = <T>(
 
   // @ts-ignore
   promise.cancel = () => {
-    source.cancel('Query was cancelled');
+    source.cancel('Query was cancelled by React Query');
   };
 
   return promise;
 };
+
+export default customInstance;

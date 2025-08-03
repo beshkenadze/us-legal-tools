@@ -23,7 +23,7 @@ describe("eCFR SDK - Integration Tests", () => {
     it("should export VERSION constant", () => {
       expect(VERSION).toBeDefined();
       expect(typeof VERSION).toBe("string");
-      expect(VERSION).toBe("0.1.0");
+      expect(VERSION).toBe("0.8.0");
     });
 
     it("should export API functions", () => {

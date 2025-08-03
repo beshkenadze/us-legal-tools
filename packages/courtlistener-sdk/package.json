@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "bun run src/index.ts",
     "build": "bun run build.ts",
-    "generate": "orval",
+    "generate": "NODE_OPTIONS='--max-old-space-size=4096' bun run --bun $(which orval)",
     "format": "biome format --write .",
     "lint": "biome lint --write .",
     "check": "biome check --write .",
@@ -20,8 +20,7 @@
     "test:integration": "SKIP_INTEGRATION_TESTS=false bun test src",
     "test:all": "bun test",
     "mcp:server": "bun run src/mcp/server.ts",
-    "download": "echo 'No download script defined, use `bun run generate` to generate the SDK from the API specification.'",
-    "docs:generate": "bunx orval --config orval.config.ts --project docs"
+    "download": "echo 'No download script defined, use `bun run generate` to generate the SDK from the API specification.'"
   },
   "files": [
     "dist",
@@ -34,9 +33,10 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.1.2",
+    "@biomejs/biome": "2.1.3",
     "@types/bun": "latest",
     "@types/node": "^24.1.0",
+    "@us-legal-tools/orval-config": "workspace:*",
     "@us-legal-tools/tsconfig": "workspace:*",
     "orval": "^7.10.0",
     "typedoc-plugin-markdown": "^4.8.0",

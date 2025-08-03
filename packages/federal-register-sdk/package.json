@@ -47,7 +47,7 @@
     "dev": "bun run src/index.ts",
     "build": "bun run build.ts",
     "download": "bun run scripts/download-openapi.ts",
-    "generate": "orval",
+    "generate": "bun run --bun $(which orval)",
     "format": "biome format --write .",
     "lint": "biome lint --write .",
     "check": "biome check --write .",
@@ -58,13 +58,13 @@
     "test:integration": "SKIP_INTEGRATION_TESTS=false bun test src",
     "test:e2e": "SKIP_E2E_TESTS=false bun test tests/e2e",
     "test:all": "bun test",
-    "mcp:server": "bun run src/mcp/server.ts",
-    "docs:generate": "bunx orval --config orval.config.ts --project docs"
+    "mcp:server": "bun run src/mcp/server.ts"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.1.2",
+    "@biomejs/biome": "2.1.3",
     "@types/bun": "latest",
     "@types/node": "^24.1.0",
+    "@us-legal-tools/orval-config": "workspace:*",
     "@us-legal-tools/tsconfig": "workspace:*",
     "orval": "^7.10.0",
     "typedoc": "^0.28.8",

@@ -47,7 +47,7 @@
     "dev": "bun run src/index.ts",
     "build": "bun run build.ts",
     "download": "bun run scripts/fix-and-convert-swagger.ts",
-    "generate": "orval",
+    "generate": "bun run --bun $(which orval)",
     "format": "biome format --write .",
     "lint": "biome lint --write .",
     "check": "biome check --write .",
@@ -63,17 +63,17 @@
     "test:all": "bun test",
     "mcp:server": "bun run src/mcp/server.ts",
     "docker:build": "docker build -t ecfr-mcp-server .",
-    "docker:run": "docker run -i --rm ecfr-mcp-server",
-    "docs:generate": "bunx orval --config orval.config.ts --project docs"
+    "docker:run": "docker run -i --rm ecfr-mcp-server"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.3",
     "@types/bun": "latest",
     "@types/node": "^24.1.0",
+    "@us-legal-tools/orval-config": "workspace:*",
     "@us-legal-tools/tsconfig": "workspace:*",
     "orval": "^7.10.0",
     "swagger2openapi": "^7.0.8",
-    "typedoc-plugin-markdown": "4.8.0",
+    "typedoc-plugin-markdown": "^4.8.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {

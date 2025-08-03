@@ -27,10 +27,9 @@ async function testCourtListenerSDK() {
         q: 'first amendment',
         order_by: 'score'
       });
-      const data = searchResults.data || searchResults;
-      console.log(`✅ Search returned ${data.count} results`);
-      if (data.results && data.results.length > 0) {
-        console.log(`   First result: ${data.results[0].caseName || 'No case name'}`);
+      console.log(`✅ Search returned ${searchResults.count} results`);
+      if (searchResults.results && searchResults.results.length > 0) {
+        console.log(`   First result: ${searchResults.results[0].caseName || 'No case name'}`);
       }
     } catch (e) {
       console.log('⚠️  Search requires authentication or hit rate limit');
@@ -44,10 +43,9 @@ async function testCourtListenerSDK() {
       const courts = await getCourts({
         page: 1
       });
-      const data = courts.data || courts;
-      console.log(`✅ Found ${data.count || data.results?.length || 0} courts`);
-      if (data.results && data.results.length > 0) {
-        console.log(`   Sample court: ${data.results[0].full_name || data.results[0].short_name}`);
+      console.log(`✅ Found ${courts.count || courts.results?.length || 0} courts`);
+      if (courts.results && courts.results.length > 0) {
+        console.log(`   Sample court: ${courts.results[0].full_name || courts.results[0].short_name}`);
       }
     } catch (e) {
       console.log('⚠️  Courts endpoint error:', e.message);

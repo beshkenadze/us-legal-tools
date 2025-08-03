@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import { build } from 'bun';
 
-const entrypoints = ['./src/index.ts', './src/mcp/index.ts', './src/mcp/server.ts'];
+const entrypoints = ['./src/index.ts', './src/mcp/server.ts'];
 
 // Build for Node.js (CommonJS)
 await build({

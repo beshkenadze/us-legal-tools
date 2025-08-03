@@ -1134,7 +1134,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AlertCreate"
+                "$ref": "#/components/schemas/PostAlertsBody"
               }
             }
           }
@@ -1271,7 +1271,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RECAPFetchRequest"
+                "$ref": "#/components/schemas/PostRecapFetchBody"
               }
             }
           }
@@ -1325,7 +1325,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DocketAlertCreate"
+                "$ref": "#/components/schemas/PostDocketAlertsBody"
               }
             }
           }
@@ -2969,7 +2969,7 @@
           }
         }
       },
-      "AlertCreate": {
+      "PostAlertsBody": {
         "type": "object",
         "properties": {
           "name": {
@@ -3210,7 +3210,7 @@
           }
         }
       },
-      "RECAPFetchRequest": {
+      "PostRecapFetchBody": {
         "type": "object",
         "properties": {
           "pacer_doc_id": {
@@ -3292,7 +3292,7 @@
           }
         }
       },
-      "DocketAlertCreate": {
+      "PostDocketAlertsBody": {
         "type": "object",
         "properties": {
           "docket": {

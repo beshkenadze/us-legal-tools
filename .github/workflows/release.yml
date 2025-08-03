@@ -98,7 +98,7 @@ jobs:
         run: bun install
 
       - name: Generate SDKs
-        run: bunx turbo generate
+        run: bunx turbo run generate
 
       - name: Run tests
         run: bunx turbo run test
