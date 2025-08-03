@@ -1,5 +1,15 @@
 # @us-legal-tools/ecfr-sdk
 
+## 0.8.1
+
+### Patch Changes
+
+- Fix missing typed API function exports
+
+  - Added export of generated API endpoints from main index.ts files
+  - This fixes the issue where typed functions like `getApiSearchV1Results` were generated but not accessible to SDK users
+  - Now all generated API functions are properly exported alongside the axios client
+
 ## 0.8.0
 
 ### Minor Changes
