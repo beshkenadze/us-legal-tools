@@ -43,7 +43,7 @@
     "build:generate": "bun run generate",
     "build:js": "bun build.ts",
     "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly --declaration --declarationMap",
-    "check": "bunx @biomejs/biome check --apply .",
+    "check": "biome check --write .",
     "dev": "bun run src/test-sdk.ts",
     "format": "bunx @biomejs/biome format --write .",
     "generate": "bun run --bun $(which orval)",
