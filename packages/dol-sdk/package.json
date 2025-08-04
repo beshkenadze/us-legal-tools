@@ -47,7 +47,7 @@
     "dev": "bun run src/test-sdk.ts",
     "format": "bunx @biomejs/biome format --write .",
     "generate": "bun run --bun $(which orval)",
-    "lint": "bunx @biomejs/biome lint --apply .",
+    "lint": "biome lint --write .",
     "mcp:server": "bun run src/mcp/server.ts",
     "test": "bun test",
     "test:e2e": "SKIP_E2E_TESTS=false bun test tests/e2e",
