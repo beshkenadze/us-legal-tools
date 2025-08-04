@@ -1,5 +1,16 @@
 # @us-legal-tools/dol-sdk
 
+## 0.5.1
+
+### Patch Changes
+
+- Fix API connectivity and test issues across multiple SDKs
+
+  - **courtlistener-sdk**: Correct API base URL to use /api/rest/v4 endpoint and add User-Agent header to avoid CloudFront blocks
+  - **federal-register-sdk**: Update base URL to use /api/v1 endpoint and fix e2e test assertions
+  - **dol-sdk**: Fix TypeScript errors in e2e tests by adding proper type guards for union types
+  - Improve TypeDoc documentation generation by focusing only on generated SDK code
+
 ## 0.5.0
 
 ### Minor Changes
