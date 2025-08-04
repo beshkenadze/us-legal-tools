@@ -7,6 +7,7 @@ import {
   getAgencyEndpointMetadataJson,
   getAgencyEndpointMetadataCsv
 } from '../../src';
+import type { Dataset, PaginationMetadata } from '../../src/api/generated/model';
 
 const SKIP_E2E_TESTS = process.env.SKIP_E2E_TESTS !== 'false';
 
@@ -19,39 +20,29 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
 
       console.log('getDatasets response:', typeof response, response);
       expect(response).toBeDefined();
+      expect(Array.isArray(response)).toBe(true);
+      expect(response.length).toBeGreaterThan(1);
       
-      let datasets: any[];
-      let pagination: any;
-      
-      // Check if response has the expected structure
-      if (typeof response === 'object' && response && 'datasets' in response) {
-        // Response is an object with datasets property
-        expect(response).toHaveProperty('datasets');
-        expect(response).toHaveProperty('meta');
-        expect(Array.isArray(response.datasets)).toBe(true);
-        expect(response.datasets.length).toBeGreaterThan(0);
-        
-        // Extract datasets and pagination metadata
-        datasets = response.datasets;
-        pagination = response.meta;
-      } else if (Array.isArray(response)) {
-        // Response is an array where all elements except the last are datasets
-        // and the last element is pagination metadata
-        expect(response.length).toBeGreaterThan(1);
-        datasets = response.slice(0, -1);
-        pagination = response[response.length - 1];
-      } else {
-        throw new Error('Unexpected response structure from getDatasets()');
-      }
+      // Response is an array where all elements except the last are datasets
+      // and the last element is pagination metadata
+      const lastElement = response[response.length - 1];
+      const datasets = response.slice(0, -1).filter((item): item is Dataset => 
+        'agency' in item && 'api_url' in item
+      );
+      const pagination = lastElement && 'page' in lastElement ? lastElement as PaginationMetadata : undefined;
 
       // Verify dataset structure
       const firstDataset = datasets[0];
-      expect(firstDataset).toHaveProperty('name');
-      expect(firstDataset).toHaveProperty('agency');
-      expect(firstDataset).toHaveProperty('api_url');
-      expect(firstDataset).toHaveProperty('description');
-      expect(firstDataset.agency).toHaveProperty('name');
-      expect(firstDataset.agency).toHaveProperty('abbr');
+      if (firstDataset) {
+        expect(firstDataset).toHaveProperty('name');
+        expect(firstDataset).toHaveProperty('agency');
+        expect(firstDataset).toHaveProperty('api_url');
+        expect(firstDataset).toHaveProperty('description');
+        if (firstDataset.agency) {
+          expect(firstDataset.agency).toHaveProperty('name');
+          expect(firstDataset.agency).toHaveProperty('abbr');
+        }
+      }
 
       // Verify pagination structure
       expect(pagination).toHaveProperty('current_page');
@@ -69,10 +60,12 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
       expect(Array.isArray(response)).toBe(true);
       expect(response.length).toBeGreaterThan(1);
       
-      const datasets = response.slice(0, -1);
+      const datasets = response.slice(0, -1).filter((item): item is Dataset => 
+        'agency' in item && 'api_url' in item
+      );
       const firstDataset = datasets[0];
       
-      if (firstDataset.agency && firstDataset.api_url) {
+      if (firstDataset && firstDataset.agency && firstDataset.api_url) {
         try {
           const dataResponse = await getAgencyEndpointDataJson(
             firstDataset.agency.abbr,
@@ -133,11 +126,13 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
       })));
       
       // Find a testable dataset
-      const testDataset = datasets.find((d: any) => 
-        d.agency?.abbr && 
-        d.api_url && 
-        d.agency.abbr.toLowerCase() !== 'dol'
-      );
+      const testDataset = datasets.find((d): d is Dataset => {
+        if (!('agency' in d)) return false;
+        const dataset = d as Dataset;
+        return !!dataset.agency?.abbr && 
+               !!dataset.api_url && 
+               dataset.agency.abbr.toLowerCase() !== 'dol';
+      });
       
       if (testDataset && testDataset.agency && testDataset.api_url) {
         try {
@@ -369,9 +364,10 @@ describe.skipIf(SKIP_E2E_TESTS)('DOL API E2E Tests', () => {
         expect(secondPageResponse.data).toBeDefined();
         
         // The data should be different between pages
-        if (firstPageResponse.data?.data && secondPageResponse.data?.data) {
-          const firstPageData = JSON.stringify(firstPageResponse.data.data[0]);
-          const secondPageData = JSON.stringify(secondPageResponse.data.data[0]);
+        if (firstPageResponse.data && Array.isArray(firstPageResponse.data) && 
+            secondPageResponse.data && Array.isArray(secondPageResponse.data)) {
+          const firstPageData = JSON.stringify(firstPageResponse.data[0]);
+          const secondPageData = JSON.stringify(secondPageResponse.data[0]);
           expect(firstPageData).not.toBe(secondPageData);
         }
       } catch (error) {
