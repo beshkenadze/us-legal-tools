@@ -121,6 +121,8 @@ jobs:
           # Commit version changes
           git add .
           git commit -m "chore: version packages for manual release" || echo "No changes to commit"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish packages
         run: |
