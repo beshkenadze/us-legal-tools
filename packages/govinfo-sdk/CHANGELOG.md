@@ -1,5 +1,16 @@
 # @us-legal-tools/govinfo-sdk
 
+## 0.5.2
+
+### Patch Changes
+
+- Fix SDK server configurations and API endpoints
+
+  - **govinfo-sdk**: Fix OpenAPI spec server URL from empty string to https://api.govinfo.gov
+  - **courtlistener-sdk**: Ensure proper API base URL generation with /api/rest/v4/ endpoints
+
+  These fixes resolve broken SDK endpoints that were causing 403 CloudFront errors and empty base URLs.
+
 ## 0.5.1
 
 ### Patch Changes
