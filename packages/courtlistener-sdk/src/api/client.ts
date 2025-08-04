@@ -9,10 +9,11 @@ export const customInstance = <T>(
   
   const source = axios.CancelToken.source();
   const promise = axios({
-    baseURL: 'https://www.courtlistener.com',
+    baseURL: 'https://www.courtlistener.com/api/rest/v4',
     timeout: 30000,
     headers: {
       'Content-Type': 'application/json',
+      'User-Agent': '@us-legal-tools/courtlistener-sdk/1.5.1',
       ...(authToken && { 'Authorization': `Token ${authToken}` }),
     },
     ...config,
