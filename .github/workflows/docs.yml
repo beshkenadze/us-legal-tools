@@ -25,6 +25,7 @@ jobs:
         with:
           bun-version: latest
 
+
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
@@ -53,7 +54,7 @@ jobs:
         run: bunx turbo docs:generate
 
       - name: Build TypeDoc documentation
-        run: bunx typedoc --options typedoc.monorepo.json
+        run: bunx --bun typedoc --options typedoc.monorepo.json
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
