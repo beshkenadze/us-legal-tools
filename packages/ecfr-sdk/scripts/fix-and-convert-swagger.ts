@@ -205,6 +205,30 @@ async function fixAndConvert() {
         openapi3.info = { ...openapi3.info, version: "1.0.0" };
       }
 
+      // Fix XML endpoint response types
+      console.log("🔧 Fixing XML endpoint response types...");
+      const xmlPath = "/api/versioner/v1/full/{date}/title-{title}.xml";
+      if (openapi3.paths && openapi3.paths[xmlPath]) {
+        const xmlEndpoint = openapi3.paths[xmlPath];
+        if (xmlEndpoint.get && xmlEndpoint.get.responses && xmlEndpoint.get.responses["200"]) {
+          const response200 = xmlEndpoint.get.responses["200"];
+          response200.content = {
+            "application/xml": {
+              schema: {
+                type: "string",
+                description: "XML content of the regulation"
+              }
+            },
+            "text/xml": {
+              schema: {
+                type: "string",
+                description: "XML content of the regulation"
+              }
+            }
+          };
+        }
+      }
+
       // Save the converted file
       await fs.writeFile(OUTPUT_FILE, JSON.stringify(openapi3, null, 2));
 
