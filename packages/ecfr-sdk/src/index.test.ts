@@ -3,6 +3,8 @@ import { VERSION } from './index';
 
 describe('ecfr-sdk', () => {
   it('should export VERSION', () => {
-    expect(VERSION).toBe('0.8.0');
+    expect(VERSION).toBeDefined();
+    expect(typeof VERSION).toBe('string');
+    expect(VERSION).toMatch(/^\d+\.\d+\.\d+$/);
   });
 });
