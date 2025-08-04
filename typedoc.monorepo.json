@@ -3,17 +3,20 @@
   "extends": ["./typedoc.base.json"],
   "name": "US Legal Tools SDK Documentation",
   "entryPoints": [
-    "packages/ecfr-sdk",
-    "packages/federal-register-sdk",
-    "packages/courtlistener-sdk",
-    "packages/govinfo-sdk",
-    "packages/dol-sdk"
+    "packages/*/src/api/generated/endpoints.ts",
+    "packages/*/src/api/generated/model/index.ts"
   ],
-  "exclude": ["**/test-sdk.ts", "**/scripts/**"],
-  "entryPointStrategy": "packages",
-  "packageOptions": {
-    "entryPoints": ["src/index.ts"],
-    "readme": "README.md"
-  },
+  "entryPointStrategy": "expand",
+  "exclude": [
+    "**/test-sdk.ts",
+    "**/scripts/**",
+    "**/mcp/**",
+    "**/client.ts",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/tests/**",
+    "**/e2e/**",
+    "**/integration/**"
+  ],
   "out": "docs"
 }
