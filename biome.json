@@ -31,7 +31,10 @@
       "!**/*.test.ts",
       "!**/test-*.ts",
       "!**/scripts/**",
-      "!**/download-*.ts"
+      "!**/download-*.ts",
+      "!**/*-openapi*.json",
+      "!**/openapi*.json",
+      "!**/swagger*.json"
     ]
   },
   "formatter": {
