@@ -1,5 +1,16 @@
 # @us-legal-tools/ecfr-sdk
 
+## 0.8.2
+
+### Patch Changes
+
+- Fix XML endpoint return types from void to string
+
+  - The TypeScript definitions for XML endpoints incorrectly specified `Promise<void>` as the return type
+  - Updated OpenAPI specification to include proper content schema for XML responses
+  - `getApiVersionerV1FullDateTitleTitleXml` and other XML endpoints now correctly return `Promise<string>`
+  - Users no longer need type assertions to work with XML content
+
 ## 0.8.1
 
 ### Patch Changes
