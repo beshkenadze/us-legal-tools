@@ -1,8 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "extends": [
-    "./typedoc.base.json"
-  ],
+  "extends": ["./typedoc.base.json"],
   "name": "US Legal Tools SDK Documentation",
   "entryPoints": [
     "packages/ecfr-sdk",
@@ -11,11 +9,10 @@
     "packages/govinfo-sdk",
     "packages/dol-sdk"
   ],
+  "exclude": ["**/test-sdk.ts", "**/scripts/**"],
   "entryPointStrategy": "packages",
   "packageOptions": {
-    "entryPoints": [
-      "src/index.ts"
-    ],
+    "entryPoints": ["src/index.ts"],
     "readme": "README.md"
   },
   "out": "docs"
