@@ -16,7 +16,8 @@
   },
   "servers": [
     {
-      "url": ""
+      "url": "https://api.govinfo.gov",
+      "description": "GovInfo API Server"
     }
   ],
   "tags": [
